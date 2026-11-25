@@ -52,9 +52,11 @@ a { color: inherit; }
 
 #menu { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.55); }
 .menu-panel {
-  width: min(82vw, 320px); height: 100%; background: var(--card1); padding: calc(24px + var(--safe-top)) 22px 22px;
+  width: min(82vw, 320px); height: 100%; background: var(--card1); padding: calc(18px + var(--safe-top)) 22px calc(24px + var(--safe-bottom));
   display: flex; flex-direction: column; gap: 4px; animation: slidein .2s ease-out;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
 }
+.menu-panel > * { flex: none; }
 .menu-logo { width: 150px; margin: 0 0 18px 4px; }
 .menu-panel a { text-decoration: none; padding: 14px 6px; font-size: 17px; border-bottom: 1px solid #2c2b3b; }
 @keyframes slidein { from { transform: translateX(-100%); } }
@@ -205,3 +207,14 @@ textarea { width: 100%; min-height: 90px; font-family: inherit; font-size: 17px;
 .swipe-btns .yep svg { width: 36px; height: 36px; }
 
 .copy { color: var(--muted); font-size: 13px; text-align: center; margin: 22px 0 0; }
+
+/* home screen fits the phone without scrolling */
+main.home { height: calc(100vh - 64px - var(--safe-top)); height: calc(100dvh - 64px - var(--safe-top)); padding: 12px 20px calc(10px + var(--safe-bottom)); display: flex; flex-direction: column; overflow: hidden; }
+main.home > * { flex: none; }
+main.home .daily { padding: 10px 16px; margin-bottom: 8px; gap: 2px 12px; }
+main.home .daily-n { font-size: 22px; }
+main.home .hello { margin: 0 0 10px; font-size: 14px; }
+main.home .grid { flex: 1 1 auto; min-height: 0; grid-template-rows: 1fr 1fr; gap: 14px; }
+main.home .tile { aspect-ratio: auto; min-height: 0; padding: 12px 10px; justify-content: space-around; font-size: 16px; }
+main.home .tile svg { width: auto; height: 45%; max-width: 70%; margin: 0; }
+main.home .copy { margin: 8px 0 0; }

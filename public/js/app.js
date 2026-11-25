@@ -248,6 +248,7 @@ function nameList(rows, opts = {}) {
 function home() {
   setBar({ help: 'home', share: sharer('What does your name say about you?', 'SPASM describes your personality just from your name, rates the romantic compatibility of any two people, suggests baby names and tells you who to kiss, marry or avoid.', location.origin + '/') });
   const me = meRecord(), nd = E.nameOfDay();
+  view.className = 'home';
   view.innerHTML = `
   <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span></a>
   ${me ? `<p class="hello">Hi ${esc(me.n)}. <a href="#/meaning/${me.g}/${enc(me.n)}">Your name</a> &middot; <a href="#/me">change</a></p>` : `<p class="hello"><a href="#/me">Tell SPASM your name</a> to save typing it every time.</p>`}
@@ -599,6 +600,7 @@ function notFound(name, g) {
 function route() {
   $('#menu').hidden = true; $('#help').hidden = true;
   view.onclick = null;
+  view.className = '';
   const raw = location.hash.replace(/^#\/?/, '');
   const [path, qs = ''] = raw.split('?');
   const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
