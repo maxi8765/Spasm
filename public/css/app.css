@@ -1,4 +1,6 @@
 [hidden] { display: none !important; }
+@font-face { font-family: 'Comfortaa'; font-weight: 400; font-display: swap; src: url('/fonts/comfortaa-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Comfortaa'; font-weight: 700; font-display: swap; src: url('/fonts/comfortaa-latin-700-normal.woff2') format('woff2'); }
 :root {
   --bg1: #393849;
   --bg2: #1d1c28;
@@ -126,7 +128,7 @@ p.body { font-size: 19px; line-height: 1.45; white-space: pre-line; }
 .list { list-style: none; padding: 0; margin: 0; }
 .list > li { border-bottom: 1px solid #3a394c; }
 .list .row { display: flex; align-items: center; gap: 8px; }
-.az-list a.name { text-decoration: none; display: block; }
+.list a.name { text-decoration: none; display: block; }
 .list .name { flex: 1; background: none; border: 0; color: #fff; text-align: left; font-size: 21px; padding: 16px 4px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 .list .name .chev { width: 18px; height: 18px; transition: transform .2s; flex: none; display: grid; }
 .list .name .chev svg { width: 18px; height: 18px; }
@@ -181,3 +183,23 @@ p.body { font-size: 19px; line-height: 1.45; white-space: pre-line; }
 #toast { position: fixed; left: 50%; bottom: calc(100px + var(--safe-bottom)); transform: translateX(-50%); background: #fff; color: #111; padding: 12px 20px; border-radius: 12px; font-size: 16px; z-index: 40; max-width: 90vw; text-align: center; }
 .loading { text-align: center; color: var(--muted); margin-top: 40px; }
 textarea { width: 100%; min-height: 90px; font-family: inherit; font-size: 17px; padding: 12px 14px; border-radius: 14px; border: 2px solid #4a495d; background: #15141e; color: #fff; }
+
+/* home extras */
+.daily { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; text-decoration: none; background: linear-gradient(90deg, #2b2a5e, #3a2457); border-radius: 18px; padding: 14px 18px; margin-bottom: 12px; }
+.daily-k { color: var(--muted); font-size: 14px; width: 100%; }
+.daily-n { font-size: 26px; font-weight: 700; }
+.daily .tag { font-size: 14px; padding: 4px 12px; }
+.hello { color: var(--muted); font-size: 15px; margin: 0 0 16px; }
+.hello a { color: #c9b8ff; }
+.menu-panel a.menu-small { font-size: 14px; color: var(--muted); padding: 10px 6px; }
+
+/* swipe */
+.swipe-stage { position: relative; height: 380px; display: flex; justify-content: center; align-items: stretch; overflow: hidden; }
+.swipe-card { width: 100%; max-width: 420px; background: linear-gradient(180deg, var(--card1), var(--card2)); border-radius: 24px; padding: 28px 24px; box-shadow: 0 10px 30px rgba(0,0,0,.35); touch-action: pan-y; user-select: none; cursor: grab; overflow-y: auto; }
+.swipe-name { font-size: 40px; font-weight: 700; margin-bottom: 14px; }
+.swipe-desc { font-size: 18px; line-height: 1.45; color: #e6e5f0; }
+.swipe-btns { display: flex; justify-content: center; gap: 40px; margin: 18px 0 6px; }
+.swipe-btns button { width: 72px; height: 72px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center; font-size: 40px; }
+.swipe-btns .nope { background: #2c2b3b; color: #fff; }
+.swipe-btns .yep { background: var(--pink); color: #fff; }
+.swipe-btns .yep svg { width: 36px; height: 36px; }

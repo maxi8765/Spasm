@@ -39,3 +39,10 @@ for (let a = 1; a <= 9; a++) for (let b = 1; b <= 9; b++) for (let x = 1; x <= 5
   E.compatibility({ n: 'A', e: a, s: x }, { n: 'B', e: b, s: y });
 assert.equal(E.search('sam', 'F')[0].n.toLowerCase().startsWith('sam'), true);
 console.log('engine tests passed;', rows.length, 'names');
+// new helpers
+assert.ok(E.similar('Kaitlyn', 'F').length > 0, 'spelling suggestions');
+console.log('similar Kaitlyn ->', E.similar('Kaitlyn','F').map(r=>r.n), '| Jonothan ->', E.similar('Jonothan','M').map(r=>r.n));
+const nd = E.nameOfDay(new Date(2026, 10, 25)); assert.equal(nd.n, E.nameOfDay(new Date(2026, 10, 25)).n);
+console.log('name of the day', nd.n, nd.g);
+const pool = E.bubPool(ian, nic, 'F'); assert.ok(pool.length > 50 && pool.every(r => r.e === E.babyType(ian, nic) && r.g === 'F'));
+console.log('swipe pool', pool.length);

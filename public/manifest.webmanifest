@@ -7,7 +7,77 @@
   "background_color": "#1d1c28",
   "theme_color": "#000000",
   "icons": [
-    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/",
+  "scope": "/",
+  "lang": "en-AU",
+  "orientation": "portrait",
+  "categories": [
+    "entertainment",
+    "lifestyle"
+  ],
+  "shortcuts": [
+    {
+      "name": "What does that name mean?",
+      "url": "/#/meaning"
+    },
+    {
+      "name": "Romantic compatibility",
+      "url": "/#/compat"
+    },
+    {
+      "name": "Your best bub names",
+      "url": "/#/bub"
+    },
+    {
+      "name": "Kiss, marry or avoid",
+      "url": "/#/kma"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/img/screen-1.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home"
+    },
+    {
+      "src": "/img/screen-2.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Name meaning"
+    },
+    {
+      "src": "/img/screen-3.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Romantic compatibility"
+    },
+    {
+      "src": "/img/screen-4.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kiss, marry or avoid"
+    }
   ]
 }

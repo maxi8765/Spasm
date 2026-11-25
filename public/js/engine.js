@@ -11,6 +11,30 @@ export const AVOID_MAX_SEX_SCORE = 0.60; // keep if score <= 60%
 export const LIST_A = 5;
 export const LIST_Z = 2;
 
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = [i];
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+
+function soundex(s) {
+  const codes = { b: 1, f: 1, p: 1, v: 1, c: 2, g: 2, j: 2, k: 2, q: 2, s: 2, x: 2, z: 2, d: 3, t: 3, l: 4, m: 5, n: 5, r: 6 };
+  const w = s.toLowerCase().replace(/[^a-z]/g, '');
+  if (!w) return '';
+  let out = w[0].toUpperCase(), last = codes[w[0]] || 0;
+  for (const ch of w.slice(1)) {
+    const c = codes[ch] || 0;
+    if (c && c !== last) out += c;
+    if (ch !== 'h' && ch !== 'w') last = c;
+  }
+  return (out + '000').slice(0, 4);
+}
+
 export function createEngine(namesRows, tables, rand = Math.random) {
   const names = namesRows.map(([n, g, c, e, s]) => ({ n, g, c, e, s }));
   const byKey = new Map(names.map((r) => [key(r.n, r.g), r]));
@@ -108,5 +132,38 @@ export function createEngine(namesRows, tables, rand = Math.random) {
     return sample(pool);
   }
 
-  return { names, find, search, byLetter, compatibility, bubNames, babyType, mates, sexScore, fillNames };
+  // Every qualifying baby name, shuffled (for swipe mode)
+  function bubPool(P1, P2, babyG) {
+    const t = babyType(P1, P2);
+    const exclude = new Set([P1.n.toLowerCase(), P2.n.toLowerCase()]);
+    return sample(names.filter((r) => r.g === babyG && r.e === t && !exclude.has(r.n.toLowerCase())), Infinity, Infinity);
+  }
+
+  // "Did you mean" suggestions for a name we don't have
+  function similar(name, g, k = 3) {
+    const q = String(name).trim().toLowerCase();
+    if (q.length < 2) return [];
+    const scored = [];
+    for (const r of names) {
+      if (r.g !== g) continue;
+      const n = r.n.toLowerCase();
+      if (Math.abs(n.length - q.length) > 3) continue;
+      let d = lev(q, n);
+      if (n[0] !== q[0]) d += 0.5;
+      if (soundex(n) === soundex(q)) d -= 1;
+      if (d <= Math.max(2, q.length / 3)) scored.push([d, r]);
+    }
+    return scored.sort((a, b) => a[0] - b[0] || a[1].n.length - b[1].n.length).slice(0, k).map((x) => x[1]);
+  }
+
+  // Name of the day: a common name chosen from the date, the same for everyone
+  function nameOfDay(date = new Date()) {
+    const key = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
+    const pool = names.filter((r) => r.c === 'a');
+    let h = key >>> 0;
+    h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16;
+    return pool[(h >>> 0) % pool.length];
+  }
+
+  return { names, find, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
 }

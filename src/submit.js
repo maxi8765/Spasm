@@ -17,3 +17,17 @@ export async function submitName(request, env) {
 }
 
 export const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json' } });
+
+// Names people searched for that SPASM doesn't have (for David's to-write list)
+export async function logMiss(request, env) {
+  if (!env.NAME_SUBMISSIONS) return new Response(null, { status: 204 });
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'Bad request' }, 400); }
+  const name = String(body.name || '').trim().slice(0, 40);
+  const gender = body.gender === 'M' ? 'M' : 'F';
+  if (!name) return new Response(null, { status: 204 });
+  const key = `miss:${gender}:${name.toLowerCase()}`;
+  const prev = parseInt((await env.NAME_SUBMISSIONS.get(key)) || '0', 10);
+  await env.NAME_SUBMISSIONS.put(key, String(prev + 1));
+  return new Response(null, { status: 204 });
+}

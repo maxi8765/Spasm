@@ -1,12 +1,14 @@
 import { createEngine } from './engine.js';
 import { HELP } from './help.js';
 import { ICON } from './icons.js';
+import { shareCard } from './share.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const view = $('#view');
 const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const enc = encodeURIComponent;
 const GLABEL = { M: 'Male', F: 'Female' };
+const FEEDBACK = 'yoohoohocko@gmail.com';
 const MODES = ['kiss', 'marry', 'avoid'];
 const MODE_INFO = {
   kiss: { title: 'Kiss', icon: ICON.kiss, blurb: 'Hook up with' },
@@ -48,6 +50,11 @@ function favs() {
   try { return JSON.parse(localStorage.getItem('spasm.favs')) || {}; } catch { return {}; }
 }
 function saveFavs(f) { try { localStorage.setItem('spasm.favs', JSON.stringify(f)); } catch { toast('Could not save on this device'); } }
+function addFavQuiet(group, label, href) {
+  const f = favs();
+  f[group] = f[group] || [];
+  if (!f[group].some((x) => x.label === label)) { f[group].unshift({ label, href }); saveFavs(f); }
+}
 function addFav(group, label, href) {
   const f = favs();
   f[group] = f[group] || [];
@@ -56,6 +63,11 @@ function addFav(group, label, href) {
   saveFavs(f);
   toast('Saved to favourites');
 }
+
+// ---------- your own name ----------
+function getMe() { try { return JSON.parse(localStorage.getItem('spasm.me')); } catch { return null; } }
+function setMe(r) { try { r ? localStorage.setItem('spasm.me', JSON.stringify({ n: r.n, g: r.g })) : localStorage.removeItem('spasm.me'); } catch { /* private mode */ } }
+function meRecord() { const m = getMe(); return m ? E.find(m.n, m.g) : null; }
 
 // ---------- chrome ----------
 function setBar({ title = null, back = false, share = null, help = null }) {
@@ -100,6 +112,13 @@ function sharer(title, text, link) {
     try { await navigator.clipboard.writeText(`${text}\n${url}`); toast('Link copied, paste it anywhere'); }
     catch { prompt('Copy this link', url); }
   };
+}
+// Share a result as an image card plus a link to it
+function cardSharer(spec, text) {
+  return () => { toast('Making your image...'); return shareCard(spec, text, toast); };
+}
+function logMiss(name, g) {
+  try { navigator.sendBeacon('/api/miss', new Blob([JSON.stringify({ name, gender: g })], { type: 'application/json' })); } catch { /* best effort */ }
 }
 const logo = () => '<img src="/img/logo.png" alt="SPASM" class="page-logo">';
 const pct = (x) => Math.round(x * 100) + '%';
@@ -153,16 +172,30 @@ function picker({ label, g = 'F', name = '', id }) {
     list.querySelectorAll('li').forEach((li, i) => li.classList.toggle('active', i === active));
   });
   list.addEventListener('mousedown', (e) => { const li = e.target.closest('li'); if (li) { e.preventDefault(); choose(+li.dataset.i); } });
+  err.addEventListener('click', (e) => {
+    const a = e.target.closest('a.sim, a.swapg'); if (!a) return;
+    e.preventDefault();
+    if (a.dataset.n) input.value = a.dataset.n;
+    if (a.dataset.g) setG(a.dataset.g); else validate();
+    err.textContent = '';
+  });
   setG(gender);
 
   return {
     el: wrap,
     get() {
       const r = E.find(input.value, gender);
+      const typed = input.value.trim();
       if (!r) {
-        err.innerHTML = input.value.trim()
-          ? `We don't have ${esc(input.value.trim())} as a ${GLABEL[gender].toLowerCase()} name yet. Check the gender, or <a href="#/submit">submit it</a>.`
-          : 'Pick a name from the pop-up list.';
+        if (!typed) { err.textContent = 'Pick a name from the pop-up list.'; return null; }
+        const other = gender === 'M' ? 'F' : 'M';
+        const sims = E.similar(typed, gender);
+        let html = `We don't have ${esc(typed)} as a ${GLABEL[gender].toLowerCase()} name yet.`;
+        if (E.find(typed, other)) html += ` We do have it as a <a href="#" data-g="${other}" class="swapg">${GLABEL[other].toLowerCase()} name</a>.`;
+        if (sims.length) html += ` Did you mean ${sims.map((x) => `<a href="#" class="sim" data-n="${esc(x.n)}">${esc(x.n)}</a>`).join(', ')}?`;
+        html += ` Or <a href="#/submit?n=${enc(typed)}&g=${gender}">submit it</a>.`;
+        err.innerHTML = html;
+        logMiss(typed, gender);
       }
       return r;
     },
@@ -214,7 +247,11 @@ function nameList(rows, opts = {}) {
 // ---------- pages ----------
 function home() {
   setBar({ help: 'home', share: sharer('What does your name say about you?', 'SPASM describes your personality just from your name, rates the romantic compatibility of any two people, suggests baby names and tells you who to kiss, marry or avoid.', location.origin + '/') });
-  view.innerHTML = `<div class="grid">
+  const me = meRecord(), nd = E.nameOfDay();
+  view.innerHTML = `
+  <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span></a>
+  ${me ? `<p class="hello">Hi ${esc(me.n)}. <a href="#/meaning/${me.g}/${enc(me.n)}">Your name</a> &middot; <a href="#/me">change</a></p>` : `<p class="hello"><a href="#/me">Tell SPASM your name</a> to save typing it every time.</p>`}
+  <div class="grid">
     <a class="tile" href="#/meaning" style="color:var(--blue)">${ICON.head}<span style="color:#fff">What does that name mean?<br>(Based on the Name Theory&trade;)</span></a>
     <a class="tile" href="#/compat" style="color:var(--blue)">${ICON.hearts}<span style="color:#fff">Romantic compatibility</span></a>
     <a class="tile" href="#/bub" style="color:var(--blue)">${ICON.baby}<span style="color:#fff">Your best bub names?</span></a>
@@ -270,17 +307,22 @@ async function meaningResult(g, name) {
   if (!r) return notFound(name, g);
   pref.g = g;
   const d = await describe(r);
-  setBar({ title: r.n, back: true, help: 'meaning', share: sharer(r.n, `What does the name ${r.n} mean? ${d.slice(0, 140)}${d.length > 140 ? '...' : ''}`) });
+  setBar({ title: r.n, back: true, help: 'meaning', share: cardSharer({ kicker: 'What does that name mean?', title: r.n, tags: [[GLABEL[r.g], r.g]], body: d }, `What does the name ${r.n} mean? SPASM knows.`) });
+  const me = getMe();
+  const isMe = me && me.n === r.n && me.g === r.g;
   view.innerHTML = `${logo()}<h1>${esc(r.n)}</h1><span class="tag ${r.g}">${GLABEL[r.g]}</span><hr class="rule"><p class="body">${esc(d)}</p>
+    ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
   $('#fav').onclick = () => addFav('names', `${r.n} (${r.g})`, location.hash);
+  if (!isMe) $('#isme').onclick = () => { setMe(r); toast(`Hi ${r.n}, SPASM will remember you`); $('#isme').remove(); };
 }
 
 function compatForm() {
   setBar({ back: true, help: 'compat' });
   view.innerHTML = `${logo()}<h1>Romantic compatibility</h1>`;
-  const a = picker({ label: 'First person', g: 'F', id: 'n1' });
-  const b = picker({ label: 'Second person', g: 'M', id: 'n2' });
+  const me = meRecord();
+  const a = picker({ label: me ? 'First person (you)' : 'First person', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const b = picker({ label: 'Second person', g: me && me.g === 'M' ? 'F' : 'M', id: 'n2' });
   const go = document.createElement('button');
   go.className = 'btn'; go.textContent = 'Check compatibility';
   go.onclick = () => {
@@ -299,7 +341,7 @@ function compatResult(gA, nA, gB, nB, q) {
   if (ci === undefined || si === undefined) {
     history.replaceState(null, '', `#/compat/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}?c=${c.ci}&s=${c.si}`);
   }
-  setBar({ back: true, help: 'compat', share: sharer(`${A.n} + ${B.n}`, `${A.n} and ${B.n}: ${pct(c.coupleScore)} couple compatibility, ${pct(c.sexScore)} sexual compatibility.`) });
+  setBar({ back: true, help: 'compat', share: cardSharer({ kicker: 'Romantic compatibility', title: `${A.n} + ${B.n}`, tags: [[A.n, A.g], [B.n, B.g], [`${pct(c.sexScore)} sexual`, 'pink']], score: pct(c.coupleScore), scoreLabel: 'Couple', body: c.coupleText }, `${A.n} and ${B.n}: ${pct(c.coupleScore)} couple compatibility, ${pct(c.sexScore)} sexual compatibility.`) });
   view.innerHTML = `${logo()}<p class="sub">Compatibility results</p>
     <div class="pair">
       <div class="who">${esc(A.n)}<br><span class="tag ${A.g}">${GLABEL[A.g]}</span></div>
@@ -321,8 +363,9 @@ function compatResult(gA, nA, gB, nB, q) {
 function bubForm() {
   setBar({ back: true, help: 'bub' });
   view.innerHTML = `${logo()}<h1>Your best bub names?</h1>`;
-  const a = picker({ label: 'Parent one', g: 'F', id: 'n1' });
-  const b = picker({ label: 'Parent two', g: 'M', id: 'n2' });
+  const me = meRecord();
+  const a = picker({ label: 'Parent one', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const b = picker({ label: 'Parent two', g: me && me.g === 'M' ? 'F' : 'M', id: 'n2' });
   const row = document.createElement('div');
   row.className = 'btn-row';
   row.innerHTML = '<button class="btn" data-g="M">Boys names</button><button class="btn" data-g="F" style="background:var(--purple)">Girls names</button>';
@@ -351,8 +394,9 @@ function bubResult(gA, nA, gB, nB, babyG, q) {
     history.replaceState(null, '', `${base}?n=${rows.map((r) => enc(r.n)).join(',')}`);
   }
   const kind = babyG === 'M' ? 'boys' : 'girls';
-  setBar({ back: true, help: 'bub', share: sharer(`Bub names for ${A.n} and ${B.n}`, `SPASM's best ${kind} names for ${A.n} and ${B.n}: ${rows.map((r) => r.n).join(', ')}`) });
-  view.innerHTML = `${logo()}<h1>Best ${kind} names</h1><p class="for-line">for ${esc(A.n)} and ${esc(B.n)}</p>`;
+  setBar({ back: true, help: 'bub', share: cardSharer({ kicker: `Best ${kind} names for ${A.n} and ${B.n}`, title: 'Your best bub names', list: rows.map((r) => r.n) }, `SPASM's best ${kind} names for ${A.n} and ${B.n}: ${rows.map((r) => r.n).join(', ')}`) });
+  view.innerHTML = `${logo()}<h1>Best ${kind} names</h1><p class="for-line">for ${esc(A.n)} and ${esc(B.n)}</p>
+    <a class="btn secondary" href="#/swipe/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}/${babyG}">Swipe through every name</a>`;
   view.append(nameList(rows, { fav: 'bub', favLabel: (r) => `${r.n} (for ${A.n} and ${B.n})` }));
   const hint = document.createElement('p');
   hint.className = 'hint'; hint.textContent = "Tap a name to see the child's personality as an adult.";
@@ -366,11 +410,16 @@ function bubResult(gA, nA, gB, nB, babyG, q) {
 function kmaForm() {
   setBar({ back: true, help: 'kma' });
   view.innerHTML = `${logo()}<h1>Kiss, marry or avoid</h1>`;
-  const a = picker({ label: 'Your name (or anyone\'s)', g: 'F', id: 'n1' });
-  const seek = genderToggle('Interested in', 'M');
+  const me = meRecord();
+  const a = picker({ label: 'Your name (or anyone\'s)', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const seek = genderToggle('Interested in', me && me.g === 'M' ? 'F' : 'M');
   const go = document.createElement('button');
   go.className = 'btn'; go.textContent = 'Show me';
-  go.onclick = () => { const A = a.get(); if (A) location.hash = `#/kma/${A.g}/${enc(A.n)}/${seek.get()}/marry`; };
+  go.onclick = () => {
+    const A = a.get(); if (!A) return;
+    if (!getMe()) setMe(A); // first time through, assume it's their own name
+    location.hash = `#/kma/${A.g}/${enc(A.n)}/${seek.get()}/marry`;
+  };
   view.append(a.el, seek.el, go);
 }
 
@@ -385,7 +434,7 @@ function kmaResult(g, name, seekG, mode, q) {
     history.replaceState(null, '', `${base(mode)}?n=${rows.map((r) => enc(r.n)).join(',')}`);
   }
   const info = MODE_INFO[mode];
-  setBar({ back: true, help: 'kma', share: sharer(`${info.title}: ${me.n}`, `SPASM says ${me.n} should ${info.title.toLowerCase()}: ${rows.map((r) => r.n).join(', ')}`) });
+  setBar({ back: true, help: 'kma', share: cardSharer({ kicker: `Kiss, marry or avoid, for ${me.n}`, title: info.title, list: rows.map((r) => r.n) }, `SPASM says ${me.n} should ${info.title.toLowerCase()}: ${rows.map((r) => r.n).join(', ')}`) });
   const i = MODES.indexOf(mode);
   view.innerHTML = `${logo()}
     <div class="kma-head">
@@ -433,7 +482,7 @@ function favourites() {
   };
 }
 
-function submitPage() {
+function submitPage(q) {
   setBar({ back: true });
   view.innerHTML = `${logo()}<h1>Submit a name to be added to SPASM</h1>
     <p class="hint" style="font-size:16px">Can't find a name? Tell us and we'll add it.</p>
@@ -445,28 +494,104 @@ function submitPage() {
       <button class="btn" type="submit">Submit name</button>
       <div class="err" id="serr"></div>
     </form>`;
-  let g = 'F';
-  view.querySelectorAll('.toggle button').forEach((b) => b.onclick = () => {
-    g = b.dataset.g; view.querySelectorAll('.toggle button').forEach((x) => x.classList.toggle('on', x === b));
-  });
+  let g = q.get('g') === 'M' ? 'M' : 'F';
+  const setGT = (v) => { g = v; view.querySelectorAll('.toggle button').forEach((x) => x.classList.toggle('on', x.dataset.g === v)); };
+  view.querySelectorAll('.toggle button').forEach((b) => b.onclick = () => setGT(b.dataset.g));
+  setGT(g);
+  if (q.get('n')) $('#sn').value = q.get('n');
   $('#sub').onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     const body = { name: fd.get('name').trim(), gender: g, note: fd.get('note').trim(), email: fd.get('email').trim() };
     if (E.find(body.name, g)) { $('#serr').innerHTML = `We already have ${esc(body.name)}. <a href="#/meaning/${g}/${enc(body.name)}">Have a look</a>.`; return; }
+    let stored = false;
     try {
       const res = await fetch('/api/submit-name', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok) throw new Error();
+      stored = res.ok;
+    } catch { /* offline or not set up */ }
+    if (stored) {
       view.innerHTML = `${logo()}<h1>Thanks!</h1><p class="body">We've got ${esc(body.name)}. Once it's written up it will appear in SPASM.</p><a class="btn" href="#/">Back to home</a>`;
-    } catch {
-      $('#serr').textContent = 'Sorry, that did not go through. Please try again later.';
+      return;
     }
+    // Not stored online: send it to David by email instead
+    const subject = `SPASM name submission: ${body.name} (${GLABEL[g]})`;
+    const text = `Please add this name to SPASM.\n\nName: ${body.name}\nGender: ${GLABEL[g]}\n${body.note ? `\nNotes: ${body.note}\n` : ''}`;
+    view.innerHTML = `${logo()}<h1>Almost there</h1><p class="body">Your email app should open with the name filled in. Just hit send.</p>
+      <a class="btn" href="mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(text)}">Open email again</a><a class="btn secondary" href="#/">Back to home</a>`;
+    location.href = `mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(text)}`;
   };
+}
+
+function mePage() {
+  setBar({ back: true });
+  const me = meRecord();
+  view.innerHTML = `${logo()}<h1>Your name</h1><p class="hint" style="font-size:16px">SPASM fills this in for you on every page. It stays on this device.</p>`;
+  const p = picker({ label: 'Your name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const save = document.createElement('button');
+  save.className = 'btn'; save.textContent = 'Save';
+  save.onclick = () => { const r = p.get(); if (r) { setMe(r); toast(`Hi ${r.n}`); location.hash = '#/'; } };
+  view.append(p.el, save);
+  if (me) {
+    const clr = document.createElement('button');
+    clr.className = 'btn secondary'; clr.textContent = 'Forget my name';
+    clr.onclick = () => { setMe(null); toast('Forgotten'); location.hash = '#/'; };
+    view.append(clr);
+  }
+}
+
+async function swipePage(gA, nA, gB, nB, babyG) {
+  const A = E.find(nA, gA), B = E.find(nB, gB);
+  if (!A) return notFound(nA, gA);
+  if (!B) return notFound(nB, gB);
+  const kind = babyG === 'M' ? 'boys' : 'girls';
+  setBar({ back: true, help: 'bub' });
+  const pool = E.bubPool(A, B, babyG);
+  const liked = [];
+  let i = 0;
+  view.innerHTML = `${logo()}<p class="for-line">${kind[0].toUpperCase() + kind.slice(1)} names for ${esc(A.n)} and ${esc(B.n)}</p>
+    <div class="swipe-stage"><div class="swipe-card" id="card"></div></div>
+    <div class="swipe-btns"><button class="nope" aria-label="Skip">&times;</button><button class="yep" aria-label="Like">${ICON.hearts}</button></div>
+    <p class="hint" style="text-align:center">Swipe right to shortlist, left to skip. <span id="left"></span></p>
+    <h2>Shortlist <small id="count" style="color:var(--muted)">0</small></h2><ul class="list" id="short"></ul>`;
+  const card = $('#card'), short = $('#short');
+  const show = async () => {
+    $('#left').textContent = `${pool.length - i} to go.`;
+    if (i >= pool.length) { card.innerHTML = '<div class="swipe-name">That\'s every name</div><p class="swipe-desc">Your shortlist is below and saved in favourites.</p>'; return; }
+    const r = pool[i];
+    card.style.transform = ''; card.style.opacity = 1;
+    card.innerHTML = `<div class="swipe-name">${esc(r.n)}</div><p class="swipe-desc">...</p>`;
+    const d = await describe(r);
+    if (pool[i] === r) $('.swipe-desc', card).textContent = d;
+  };
+  const decide = (like) => {
+    if (i >= pool.length) return;
+    const r = pool[i];
+    if (like) {
+      liked.push(r);
+      addFavQuiet('bub', `${r.n} (for ${A.n} and ${B.n})`, `#/meaning/${r.g}/${enc(r.n)}`);
+      short.insertAdjacentHTML('beforeend', `<li><a class="name" href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a></li>`);
+      $('#count').textContent = liked.length;
+    }
+    card.style.transition = 'transform .25s, opacity .25s';
+    card.style.transform = `translateX(${like ? 140 : -140}%) rotate(${like ? 18 : -18}deg)`;
+    card.style.opacity = 0;
+    setTimeout(() => { card.style.transition = 'none'; i++; show(); }, 250);
+  };
+  $('.nope').onclick = () => decide(false);
+  $('.yep').onclick = () => decide(true);
+  let x0 = null, dx = 0;
+  card.addEventListener('pointerdown', (e) => { x0 = e.clientX; dx = 0; card.setPointerCapture(e.pointerId); card.style.transition = 'none'; });
+  card.addEventListener('pointermove', (e) => { if (x0 === null) return; dx = e.clientX - x0; card.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`; });
+  const end = () => { if (x0 === null) return; x0 = null; if (Math.abs(dx) > 90) decide(dx > 0); else { card.style.transition = 'transform .2s'; card.style.transform = ''; } };
+  card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+  show();
 }
 
 function notFound(name, g) {
   setBar({ back: true });
-  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.</p><a class="btn" href="#/submit">Submit a name to be added to SPASM</a><a class="btn secondary" href="#/">Home</a>`;
+  const sims = GLABEL[g] ? E.similar(name, g) : [];
+  if (GLABEL[g]) logMiss(name, g);
+  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/submit?n=${enc(name)}&g=${g}">Submit a name to be added to SPASM</a><a class="btn secondary" href="#/">Home</a>`;
 }
 
 // ---------- router ----------
@@ -486,7 +611,9 @@ function route() {
     case 'bub': return a.length >= 5 ? bubResult(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
     case 'kma': return a.length >= 4 ? kmaResult(a[0], a[1], a[2], a[3], q) : kmaForm();
     case 'favourites': return favourites();
-    case 'submit': return submitPage();
+    case 'submit': return submitPage(q);
+    case 'me': return mePage();
+    case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4]) : bubForm();
     default: return home();
   }
 }
