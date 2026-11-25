@@ -1,5 +1,5 @@
 // Help copy from "These are the HELP edits.docx" (David Hocking, 2019).
-const SUBMIT = '<a href="#/submit">SUBMIT A NAME TO BE ADDED TO SPASM</a>';
+const SUBMIT = '<a href="#/custom">GET YOUR NAME WRITTEN UP (A$10)</a>';
 const MISSING = `If a name doesn't appear on the pop-up list (and make sure you've entered their correct gender), then we haven't encountered it yet. But fear not! ${SUBMIT}`;
 const SCIENCE = '<h3>THE SCIENCE</h3><p>Read the paper: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
 const SHARE = 'Use the SHARE button, top right of screen, to send a link to any of your results anywhere you like.';
@@ -74,8 +74,8 @@ export const HELP = {
 };
 
 // Translated help. Names, links and David's own phrases are kept where they appear in the English.
-const SUBMIT_ZH = '<a href="#/submit">提交名字加入 SPASM</a>';
-const SUBMIT_HI = '<a href="#/submit">SPASM में जोड़ने के लिए नाम भेजें</a>';
+const SUBMIT_ZH = '<a href="#/custom">请人为你的名字写介绍（A$10）</a>';
+const SUBMIT_HI = '<a href="#/custom">अपने नाम का विवरण लिखवाएँ (A$10)</a>';
 const SCI_ZH = '<h3>科学依据</h3><p>阅读论文：<a href="/paper.html">Hocking &amp; Maxwell，<i>Nurture</i>（2026）</a></p>';
 const SCI_HI = '<h3>विज्ञान</h3><p>शोधपत्र पढ़ें: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
 const MISS_ZH = `如果弹出列表里没有这个名字（请先确认性别选对了），说明我们还没收录。别担心！${SUBMIT_ZH}`;

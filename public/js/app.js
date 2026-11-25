@@ -256,7 +256,7 @@ function picker({ label, g = 'F', name = '', id }) {
         let html = `We don't have ${esc(typed)} as a ${GLABEL[gender].toLowerCase()} name yet.`;
         if (E.find(typed, other)) html += ` We do have it as a <a href="#" data-g="${other}" class="swapg">${GLABEL[other].toLowerCase()} name</a>.`;
         if (sims.length) html += ` Did you mean ${sims.map((x) => `<a href="#" class="sim" data-n="${esc(x.n)}">${esc(x.n)}</a>`).join(', ')}?`;
-        html += ` Or <a href="#/submit?n=${enc(typed)}&g=${gender}">submit it</a>.`;
+        html += ` Or <a href="#/custom?n=${enc(typed)}&g=${gender}">get it written up by David${STRIPE_LINK ? ` (${PRICE})` : ''}</a>.`;
         err.innerHTML = html;
         logMiss(typed, gender);
       }
@@ -1058,7 +1058,7 @@ function notFound(name, g) {
   setBar({ back: true });
   const sims = GLABEL[g] ? E.similar(name, g) : [];
   if (GLABEL[g]) logMiss(name, g);
-  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/submit?n=${enc(name)}&g=${g}">Submit a name to be added to SPASM</a><a class="btn secondary" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David</a><a class="btn secondary" href="#/">Home</a>`;
+  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David${STRIPE_LINK ? ` (${PRICE})` : ''}</a><a class="btn secondary" href="#/">Home</a>`;
 }
 
 // ---------- router ----------
@@ -1081,7 +1081,9 @@ function route() {
     case 'bub': return a.length >= 5 ? bubResult(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
     case 'kma': return a.length >= 4 ? kmaResult(a[0], a[1], a[2], a[3], q) : kmaForm();
     case 'favourites': return favourites();
-    case 'submit': return submitPage(q);
+    case 'submit': // old free submission route: every name request now goes through the paid write-up
+      history.replaceState(null, '', `#/custom${q.toString() ? '?' + q.toString() : ''}`);
+      return customPage(q);
     case 'me': return mePage();
     case 'choose': return a.length >= 2 ? chooseResult(a[0], a[1], q) : chooseForm(q);
     case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
@@ -1102,7 +1104,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 29;
+const APP_VERSION = 30;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
