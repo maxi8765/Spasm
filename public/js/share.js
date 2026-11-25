@@ -1,7 +1,7 @@
 // Builds a shareable 1080x1350 PNG card for a result, then shares it.
 import { tr } from './i18n.js';
 const W = 1080, H = 1350, PAD = 80;
-const SITE = location.host;
+const SITE = location.host.endsWith('workers.dev') || location.host.startsWith('localhost') ? 'spasm.pages.dev' : location.host;
 let logoImg = null;
 
 function loadLogo() {
@@ -83,7 +83,7 @@ export async function renderCard(spec) {
 
   ctx.fillStyle = '#a855f7'; ctx.fillRect(PAD, y, 360, 7); y += 60;
 
-  const footerTop = H - 150;
+  const footerTop = H - 220;
   if (spec.list) {
     ctx.fillStyle = '#fff'; ctx.font = '700 58px Comfortaa, sans-serif';
     const colW = (W - PAD * 2) / 2;
@@ -100,11 +100,16 @@ export async function renderCard(spec) {
     shown.forEach((l, i) => ctx.fillText(l, PAD, y + 40 + i * 60));
   }
 
-  ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.fillRect(0, H - 110, W, 110);
-  ctx.fillStyle = '#fff'; ctx.font = '700 38px Comfortaa, sans-serif'; ctx.textAlign = 'center';
-  ctx.fillText(tr('What does your name say?') + ' ' + SITE, W / 2, H - 52);
+  // footer: the address is the call to action, so it's the biggest thing down here
+  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, H - 200, W, 200);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#e9e8f2'; ctx.font = '400 34px Comfortaa, sans-serif';
+  ctx.fillText(tr('What does your name say?'), W / 2, H - 144);
+  let fs = 72; ctx.font = `700 ${fs}px Comfortaa, sans-serif`;
+  while (ctx.measureText(SITE).width > W - PAD * 2 && fs > 40) { fs -= 4; ctx.font = `700 ${fs}px Comfortaa, sans-serif`; }
+  ctx.fillStyle = '#f04e98'; ctx.fillText(SITE, W / 2, H - 62);
   ctx.fillStyle = '#a7a6b8'; ctx.font = '400 24px Comfortaa, sans-serif';
-  ctx.fillText('\u00a9 2026 David Hocking', W / 2, H - 16);
+  ctx.fillText('\u00a9 2026 David Hocking', W / 2, H - 20);
   ctx.textAlign = 'left';
 
   return new Promise((res) => c.toBlob(res, 'image/png'));
