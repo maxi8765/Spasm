@@ -11,6 +11,19 @@ export const AVOID_MAX_SEX_SCORE = 0.60; // keep if score <= 60%
 export const LIST_A = 5;
 export const LIST_Z = 2;
 
+export const TRAITS = ['Charisma', 'Spontaneity', 'Emotional savvy', 'Sexual adventurousness', 'Motivation',
+  'Creativity', 'Humour', 'Spirituality', 'Leadership', 'Generosity'];
+
+// Traits on a common 1-5 scale (charisma is scored out of 10 in the data)
+function traitsOf(str) {
+  if (!str) return null;
+  return [...str].map((ch, i) => {
+    const v = ch === 'A' ? 10 : +ch;
+    const x = i === 0 ? v / 2 : v;
+    return Math.max(0, Math.min(5, x));
+  });
+}
+
 function lev(a, b) {
   const m = a.length, n = b.length;
   let prev = Array.from({ length: n + 1 }, (_, j) => j);
@@ -36,7 +49,7 @@ function soundex(s) {
 }
 
 export function createEngine(namesRows, tables, rand = Math.random) {
-  const names = namesRows.map(([n, g, c, e, s]) => ({ n, g, c, e, s }));
+  const names = namesRows.map(([n, g, c, e, s, t]) => ({ n, g, c, e, s, t: traitsOf(t) }));
   const byKey = new Map(names.map((r) => [key(r.n, r.g), r]));
 
   function key(n, g) { return g + ':' + n.toLowerCase(); }
@@ -165,5 +178,13 @@ export function createEngine(namesRows, tables, rand = Math.random) {
     return pool[(h >>> 0) % pool.length];
   }
 
-  return { names, find, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
+  // Names whose trait profile sits closest to the one asked for (target: ten values, 1-5)
+  function chooseNames(g, target, commonOnly = false, shortlist = 40) {
+    const pool = names.filter((r) => r.g === g && r.t && (!commonOnly || r.c === 'a'));
+    const ranked = pool.map((r) => [r.t.reduce((d, v, i) => d + (v - target[i]) ** 2, 0), r]).sort((a, b) => a[0] - b[0]);
+    const top = ranked.slice(0, shortlist).map((x) => x[1]);
+    return commonOnly ? sample(top, LIST_A + LIST_Z, 0) : sample(top);
+  }
+
+  return { names, find, chooseNames, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
 }

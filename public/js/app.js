@@ -1,4 +1,4 @@
-import { createEngine } from './engine.js';
+import { createEngine, TRAITS } from './engine.js';
 import { HELP } from './help.js';
 import { ICON } from './icons.js';
 import { shareCard } from './share.js';
@@ -258,6 +258,7 @@ function home() {
     <a class="tile" href="#/bub" style="color:var(--blue)">${ICON.baby}<span style="color:#fff">Your best bub names?</span></a>
     <a class="tile" href="#/kma" style="color:var(--blue)">${ICON.balloons}<span style="color:#fff">Kiss, marry or avoid</span></a>
   </div>
+  <a class="btn slim choose-link" href="#/choose">Choose a name by personality</a>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
@@ -304,6 +305,11 @@ function meaningForm() {
   draw();
 }
 
+function profile(t) {
+  return `<section class="profile"><h2>Personality profile</h2>${TRAITS.map((name, i) => `
+    <div class="trait"><span class="tl">${name}</span><span class="tb"><span style="width:${Math.round(t[i] / 5 * 100)}%"></span></span></div>`).join('')}</section>`;
+}
+
 async function meaningResult(g, name) {
   const r = E.find(name, g);
   if (!r) return notFound(name, g);
@@ -313,6 +319,7 @@ async function meaningResult(g, name) {
   const me = getMe();
   const isMe = me && me.n === r.n && me.g === r.g;
   view.innerHTML = `${logo()}<h1>${esc(r.n)}</h1><span class="tag ${r.g}">${GLABEL[r.g]}</span><hr class="rule"><p class="body">${esc(d)}</p>
+    ${r.t ? profile(r.t) : ''}
     ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
   $('#fav').onclick = () => addFav('names', `${r.n} (${r.g})`, location.hash);
@@ -524,6 +531,59 @@ function submitPage(q) {
   };
 }
 
+const CHOOSE_HINTS = ['Draws people in', 'Acts on a whim', 'Reads the room', 'Up for anything', 'Gets things done',
+  'Makes things', 'Makes people laugh', 'Seeks meaning', 'Takes charge', 'Gives freely'];
+
+function chooseForm(q) {
+  setBar({ back: true, help: 'choose' });
+  view.classList.add('scroll');
+  const start = /^[1-5]{10}$/.test(q.get('t') || '') ? [...q.get('t')].map(Number) : Array(10).fill(3);
+  view.innerHTML = `${logo()}<h1>Choose a name by personality</h1>
+    <p class="hint" style="font-size:15px">Set how much of each trait you'd like, and SPASM finds the names that match. Handy for choosing an English name, or a baby name from scratch.</p>`;
+  const g = genderToggle('Name for a', q.get('g') === 'M' ? 'M' : 'F');
+  view.append(g.el);
+  const box = document.createElement('div');
+  box.className = 'sliders';
+  box.innerHTML = TRAITS.map((name, i) => `
+    <label class="slider"><span class="sl-top"><span>${name}</span><span class="sl-hint">${CHOOSE_HINTS[i]}</span></span>
+      <input type="range" min="1" max="5" step="1" value="${start[i]}" data-i="${i}" aria-label="${name}">
+      <span class="sl-ends"><span>Low</span><span>High</span></span></label>`).join('') +
+    `<label class="check"><input type="checkbox" id="common" ${q.get('common') === '1' ? 'checked' : ''}> Common names only</label>`;
+  view.append(box);
+  const go = document.createElement('button');
+  go.className = 'btn'; go.textContent = 'Find names';
+  go.onclick = () => {
+    const t = [...box.querySelectorAll('input[type=range]')].map((x) => x.value).join('');
+    location.hash = `#/choose/${g.get()}/${t}${$('#common').checked ? '?common=1' : ''}`;
+  };
+  view.append(go);
+}
+
+function chooseResult(g, tstr, q) {
+  if (!GLABEL[g] || !/^[1-5]{10}$/.test(tstr)) return chooseForm(q);
+  const target = [...tstr].map(Number);
+  const common = q.get('common') === '1';
+  const base = `#/choose/${g}/${tstr}${common ? '?common=1' : ''}`;
+  let rows = fromList(q, g);
+  if (!rows) {
+    rows = E.chooseNames(g, target, common);
+    history.replaceState(null, '', `${base}${common ? '&' : '?'}n=${rows.map((r) => enc(r.n)).join(',')}`);
+  }
+  const kind = g === 'M' ? 'male' : 'female';
+  const wanted = TRAITS.filter((_, i) => target[i] >= 4).map((x) => x.toLowerCase());
+  setBar({ back: true, help: 'choose', share: cardSharer({ kicker: 'Names chosen by personality', title: wanted.length ? `For ${wanted.slice(0, 2).join(' and ')}` : 'Your best names', list: rows.map((r) => r.n) }, `SPASM picked these ${kind} names for me: ${rows.map((r) => r.n).join(', ')}`) });
+  view.innerHTML = `${logo()}<h1>Your best ${kind} names</h1>
+    <p class="for-line">${wanted.length ? `Strong on ${esc(wanted.join(', '))}` : 'Matched to your profile'}</p>`;
+  view.append(nameList(rows, { fav: 'names', favLabel: (r) => `${r.n} (${r.g})` }));
+  const hint = document.createElement('p');
+  hint.className = 'hint'; hint.textContent = 'Tap a name to read about them.';
+  const row = document.createElement('div');
+  row.className = 'fixed-bottom';
+  row.innerHTML = `<div class="btn-row" style="max-width:520px;margin:0 auto"><a class="btn secondary" href="#/choose?g=${g}&t=${tstr}${common ? '&common=1' : ''}">Adjust</a><button class="btn">Refresh list</button></div>`;
+  $('button', row).onclick = () => { location.hash = base; };
+  view.append(hint, row);
+}
+
 function mePage() {
   setBar({ back: true });
   const me = meRecord();
@@ -616,6 +676,7 @@ function route() {
     case 'favourites': return favourites();
     case 'submit': return submitPage(q);
     case 'me': return mePage();
+    case 'choose': return a.length >= 2 ? chooseResult(a[0], a[1], q) : chooseForm(q);
     case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4]) : bubForm();
     default: return home();
   }

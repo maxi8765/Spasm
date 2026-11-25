@@ -46,3 +46,12 @@ const nd = E.nameOfDay(new Date(2026, 10, 25)); assert.equal(nd.n, E.nameOfDay(n
 console.log('name of the day', nd.n, nd.g);
 const pool = E.bubPool(ian, nic, 'F'); assert.ok(pool.length > 50 && pool.every(r => r.e === E.babyType(ian, nic) && r.g === 'F'));
 console.log('swipe pool', pool.length);
+// trait profiles and name chooser
+assert.equal(E.find('Ab','F').t.length, 10);
+const funny = [3,3,3,3,3,3,5,1,3,3];
+const picks = E.chooseNames('M', funny);
+assert.equal(picks.length, 7);
+console.log('funny, unspiritual men ->', picks.map(r => r.n + ' ' + r.t[6] + '/' + r.t[7]).join(', '));
+const common = E.chooseNames('F', [5,5,5,5,5,5,5,5,5,5], true);
+assert.ok(common.length === 7 && common.every(r => r.c === 'a'));
+console.log('all-5 common women ->', common.map(r => r.n).join(', '));

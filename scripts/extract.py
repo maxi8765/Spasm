@@ -38,7 +38,7 @@ for sheet, g in (('Data Female','F'),('Data Male','M')):
         if name.lower() in seen: issues[g+' dup']+=1; continue
         seen.add(name.lower())
         if ennea is None or sex is None or not (1<=sex<=5): issues[g+' unusable']+=1; continue
-        names.append({'n':name,'g':g,'d':desc,'c':cat,'e':ennea,'s':sex})
+        names.append({'n':name,'g':g,'d':desc,'c':cat,'e':ennea,'s':sex,'t':[t if t is not None else 0 for t in traits]})
 
 def table(ws, ncols):
     rows = {}

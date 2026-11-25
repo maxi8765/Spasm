@@ -218,3 +218,21 @@ main.home .grid { flex: 1 1 auto; min-height: 0; grid-template-rows: 1fr 1fr; ga
 main.home .tile { aspect-ratio: auto; min-height: 0; padding: 12px 10px; justify-content: space-around; font-size: 16px; }
 main.home .tile svg { width: auto; height: 45%; max-width: 70%; margin: 0; }
 main.home .copy { margin: 8px 0 0; }
+
+/* trait profile */
+.profile { margin: 6px 0 16px; }
+.trait { display: flex; align-items: center; gap: 10px; margin: 7px 0; font-size: 14px; }
+.trait .tl { width: 46%; color: #dcdbe6; }
+.trait .tb { flex: 1; height: 10px; background: #2c2b3b; border-radius: 5px; overflow: hidden; }
+.trait .tb span { display: block; height: 100%; background: linear-gradient(90deg, var(--blue), var(--purple)); border-radius: 5px; }
+
+/* choose by personality */
+.sliders { margin: 4px 0 6px; }
+.slider { display: block; margin: 0 0 12px; }
+.sl-top { display: flex; justify-content: space-between; font-size: 16px; }
+.sl-hint { color: var(--muted); font-size: 13px; }
+.slider input[type=range] { width: 100%; accent-color: var(--purple); margin: 6px 0 0; }
+.sl-ends { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 16px; margin: 6px 0 4px; }
+.check input { width: 20px; height: 20px; accent-color: var(--purple); }
+main.home .choose-link { margin: 10px 0 0; }

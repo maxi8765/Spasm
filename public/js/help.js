@@ -50,4 +50,12 @@ export const HELP = {
 <p>When you get sick of one list just hit the Refresh button to immediately get a new one. Also, you can easily switch from the Marry to the Kiss or Avoid searches, for example, by flicking left or right on the main symbol at the top of the results page.</p>
 <p>${SHARE} Give it a go and share the love/lust/disgust!</p>
 <p>${MISSING}</p>${SCIENCE}`,
+
+  choose: `<h2>Choose a name by personality</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Every name in SPASM is scored on ten traits. Pick male or female, slide each trait to how much of it you'd like, and SPASM shows the names whose personalities come closest. It's ideal if you're choosing an English name for yourself, or looking for a baby name without starting from the parents' names.</p>
+<p>Tick 'Common names only' to leave out the unusual ones. Hit Refresh for another set from the closest matches, or Adjust to change your sliders. Tap any name to read about them, and see their full personality profile.</p>
+<h3>IMPORTANT POINTS</h3>
+<p>${SHARE}</p>
+<p>Use the star to save names to your favourites.</p>${SCIENCE}`,
 };
