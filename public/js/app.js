@@ -10,6 +10,7 @@ const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const enc = encodeURIComponent;
 const GLABEL = { M: 'Male', F: 'Female' };
 const FEEDBACK = 'yoohoohocko@gmail.com';
+const CC = 'maxwell.ian@gmail.com'; // copied on name requests
 const DATA_VERSION = 2; // bump whenever public/data changes, so phones fetch the new files
 const MODES = ['kiss', 'marry', 'avoid'];
 const MODE_INFO = {
@@ -566,8 +567,8 @@ function submitPage(q) {
     const subject = `SPASM name submission: ${body.name} (${GLABEL[g]})`;
     const text = `Please add this name to SPASM.\n\nName: ${body.name}\nGender: ${GLABEL[g]}\n${body.note ? `\nNotes: ${body.note}\n` : ''}`;
     view.innerHTML = `${logo()}<h1>Almost there</h1><p class="body">Your email app should open with the name filled in. Just hit send.</p>
-      <a class="btn" href="mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(text)}">Open email again</a><a class="btn secondary" href="#/">Back to home</a>`;
-    location.href = `mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(text)}`;
+      <a class="btn" href="mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(text)}">Open email again</a><a class="btn secondary" href="#/">Back to home</a>`;
+    location.href = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(text)}`;
   };
 }
 
@@ -811,7 +812,7 @@ function customPage(q) {
     const name = $('#cn').value.trim(), email = $('#cemail').value.trim(), note = $('#cnote').value.trim();
     const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})`;
     const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
-    const mail = `mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(body)}`;
+    const mail = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(body)}`;
     const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}` : '';
     view.innerHTML = `${logo()}<h1>Nearly done</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab, then send the email that opens here.' : 'Send the email that opens, and David will be in touch.'}</p>
       <a class="btn" href="${mail}">Open the email again</a>${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn secondary" href="#/">Back to home</a>`;
@@ -1004,7 +1005,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 24;
+const APP_VERSION = 25;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
