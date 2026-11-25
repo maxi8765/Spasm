@@ -203,3 +203,5 @@ textarea { width: 100%; min-height: 90px; font-family: inherit; font-size: 17px;
 .swipe-btns .nope { background: #2c2b3b; color: #fff; }
 .swipe-btns .yep { background: var(--pink); color: #fff; }
 .swipe-btns .yep svg { width: 36px; height: 36px; }
+
+.copy { color: var(--muted); font-size: 13px; text-align: center; margin: 22px 0 0; }
