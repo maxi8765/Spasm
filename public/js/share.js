@@ -1,6 +1,6 @@
 // Builds a shareable 1080x1350 PNG card for a result, then shares it.
 import { tr } from './i18n.js';
-const W = 1080, H = 1350, PAD = 80;
+const W = 1080, PAD = 80;
 const SITE = location.host.endsWith('workers.dev') || location.host.startsWith('localhost') ? 'spasm.pages.dev' : location.host;
 let logoImg = null;
 
@@ -36,6 +36,7 @@ const COLORS = { M: '#5552ff', F: '#a855f7', blue: '#5552ff', pink: '#f04e98' };
 
 // spec: { kicker, title, tags:[[text,colorKey]], score, scoreLabel, body, list:[names] }
 export async function renderCard(spec) {
+  const H = spec.height || 1350;
   try { await document.fonts.load('700 40px Comfortaa'); await document.fonts.load('400 40px Comfortaa'); } catch { /* fallback font */ }
   const c = document.createElement('canvas');
   c.width = W; c.height = H;

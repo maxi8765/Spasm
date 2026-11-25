@@ -133,6 +133,7 @@ function setBar({ title = null, back = false, share = null, help = null }) {
   left.setAttribute('aria-label', back ? 'Back' : 'Menu');
   left.onclick = back ? () => (history.length > 1 ? history.back() : (location.hash = '#/')) : openMenu;
   $('#barTitle').innerHTML = title ? esc(title) : '<img src="/img/logo.png" alt="SPASM" class="bar-logo">';
+  $('#barTitle').onclick = () => { if (location.hash.replace(/^#\/?/, '')) location.hash = '#/'; else window.scrollTo(0, 0); };
   const sb = $('#btnShare');
   sb.hidden = !share;
   sb.innerHTML = ICON.share;
@@ -812,7 +813,7 @@ function morePage() {
 function groupForm() {
   setBar({ back: true, help: 'group' });
   view.classList.add('scroll');
-  view.innerHTML = `${logo()}<h1>Group compatibility</h1><p class="hint" style="font-size:15px">Add up to 12 people and SPASM ranks every pairing.</p><div id="people"></div>`;
+  view.innerHTML = `${logo()}<h1>Group compatibility</h1><p class="hint" style="font-size:15px">Add up to 12 people and SPASM scores how well the group gets on as friends.</p><div id="people"></div>`;
   const people = $('#people');
   const pickers = [];
   const add = (name = '', g = 'F') => {
@@ -842,17 +843,27 @@ function groupResult(list) {
   view.classList.add('scroll');
   const pairs = E.group(people);
   const best = pairs[0], worst = pairs[pairs.length - 1];
-  const shareText = `SPASM says the best match in our group is ${best.A.n} and ${best.B.n} (${pct(best.overall)}). The worst: ${worst.A.n} and ${worst.B.n} (${pct(worst.overall)}).`;
-  setBar({ back: true, help: 'group', share: cardSharer({ kicker: 'Group compatibility', title: `${best.A.n} + ${best.B.n}`, score: pct(best.overall), scoreLabel: 'Best match', list: pairs.slice(0, 6).map((p) => `${p.A.n} + ${p.B.n}`) }, shareText) });
+  const verdict = groupVerdict(pairs.score);
+  const shareText = `Our group scored ${pct(pairs.score)} on SPASM: ${verdict}. Best mates: ${best.A.n} and ${best.B.n} (${pct(best.overall)}). Keep apart: ${worst.A.n} and ${worst.B.n} (${pct(worst.overall)}).`;
+  setBar({ back: true, help: 'group', share: cardSharer({ kicker: 'Group friendship score', title: people.map((p) => p.n).join(', '), score: pct(pairs.score), scoreLabel: verdict, list: pairs.slice(0, 6).map((p) => `${p.A.n} + ${p.B.n}`) }, shareText) });
   const cell = (v) => `<td style="background:hsla(${Math.round(v * 120)},70%,45%,.55)">${Math.round(v * 100)}</td>`;
   const grid = `<div class="grid-wrap"><table class="gtable"><tr><th></th>${people.map((p) => `<th>${esc(p.n)}</th>`).join('')}</tr>${people.map((p, i) => `<tr><th>${esc(p.n)}</th>${people.map((q, j) => {
     if (i === j) return '<td class="self"></td>';
     const pr = pairs.find((x) => (x.i === i && x.j === j) || (x.i === j && x.j === i));
     return cell(pr.overall);
   }).join('')}</tr>`).join('')}</table></div>`;
-  view.innerHTML = `${logo()}<h1>Group compatibility</h1><p class="for-line">Overall = average of couple and sexual compatibility</p>
-    <ol class="ranked">${pairs.map((p) => `<li><a href="#/compat/${p.A.g}/${enc(p.A.n)}/${p.B.g}/${enc(p.B.n)}"><span>${esc(p.A.n)} + ${esc(p.B.n)}</span><b>${pct(p.overall)}</b></a></li>`).join('')}</ol>
+  view.innerHTML = `${logo()}<h1>Group compatibility</h1>
+    <div class="group-score"><span class="gs-num">${pct(pairs.score)}</span><span class="gs-label">${verdict}</span></div>
+    <p class="for-line">How well this group gets on as friends. Best mates: ${esc(best.A.n)} and ${esc(best.B.n)}. Keep apart: ${esc(worst.A.n)} and ${esc(worst.B.n)}.</p>
+    <ol class="ranked">${pairs.map((p) => `<li><a href="#/compare/${p.A.g}/${enc(p.A.n)}/${p.B.g}/${enc(p.B.n)}"><span>${esc(p.A.n)} + ${esc(p.B.n)}</span><b>${pct(p.overall)}</b></a></li>`).join('')}</ol>
     <h2>Grid</h2>${grid}<a class="btn secondary" href="#/group">Start again</a>`;
+}
+function groupVerdict(s) {
+  if (s >= 0.75) return 'Friends for life';
+  if (s >= 0.68) return 'A solid crew';
+  if (s >= 0.60) return 'Good company, mostly';
+  if (s >= 0.52) return 'Handle with care';
+  return 'Keep them apart';
 }
 
 function compareForm() {
@@ -949,13 +960,46 @@ const FAMOUS = [
 function famousPage() {
   setBar({ back: true });
   view.classList.add('scroll');
-  const items = FAMOUS.map(([a, ga, b, gb, note]) => {
+  const li = ([a, ga, b, gb, note]) => {
     const A = E.find(a, ga), B = E.find(b, gb);
     if (!A || !B) return '';
     const c = E.compatibility(A, B, 0, 0);
-    return `<li><a href="#/compat/${ga}/${enc(a)}/${gb}/${enc(b)}"><span>${esc(a)} + ${esc(b)}<small>${esc(note)}</small></span><b>${pct(c.coupleScore)}</b></a></li>`;
-  }).join('');
-  view.innerHTML = `${logo()}<h1>Famous couples</h1><p class="for-line">Couple compatibility, by first name alone</p><ol class="ranked">${items}</ol>`;
+    return `<li><a href="#/compat/${ga}/${enc(A.n)}/${gb}/${enc(B.n)}"><span>${esc(A.n)} + ${esc(B.n)}<small>${esc(note)}</small></span><b>${pct(c.coupleScore)}</b></a></li>`;
+  };
+  const draw = (added) => {
+    $('#famouslist').innerHTML = added.map((x) => li([x.a, x.ga, x.b, x.gb, x.note])).join('') + FAMOUS.map(li).join('');
+  };
+  view.innerHTML = `${logo()}<h1>Famous couples</h1><p class="for-line">Couple compatibility, by first name alone</p>
+    <ol class="ranked" id="famouslist"></ol><h2>Add a famous couple</h2>
+    <p class="hint" style="font-size:15px">Pick their first names from the list (for Becks and Posh, that's David and Victoria) and say who they are. Everyone will see it.</p>
+    <div id="famousform"></div>`;
+  draw([]);
+  fetch('/api/famous').then((r) => r.json()).then((d) => draw(d.couples || [])).catch(() => {});
+  const a = picker({ label: 'First name', g: 'M', id: 'fa' });
+  const b = picker({ label: 'Second name', g: 'F', id: 'fb' });
+  const note = document.createElement('div');
+  note.className = 'field';
+  note.innerHTML = '<label for="fnote">Who are they?</label><div class="input-row"><input id="fnote" maxlength="40" placeholder="e.g. The Beckhams"></div>';
+  const go = document.createElement('button');
+  go.className = 'btn'; go.textContent = 'Add couple';
+  go.onclick = async () => {
+    const A = a.get(), B = b.get();
+    const n = $('#fnote').value.trim();
+    if (!A || !B) return;
+    if (!n) { toast('Say who they are'); return; }
+    go.disabled = true;
+    try {
+      const r = await fetch('/api/famous', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ a: A.n, ga: A.g, b: B.n, gb: B.g, note: n }) });
+      const d = await r.json();
+      if (!r.ok) { toast(d.error || 'Could not add that'); return; }
+      draw(d.couples || []);
+      track('famous_add');
+      toast(d.duplicate ? 'Already on the list' : 'Added for everyone to see');
+      $('#fnote').value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch { toast('Could not add that. Check your connection'); } finally { go.disabled = false; }
+  };
+  $('#famousform').append(a.el, b.el, note, go);
 }
 
 function customPage(q) {
@@ -1210,7 +1254,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 35;
+const APP_VERSION = 36;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

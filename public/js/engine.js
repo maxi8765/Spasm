@@ -220,15 +220,24 @@ export function createEngine(namesRows, tables, rand = Math.random) {
   }
 
   // Every pairing in a group, best first. Overall = average of couple and sexual scores.
+  // Friendship, not romance: personality-type fit (the couple table, by Enneagram type) plus how
+  // closely two people match on the social traits (charisma, spontaneity, emotional savvy, humour, generosity).
+  const SOCIAL = [0, 1, 2, 6, 9];
+  function friendship(A, B) {
+    const type = tables.couple[WORD[A.e] + 'with' + WORD[B.e]].score;
+    if (!A.t || !B.t) return type;
+    const fit = 1 - SOCIAL.reduce((d, i) => d + Math.abs(A.t[i] - B.t[i]), 0) / (SOCIAL.length * 4);
+    return 0.6 * type + 0.4 * fit;
+  }
   function group(people) {
     const pairs = [];
     for (let i = 0; i < people.length; i++) for (let j = i + 1; j < people.length; j++) {
       const A = people[i], B = people[j];
-      const c = tables.couple[WORD[A.e] + 'with' + WORD[B.e]].score;
-      const sx = tables.sexual['S' + WORD[A.s] + 'with' + WORD[B.s]].score;
-      pairs.push({ A, B, i, j, couple: c, sex: sx, overall: (c + sx) / 2 });
+      pairs.push({ A, B, i, j, overall: friendship(A, B) });
     }
-    return pairs.sort((a, b) => b.overall - a.overall);
+    pairs.sort((a, b) => b.overall - a.overall);
+    pairs.score = pairs.reduce((t, p) => t + p.overall, 0) / pairs.length;
+    return pairs;
   }
 
   // Names for a pet, boat or car: traits picked get top marks, the rest sit in the middle
@@ -239,5 +248,5 @@ export function createEngine(namesRows, tables, rand = Math.random) {
     return sample(ranked.slice(0, shortlist).map((x) => x[1]));
   }
 
-  return { names, find, chooseNames, bubPoolShared, group, petNames, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
+  return { names, find, chooseNames, bubPoolShared, group, friendship, petNames, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
 }

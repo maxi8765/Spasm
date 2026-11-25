@@ -61,8 +61,8 @@ export const HELP = {
 
   group: `<h2>Group compatibility</h2>
 <h3>HOW TO USE THIS PAGE</h3>
-<p>Add up to twelve people, choosing each name from the pop-up list and nominating their gender. SPASM rates every possible pairing and lists them from best to worst. The overall score is the average of the couple and sexual compatibility scores.</p>
-<p>Tap any pairing to read their full romantic compatibility. The grid shows every pairing at a glance: green is good, red is trouble.</p>
+<p>Add up to twelve people, choosing each name from the pop-up list and nominating their gender. SPASM rates how well every pair would get on as friends and lists them from best to worst, then gives the whole group a score. Friendship is worked out from each pair's personality types and how closely they match on charisma, spontaneity, emotional savvy, humour and generosity. Romance and sex don't come into it.</p>
+<p>Tap any pairing to compare the two side by side. The grid shows every pairing at a glance: green is good, red is trouble.</p>
 <h3>IMPORTANT POINTS</h3>
 <p>${SHARE}</p>${SCIENCE}`,
   pet: `<h2>Name your pet, boat or car</h2>
@@ -116,8 +116,8 @@ export const HELP_I18N = {
 <p>勾选"只看常见名字"可去掉罕见名字。点"刷新列表"换一批，点"调整"修改设置。点任意名字可查看介绍和完整的性格档案。</p>
 <h3>要点</h3><p>${SHARE_ZH}</p><p>点星号可把名字加入收藏。</p>${SCI_ZH}`,
     group: `<h2>群体匹配度</h2><h3>如何使用</h3>
-<p>最多添加十二个人，每个名字都从弹出列表中选择并选好性别。SPASM 会为每一对打分，从最配到最不配排列。总分是情侣匹配度和性匹配度的平均值。</p>
-<p>点任意一对可以看完整的恋爱匹配度。表格让你一眼看到所有组合：绿色是好，红色是麻烦。</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
+<p>最多添加十二个人，每个名字都从弹出列表中选择并选好性别。SPASM 会为每一对作为朋友的相处程度打分，从最配到最不配排列，并给整个群体一个总分。友谊分数来自两人的性格类型，以及他们在魅力、随性、情商、幽默和慷慨上的接近程度，与恋爱和性无关。</p>
+<p>点任意一对可以并排比较两人。表格让你一眼看到所有组合：绿色是好，红色是麻烦。</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
     pet: `<h2>给宠物、船或车起名</h2><h3>如何使用</h3>
 <p>选好要起名的对象，是男孩、女孩还是都行，再选最多三个词形容它的性格。SPASM 会找出性格最合适的名字。</p>
 <p>名字介绍是为人写的，读的时候发挥一点想象力。点"刷新列表"看更多名字。</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
@@ -148,8 +148,8 @@ export const HELP_I18N = {
 <p>दुर्लभ नाम हटाने के लिए "केवल आम नाम" चुनें। नई सूची के लिए सूची बदलें, और सेटिंग बदलने के लिए बदलें दबाएँ। किसी भी नाम पर टैप करके उसका विवरण और पूरी व्यक्तित्व प्रोफ़ाइल देखें।</p>
 <h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p><p>सितारे से नाम पसंदीदा में सहेजें।</p>${SCI_HI}`,
     group: `<h2>समूह का मेल</h2><h3>इस पेज का इस्तेमाल</h3>
-<p>बारह लोगों तक जोड़ें, हर नाम पॉप-अप सूची से चुनें और लिंग चुनें। SPASM हर संभव जोड़ी को अंक देकर सबसे अच्छी से सबसे खराब तक दिखाएगा। कुल अंक जोड़ी के मेल और यौन मेल का औसत है।</p>
-<p>किसी भी जोड़ी पर टैप करके पूरा रोमांटिक मेल पढ़ें। ग्रिड में सारी जोड़ियाँ एक नज़र में दिखती हैं: हरा अच्छा, लाल मुसीबत।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
+<p>बारह लोगों तक जोड़ें, हर नाम पॉप-अप सूची से चुनें और लिंग चुनें। SPASM हर जोड़ी को दोस्ती के हिसाब से अंक देकर सबसे अच्छी से सबसे खराब तक दिखाएगा, और पूरे समूह को एक कुल अंक देगा। दोस्ती के अंक दोनों के व्यक्तित्व प्रकार और करिश्मा, सहजता, भावनात्मक समझ, हास्य और उदारता में उनकी समानता से निकलते हैं। रोमांस और सेक्स इसमें शामिल नहीं हैं।</p>
+<p>किसी भी जोड़ी पर टैप करके दोनों की तुलना देखें। ग्रिड में सारी जोड़ियाँ एक नज़र में दिखती हैं: हरा अच्छा, लाल मुसीबत।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
     pet: `<h2>पालतू, नाव या कार का नाम रखें</h2><h3>इस पेज का इस्तेमाल</h3>
 <p>चुनें कि किसका नाम रख रहे हैं, लड़का है, लड़की या कोई भी, और उसके व्यक्तित्व के लिए तीन शब्द तक चुनें। SPASM सबसे उपयुक्त व्यक्तित्व वाले नाम ढूँढेगा।</p>
 <p>विवरण इंसानों के लिए लिखे गए हैं, तो थोड़ी कल्पना से पढ़ें। और नामों के लिए सूची बदलें दबाएँ।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,

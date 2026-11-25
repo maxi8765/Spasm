@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SPASM name of the day: social posts</title>
+<link rel="icon" href="/img/icon-192.png">
+<style>
+@font-face { font-family: Comfortaa; font-weight: 400; src: url(/fonts/comfortaa-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: Comfortaa; font-weight: 700; src: url(/fonts/comfortaa-latin-700-normal.woff2) format('woff2'); }
+body { margin: 0; padding: 20px; background: #1d1c28; color: #e9e8f2; font-family: Comfortaa, sans-serif; }
+h1 { font-size: 22px; } label { margin-right: 8px; }
+.row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-top: 16px; }
+.row figure { margin: 0; } .row img { width: 300px; display: block; border-radius: 8px; }
+figcaption a { color: #f04e98; }
+textarea { width: 100%; max-width: 640px; height: 170px; margin-top: 16px; background: #393849; color: #fff; border: 0; border-radius: 8px; padding: 10px; font: 14px/1.4 sans-serif; }
+button { background: #5552ff; color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; font: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>Name of the day, ready to post</h1>
+<label>Date <input type="date" id="date"></label>
+<p id="warn" style="color:#ff8a8a;font-weight:700"></p>
+<div class="row" id="out"></div>
+<textarea id="caption" readonly></textarea><br>
+<button id="copy">Copy caption</button>
+<script type="module">
+import { createEngine, ENNEA } from '/js/engine.js';
+import { renderCard } from '/js/share.js';
+const DV = 3;
+const qs = new URLSearchParams(location.search);
+const brisbaneToday = new Date(Date.now() + 10 * 3600 * 1000).toISOString().slice(0, 10);
+const dateEl = document.getElementById('date');
+dateEl.value = qs.get('date') || brisbaneToday;
+const [rows, tables] = await Promise.all([fetch(`/data/names.json?v=${DV}`).then((r) => r.json()), fetch(`/data/tables.json?v=${DV}`).then((r) => r.json())]);
+const E = createEngine(rows, tables);
+
+async function build() {
+  const [y, m, d] = dateEl.value.split('-').map(Number);
+  const r = E.nameOfDay(new Date(y, m - 1, d));
+  const L = r.n[0].toUpperCase();
+  const shard = await fetch(`/data/desc/${r.g}-${L >= 'A' && L <= 'Z' ? L : '_'}.json?v=${DV}`).then((x) => x.json()).catch(() => ({}));
+  const desc = shard[r.n] || '';
+  const type = ENNEA[r.e] ? ENNEA[r.e][0] : '';
+  const spec = { kicker: 'Name of the day', title: r.n, tags: [[r.g === 'F' ? 'Female' : 'Male', r.g], [type, 'pink']], body: desc };
+  const out = document.getElementById('out');
+  out.innerHTML = '';
+  const made = {};
+  for (const [kind, height] of [['post', 1350], ['story', 1920]]) {
+    const blob = await renderCard({ ...spec, height });
+    const url = URL.createObjectURL(blob);
+    made[kind] = blob;
+    const file = `spasm-${dateEl.value}-${r.n.toLowerCase()}-${kind}.png`;
+    out.insertAdjacentHTML('beforeend', `<figure><img src="${url}" alt="${kind}"><figcaption><a href="${url}" download="${file}">Download ${kind}</a></figcaption></figure>`);
+  }
+  // Words that get posts hidden or that read badly in a public feed. Check these by hand.
+  const hits = [...new Set((desc.match(/\b(suicid\w*|kill\w*|rape\w*|drug\w*|cocaine|nazi\w*|fuck\w*|shit\w*|cunt|bastard|bitch\w*|sex\w*|porn\w*|naked|nude)\b/gi) || []).map((w) => w.toLowerCase()))];
+  const warning = hits.length ? `Check before posting: the description mentions ${hits.join(', ')}. Social sites may hide or flag it.` : '';
+  document.getElementById('warn').textContent = warning;
+  const tag = r.n.replace(/[^A-Za-z]/g, '');
+  const short = desc.length > 220 ? desc.slice(0, 217).replace(/\s+\S*$/, '') + '...' : desc;
+  document.getElementById('caption').value =
+    `Name of the day: ${r.n}\n\n${short}\n\nKnow a ${r.n}? Tag them. What does your name say? spasm.pages.dev\n\n#${tag} #NameOfTheDay #NameMeaning #WhatsInAName #SPASM`;
+  window.socialResult = { name: r.n, gender: r.g, date: dateEl.value, caption: document.getElementById('caption').value, warning, blobs: made };
+  document.body.dataset.ready = '1';
+}
+dateEl.onchange = () => { document.body.dataset.ready = ''; build(); };
+document.getElementById('copy').onclick = () => navigator.clipboard.writeText(document.getElementById('caption').value);
+build();
+</script>
+</body>
+</html>

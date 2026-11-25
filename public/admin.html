@@ -38,7 +38,7 @@ nav.tabs{display:flex;gap:8px;margin:10px 0}nav.tabs button{background:#2c2b3b}n
 <p id="msg" class="muted"></p>
 
 <div id="app" class="hidden">
-<nav class="tabs"><button data-t="usage" class="on">Usage</button><button data-t="add">Add a name</button><button data-t="subs">Requests</button><button data-t="added">Added names</button></nav>
+<nav class="tabs"><button data-t="usage" class="on">Usage</button><button data-t="add">Add a name</button><button data-t="subs">Requests</button><button data-t="added">Added names</button><button data-t="famous">Famous couples</button></nav>
 
 <section id="t-usage">
   <p id="umsg" class="muted"></p>
@@ -88,6 +88,12 @@ nav.tabs{display:flex;gap:8px;margin:10px 0}nav.tabs button{background:#2c2b3b}n
 
 <section id="t-added" class="hidden">
   <h2>Names added here</h2><div id="added"></div>
+</section>
+
+<section id="t-famous" class="hidden">
+  <h2>Famous couples added by users</h2>
+  <p class="muted" style="margin-top:0">Everyone sees these on the Famous couples page. Delete anything that shouldn't be there.</p>
+  <div id="famous"></div>
 </section>
 </div>
 </main>
@@ -163,7 +169,7 @@ $('#save').onclick = async () => {
 
 function showTab(t) {
   document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === t));
-  ['usage', 'add', 'subs', 'added'].forEach((x) => $('#t-' + x).classList.toggle('hidden', x !== t));
+  ['usage', 'add', 'subs', 'added', 'famous'].forEach((x) => $('#t-' + x).classList.toggle('hidden', x !== t));
 }
 document.querySelector('nav.tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) showTab(b.dataset.t); };
 
@@ -217,7 +223,19 @@ async function loadAll() {
     data.added.map((r, i) => `<tr><td><a href="/#/meaning/${r.g}/${encodeURIComponent(r.n)}" target="_blank">${esc(r.n)}</a></td><td>${r.g}</td><td>${r.e} / ${r.s}</td><td>${r.score}</td><td><button class="small" data-edit="${i}">Edit</button> <button class="small sec" data-del="${i}">Delete</button></td></tr>`).join('') + '</table>'
     : '<p class="muted">None yet.</p>';
   checkExists();
+  loadFamous();
 }
+async function loadFamous() {
+  const j = await fetch('/api/admin/famous?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()).catch(() => ({ couples: [] }));
+  const list = j.couples || [];
+  $('#famous').innerHTML = list.length ? '<table><tr><th>Couple</th><th>Who</th><th>Added</th><th></th></tr>' +
+    list.map((c) => `<tr><td><a href="/#/compat/${c.ga}/${encodeURIComponent(c.a)}/${c.gb}/${encodeURIComponent(c.b)}" target="_blank">${esc(c.a)} + ${esc(c.b)}</a></td><td>${esc(c.note)}</td><td class="muted">${esc((c.at || '').slice(0, 10))}</td><td><button class="small sec" data-fdel="${esc(c.id)}">Delete</button></td></tr>`).join('') + '</table>'
+    : '<p class="muted">None yet.</p>';
+}
+document.addEventListener('click', async (e) => {
+  const fb = e.target.closest('button[data-fdel]');
+  if (fb) { fb.textContent = 'Deleting...'; await fetch('/api/admin/famous?key=' + encodeURIComponent(key) + '&id=' + encodeURIComponent(fb.dataset.fdel), { method: 'DELETE' }); return loadFamous(); }
+});
 document.addEventListener('click', async (e) => {
   const b = e.target.closest('button'); if (!b || !data) return;
   const cap = (s) => String(s || '').replace(/\b\w/g, (c) => c.toUpperCase());
