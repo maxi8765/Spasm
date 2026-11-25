@@ -46,3 +46,5 @@ The site is an installable PWA, so it can be listed on Google Play as a Trusted 
 ## Credits
 
 Nickname links from github.com/carltonnorthern/nicknames (Apache License 2.0), filtered to names in SPASM. Comfortaa font (SIL Open Font License).
+
+Tattoo lettering fonts (public/fonts/tattoo): UnifrakturMaguntia, Pirata One, Grenze Gotisch, Great Vibes, Monsieur La Doulaise, Alex Brush, Pinyon Script, Kaushan Script (SIL Open Font License) and Special Elite (Apache License 2.0), via Fontsource.

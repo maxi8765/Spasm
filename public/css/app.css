@@ -303,3 +303,11 @@ main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purp
 #installtip .btn { width: auto; margin: 0; padding: 10px 16px; font-size: 15px; flex: none; }
 #installtip .tipclose { background: none; border: 0; font-size: 26px; color: #777; cursor: pointer; padding: 0 4px; flex: none; align-self: flex-start; }
 @keyframes tipin { from { transform: translateY(30px); opacity: 0; } }
+
+/* tattoo designs */
+.tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.tcard { background: none; border: 0; padding: 0; cursor: pointer; color: #fff; font-family: inherit; text-align: left; }
+.tcard canvas, .tbig canvas { width: 100%; height: auto; display: block; border-radius: 12px; }
+.tcard span { display: block; font-size: 13px; color: var(--muted); margin: 5px 2px 0; }
+.tbig { margin: 6px 0 14px; }
+.chip .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid rgba(255,255,255,.4); }

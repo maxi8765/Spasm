@@ -71,6 +71,12 @@ export const HELP = {
 <p>The descriptions are written for people, so read them with a little imagination. Hit Refresh for more names.</p>
 <h3>IMPORTANT POINTS</h3>
 <p>${SHARE}</p>${SCIENCE}`,
+  tattoo: `<h2>Name tattoo designs</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Choose a name and SPASM draws it in twelve tattoo lettering styles: old English, gothic, flowing and fine-line scripts, brush lettering, typewriter, and a few with hearts, stars and flourishes. Pick black, blue or red ink to preview.</p>
+<p>Tap a design to see it larger, then Download. You get a high-resolution PNG with a transparent background that your tattoo artist can print, trace or resize.</p>
+<h3>IMPORTANT POINTS</h3>
+<p>Check the spelling before you book. SPASM takes no responsibility for regrettable tattoos.</p>${SCIENCE}`,
 };
 
 // Translated help. Names, links and David's own phrases are kept where they appear in the English.

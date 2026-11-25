@@ -2,7 +2,7 @@
 // Anonymous: each browser gets a random id (no names, emails or IP addresses are stored).
 
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-const EVENTS = new Set(['open', 'page', 'install', 'share', 'notify_on', 'writeup', 'submit_name', 'swipe_partner', 'favourite']);
+const EVENTS = new Set(['open', 'page', 'install', 'share', 'notify_on', 'writeup', 'submit_name', 'swipe_partner', 'favourite', 'tattoo']);
 const brisbaneDay = (offsetDays = 0) => new Date(Date.now() + 10 * 3600 * 1000 - offsetDays * 86400000).toISOString().slice(0, 10);
 
 let ready = false;
@@ -57,7 +57,7 @@ export async function adminStats(request, env) {
     all("SELECT day, SUM(n) AS n FROM events WHERE event = 'open' AND day >= ? GROUP BY day ORDER BY day", since),
     all('SELECT day, COUNT(*) AS n FROM visitors WHERE day >= ? GROUP BY day ORDER BY day', since),
     all('SELECT day, COUNT(*) AS n FROM firstseen WHERE day >= ? GROUP BY day ORDER BY day', since),
-    all("SELECT event, detail, SUM(n) AS n, SUM(CASE WHEN day >= ? THEN n ELSE 0 END) AS n7, SUM(CASE WHEN day = ? THEN n ELSE 0 END) AS today FROM events WHERE event IN ('open','install','share','notify_on','writeup','submit_name','swipe_partner','favourite') GROUP BY event, detail", d7, today),
+    all("SELECT event, detail, SUM(n) AS n, SUM(CASE WHEN day >= ? THEN n ELSE 0 END) AS n7, SUM(CASE WHEN day = ? THEN n ELSE 0 END) AS today FROM events WHERE event IN ('open','install','share','notify_on','writeup','submit_name','swipe_partner','favourite','tattoo') GROUP BY event, detail", d7, today),
     all("SELECT detail, SUM(n) AS n FROM events WHERE event = 'page' AND day >= ? GROUP BY detail ORDER BY n DESC", since),
     all("SELECT detail, SUM(n) AS n FROM events WHERE event = 'country' AND day >= ? GROUP BY detail ORDER BY n DESC LIMIT 15", since),
     all('SELECT COUNT(DISTINCT vid) AS n FROM visitors WHERE day >= ?', d7),

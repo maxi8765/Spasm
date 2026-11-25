@@ -167,7 +167,7 @@ function showTab(t) {
 }
 document.querySelector('nav.tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) showTab(b.dataset.t); };
 
-const PAGE_NAMES = { home: 'Home screen', meaning: 'What does that name mean?', compat: 'Romantic compatibility', bub: 'Best bub names', kma: 'Kiss, marry or avoid', choose: 'Choose a name by personality', group: 'Group compatibility', compare: 'Compare two names', pet: 'Pet, boat or car names', famous: 'Famous couples', custom: 'Get your name written up', swipe: 'Swipe baby names', favourites: 'Favourites', notify: 'Name of the day sign-up', submit: 'Submit a name', me: 'Your name', more: 'More fun' };
+const PAGE_NAMES = { home: 'Home screen', meaning: 'What does that name mean?', compat: 'Romantic compatibility', bub: 'Best bub names', kma: 'Kiss, marry or avoid', choose: 'Choose a name by personality', group: 'Group compatibility', compare: 'Compare two names', pet: 'Pet, boat or car names', famous: 'Famous couples', custom: 'Get your name written up', tattoo: 'Name tattoo designs', install: 'Install page', swipe: 'Swipe baby names', favourites: 'Favourites', notify: 'Name of the day sign-up', submit: 'Submit a name', me: 'Your name', more: 'More fun' };
 const COUNTRY = (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c) || c; } catch { return c; } };
 async function loadStats() {
   const r = await fetch('/api/admin/stats?key=' + encodeURIComponent(key), { cache: 'no-store' });
@@ -186,6 +186,7 @@ async function loadStats() {
     kpi('Name submissions', sum('submit_name')) +
     kpi('Favourites saved', sum('favourite')) +
     kpi('Partner swipe invites', sum('swipe_partner')) +
+    kpi('Tattoo designs downloaded', sum('tattoo'), `${sum('tattoo', 'n7')} in 7 days`) +
     kpi('Names added by David', j.addedNames);
   // last 30 days chart
   const days = [...Array(30)].map((_, i) => { const d = new Date(j.today + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - 29 + i); return d.toISOString().slice(0, 10); });

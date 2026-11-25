@@ -3,6 +3,7 @@ import { HELP, HELP_I18N } from './help.js';
 import { getLang, setLang, tr, startTranslating, LANGS } from './i18n.js';
 import { ICON } from './icons.js';
 import { shareCard } from './share.js';
+import { STYLES as TATTOO, loadFonts as loadTattooFonts, draw as drawTattoo, pngBlob as tattooPng } from './tattoo.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const view = $('#view');
@@ -404,6 +405,7 @@ async function meaningResult(g, name) {
     ${typeBox(r)}
     ${nickBox(r)}
     ${r.t ? profile(r.t) : ''}
+    <a class="btn secondary" href="#/tattoo/${r.g}/${enc(r.n)}">Tattoo designs for ${esc(r.n)}</a>
     ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
   $('#fav').onclick = () => addFav('names', `${r.n} (${r.g})`, location.hash);
@@ -669,6 +671,81 @@ function chooseResult(g, tstr, q) {
   view.append(hint, row);
 }
 
+// ---------- tattoo designs ----------
+const INKS = [['#111111', 'Black'], ['#1d3a6e', 'Blue'], ['#9b1c23', 'Red']];
+const SKIN = '#e9c6a5';
+
+function tattooForm() {
+  setBar({ back: true, help: 'tattoo' });
+  view.innerHTML = `${logo()}<h1>Name tattoo designs</h1><p class="hint" style="font-size:15px">Twelve tattoo lettering styles for any name, ready to download and take to your tattoo artist.</p>`;
+  const me = meRecord();
+  const p = picker({ label: 'Name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const go = document.createElement('button');
+  go.className = 'btn'; go.textContent = 'Show designs';
+  go.onclick = () => { const r = p.get(); if (r) location.hash = `#/tattoo/${r.g}/${enc(r.n)}`; };
+  view.append(p.el, go);
+}
+
+async function tattooPage(g, name, q) {
+  const r = E.find(name, g);
+  if (!r) return notFound(name, g);
+  setBar({ back: true, help: 'tattoo' });
+  view.classList.add('scroll');
+  let ink = INKS.find(([c]) => c === '#' + (q.get('ink') || ''))?.[0] || INKS[0][0];
+  view.innerHTML = `${logo()}<h1>${esc(r.n)}</h1><p class="for-line" style="text-align:left">Tattoo designs. Tap one to download it.</p>
+    <div class="chips" id="inks">${INKS.map(([c, l]) => `<button class="chip${c === ink ? ' on' : ''}" data-c="${c}"><span class="dot" style="background:${c}"></span>${l} ink</button>`).join('')}</div>
+    <div class="tgrid" id="tgrid"><p class="loading">Loading lettering...</p></div>
+    <p class="hint">Downloads are high-resolution PNGs with a transparent background. Your tattoo artist will size and adjust the design for you.</p>`;
+  await loadTattooFonts();
+  const grid = $('#tgrid');
+  const drawAll = () => {
+    grid.innerHTML = '';
+    TATTOO.forEach((st, i) => {
+      const card = document.createElement('button');
+      card.className = 'tcard'; card.dataset.i = i;
+      const c = drawTattoo(document.createElement('canvas'), r.n, st, { w: 720, h: 300, ink, bg: SKIN });
+      card.append(c);
+      card.insertAdjacentHTML('beforeend', `<span>${esc(st.label)}</span>`);
+      grid.append(card);
+    });
+  };
+  drawAll();
+  $('#inks').onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    ink = b.dataset.c;
+    $('#inks').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+    history.replaceState(null, '', `#/tattoo/${r.g}/${enc(r.n)}?ink=${ink.slice(1)}`);
+    drawAll();
+  };
+  grid.onclick = (e) => { const c = e.target.closest('.tcard'); if (c) openTattoo(r, TATTOO[+c.dataset.i], ink); };
+}
+
+function openTattoo(r, st, ink) {
+  const h = $('#help');
+  const body = $('.modal-body', h);
+  body.innerHTML = `<h2>${esc(r.n)}</h2><p class="hint" style="margin-top:-6px">${esc(st.label)}</p><div class="tbig"></div>
+    <div class="btn-row"><button class="btn" id="tdl">Download</button>${navigator.share ? '<button class="btn secondary" id="tsh">Share</button>' : ''}</div>`;
+  $('.tbig', body).append(drawTattoo(document.createElement('canvas'), r.n, st, { w: 1200, h: 500, ink, bg: SKIN }));
+  const file = `spasm-tattoo-${r.n.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${st.id}.png`;
+  $('#tdl', body).onclick = async () => {
+    track('tattoo', st.id);
+    const blob = await tattooPng(r.n, st, ink);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = file; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    toast('Design downloaded');
+  };
+  if ($('#tsh', body)) $('#tsh', body).onclick = async () => {
+    track('tattoo', st.id);
+    const blob = await tattooPng(r.n, st, ink);
+    const f = new File([blob], file, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], title: `${r.n} tattoo` }).catch(() => {});
+    else toast('Use Download instead');
+  };
+  h.hidden = false;
+  h.onclick = (e) => { if (e.target === h || e.target.closest('.modal-close')) h.hidden = true; };
+}
+
 // ---------- install tip ----------
 // Android/desktop Chrome hands us an install prompt; iPhone needs Share > Add to Home Screen.
 let installPrompt = null;
@@ -725,6 +802,7 @@ function morePage() {
     ['#/choose', 'Choose a name by personality', 'Find names to match the traits you want'],
     ['#/pet', 'Name your pet, boat or car', 'Pick its personality, get a name'],
     ['#/famous', 'Famous couples', 'How the great romances of history and fiction rate'],
+    ['#/tattoo', 'Name tattoo designs', 'Twelve tattoo lettering styles for any name, free to download'],
     ['#/custom', 'Get your name written up', `Not in SPASM? David will write yours${STRIPE_LINK ? ` for ${PRICE}` : ''}`],
     ['#/notify', 'Name of the day, every morning', 'A notification with each day\'s name'],
   ];
@@ -1090,6 +1168,7 @@ function route() {
     case 'more': return morePage();
     case 'notify': return notifyPage();
     case 'install': return installPage();
+    case 'tattoo': return a.length >= 2 ? tattooPage(a[0], a[1], q) : tattooForm();
     case 'group': return a.length >= 1 ? groupResult(a[0]) : groupForm();
     case 'compare': return a.length >= 4 ? compareResult(a[0], a[1], a[2], a[3]) : compareForm();
     case 'pet': return a.length >= 3 ? petResult(a[0], a[1], a[2], q) : petForm();
@@ -1104,7 +1183,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 31;
+const APP_VERSION = 32;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
