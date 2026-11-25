@@ -1,0 +1,9 @@
+name = "spasm"
+pages_build_output_dir = "public"
+compatibility_date = "2026-11-01"
+
+# Optional: create a KV namespace for "submit a name" and paste its id here
+# (npx wrangler kv namespace create NAME_SUBMISSIONS)
+# [[kv_namespaces]]
+# binding = "NAME_SUBMISSIONS"
+# id = "<namespace id>"
