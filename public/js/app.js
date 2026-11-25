@@ -628,6 +628,7 @@ function morePage() {
     ['#/pet', 'Name your pet, boat or car', 'Pick its personality, get a name'],
     ['#/famous', 'Famous couples', 'How the great romances of history and fiction rate'],
     ['#/custom', 'Get your name written up', 'Not in SPASM? David will write yours'],
+    ['#/notify', 'Name of the day, every morning', 'A notification with each day\'s name'],
   ];
   view.innerHTML = `${logo()}<h1>More fun</h1>` + items.map(([h, t, d]) => `<a class="more-item" href="${h}"><b>${t}</b><span>${d}</span></a>`).join('');
 }
@@ -812,6 +813,62 @@ function customPage(q) {
   };
 }
 
+async function notifyPage() {
+  setBar({ back: true });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Name of the day, every morning</h1>
+    <p class="hint" style="font-size:15px">Get a notification each morning with SPASM's name of the day. Tap it to read the full description.</p>
+    <div id="nstate" class="loading"></div><div id="nbtns"></div>`;
+  const state = $('#nstate'), btns = $('#nbtns');
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    state.className = 'body';
+    state.textContent = ios && !standalone
+      ? 'On iPhone and iPad, notifications only work once SPASM is on your home screen. Tap the Share button in Safari, choose Add to Home Screen, then open SPASM from there and come back to this page.'
+      : "Sorry, this browser doesn't support notifications.";
+    return;
+  }
+  const reg = await navigator.serviceWorker.ready;
+  const draw = async () => {
+    const sub = await reg.pushManager.getSubscription();
+    const denied = Notification.permission === 'denied';
+    state.className = 'body';
+    state.textContent = denied ? 'Notifications are blocked for SPASM. Turn them back on in your browser or phone settings, then try again.'
+      : sub ? "You're signed up. The name of the day arrives each morning." : 'Notifications are off.';
+    btns.innerHTML = denied ? '' : sub
+      ? '<button class="btn" id="ntest">Send me one now</button><button class="btn secondary" id="noff">Turn off</button>'
+      : '<button class="btn" id="non">Turn on</button>';
+    if ($('#non')) $('#non').onclick = turnOn;
+    if ($('#noff')) $('#noff').onclick = turnOff;
+    if ($('#ntest')) $('#ntest').onclick = () => { (reg.active || navigator.serviceWorker.controller)?.postMessage('test-daily'); toast('On its way'); };
+  };
+  const b64 = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
+  async function turnOn() {
+    try {
+      if ((await Notification.requestPermission()) !== 'granted') return draw();
+      const r = await fetch('/api/push/key');
+      if (!r.ok) throw new Error('key');
+      const { key } = await r.json();
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64(key) });
+      const ok = await fetch('/api/push/subscribe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(sub) });
+      if (!ok.ok) throw new Error('save');
+      toast("You're signed up");
+    } catch { toast("Sorry, that didn't work. Try again later."); }
+    draw();
+  }
+  async function turnOff() {
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      fetch('/api/push/unsubscribe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint }) }).catch(() => {});
+      await sub.unsubscribe();
+    }
+    toast('Notifications off');
+    draw();
+  }
+  draw();
+}
+
 function mePage() {
   setBar({ back: true });
   const me = meRecord();
@@ -925,6 +982,7 @@ function route() {
     case 'choose': return a.length >= 2 ? chooseResult(a[0], a[1], q) : chooseForm(q);
     case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
     case 'more': return morePage();
+    case 'notify': return notifyPage();
     case 'group': return a.length >= 1 ? groupResult(a[0]) : groupForm();
     case 'compare': return a.length >= 4 ? compareResult(a[0], a[1], a[2], a[3]) : compareForm();
     case 'pet': return a.length >= 3 ? petResult(a[0], a[1], a[2], q) : petForm();
@@ -939,7 +997,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 15;
+const APP_VERSION = 16;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
