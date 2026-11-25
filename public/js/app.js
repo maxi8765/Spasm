@@ -50,7 +50,8 @@ async function boot() {
   window.addEventListener('hashchange', route);
   route();
   track('open', matchMedia('(display-mode: standalone)').matches || navigator.standalone ? 'app' : 'web');
-  window.addEventListener('appinstalled', () => track('install'));
+  window.addEventListener('appinstalled', () => { track('install'); hideInstallTip(); });
+  setTimeout(maybeShowInstallTip, 2500);
   startTranslating();
   // language picker in the menu
   const lp = document.getElementById('langs');
@@ -311,6 +312,7 @@ function home() {
   setBar({ help: 'home', share: sharer('What does your name say about you?', 'SPASM describes your personality just from your name, rates the romantic compatibility of any two people, suggests baby names and tells you who to kiss, marry or avoid.', location.origin + '/') });
   const me = meRecord(), nd = E.nameOfDay();
   view.className = 'home';
+  setTimeout(maybeShowInstallTip, 1500);
   const tiles = [
     ['#/meaning', ICON.head, 'What does that name mean?'],
     ['#/compat', ICON.hearts, 'Romantic compatibility'],
@@ -667,6 +669,53 @@ function chooseResult(g, tstr, q) {
   view.append(hint, row);
 }
 
+// ---------- install tip ----------
+// Android/desktop Chrome hands us an install prompt; iPhone needs Share > Add to Home Screen.
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isAndroid = () => /android/i.test(navigator.userAgent);
+const SHARE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-3px"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v8h14v-8"/></svg>';
+function installSteps() {
+  if (isIOS()) return `In Safari, tap the Share button ${SHARE_ICON} at the bottom of the screen, then <b>Add to Home Screen</b>.`;
+  if (installPrompt) return 'Add SPASM to your home screen so it opens like an app, full screen, with daily notifications.';
+  if (isAndroid()) return 'Tap your browser\'s menu (&#8942;), then <b>Install app</b> or <b>Add to Home screen</b>.';
+  return 'In Chrome or Edge, click the install icon at the right of the address bar, or open the browser menu and choose <b>Install SPASM</b>.';
+}
+async function runInstall() {
+  if (!installPrompt) return false;
+  installPrompt.prompt();
+  const { outcome } = await installPrompt.userChoice.catch(() => ({ outcome: 'dismissed' }));
+  installPrompt = null;
+  if (outcome === 'accepted') { hideInstallTip(); toast('SPASM is on your home screen'); }
+  return true;
+}
+function hideInstallTip() { const t = document.getElementById('installtip'); if (t) t.remove(); }
+function maybeShowInstallTip() {
+  if (isStandalone() || document.getElementById('installtip')) return;
+  if (!isIOS() && !isAndroid() && !installPrompt) return; // desktop: only when the browser offers it
+  try { if (Date.now() - (+localStorage.getItem('spasm.installTipHidden') || 0) < 14 * 86400000) return; } catch { /* show anyway */ }
+  if (!view.classList.contains('home')) return;
+  const tip = document.createElement('div');
+  tip.id = 'installtip';
+  tip.innerHTML = `<img src="/img/icon-192.png" alt=""><div><b>Install SPASM</b><span>${installSteps()}</span></div>
+    ${installPrompt ? '<button class="btn" id="tipinstall">Install</button>' : ''}<button class="tipclose" aria-label="Not now">&times;</button>`;
+  document.body.append(tip);
+  if (installPrompt) $('#tipinstall').onclick = runInstall;
+  $('.tipclose', tip).onclick = () => { try { localStorage.setItem('spasm.installTipHidden', String(Date.now())); } catch { /* ignore */ } hideInstallTip(); };
+}
+function installPage() {
+  setBar({ back: true });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Install SPASM</h1>` + (isStandalone()
+    ? '<p class="body">You\'re already using the installed app.</p>'
+    : `<p class="body">${installSteps()}</p>${installPrompt ? '<button class="btn" id="pinstall">Install now</button>' : ''}
+       <h2>iPhone and iPad</h2><p class="hint" style="font-size:15px">Open spasm.pages.dev in Safari, tap Share ${SHARE_ICON}, then Add to Home Screen.</p>
+       <h2>Android</h2><p class="hint" style="font-size:15px">Open spasm.pages.dev in Chrome, tap the menu (&#8942;), then Install app or Add to Home screen.</p>`);
+  if ($('#pinstall')) $('#pinstall').onclick = async () => { if (!(await runInstall())) toast('Use your browser menu to install'); };
+}
+
 function morePage() {
   setBar({ back: true });
   view.classList.add('scroll');
@@ -1017,6 +1066,7 @@ function route() {
   $('#menu').hidden = true; $('#help').hidden = true;
   view.onclick = null;
   view.className = '';
+  hideInstallTip();
   const raw = location.hash.replace(/^#\/?/, '');
   const [path, qs = ''] = raw.split('?');
   const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
@@ -1037,6 +1087,7 @@ function route() {
     case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
     case 'more': return morePage();
     case 'notify': return notifyPage();
+    case 'install': return installPage();
     case 'group': return a.length >= 1 ? groupResult(a[0]) : groupForm();
     case 'compare': return a.length >= 4 ? compareResult(a[0], a[1], a[2], a[3]) : compareForm();
     case 'pet': return a.length >= 3 ? petResult(a[0], a[1], a[2], q) : petForm();
@@ -1051,7 +1102,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 28;
+const APP_VERSION = 29;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
