@@ -23,6 +23,7 @@ let NICK = {};
 const descCache = new Map();
 // Set this to your Stripe Payment Link (https://buy.stripe.com/...) to take payment for custom write-ups
 const STRIPE_LINK = 'https://buy.stripe.com/7sYcN71N1gBBfTqg1jb7y00';
+const PRICE = 'A$10'; // keep in step with the Stripe payment link
 
 // ---------- data ----------
 async function boot() {
@@ -278,6 +279,7 @@ function home() {
     <a class="tile" href="#/kma" style="color:var(--blue)">${ICON.balloons}<span style="color:#fff">Kiss, marry or avoid</span></a>
   </div>
   <div class="btn-row home-more"><a class="btn slim" href="#/choose">Choose a name</a><a class="btn slim secondary" href="#/more">More fun</a></div>
+  <a class="btn slim custom-link" href="#/custom">Get your name written up${STRIPE_LINK ? ` (${PRICE})` : ''}</a>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
@@ -627,7 +629,7 @@ function morePage() {
     ['#/choose', 'Choose a name by personality', 'Find names to match the traits you want'],
     ['#/pet', 'Name your pet, boat or car', 'Pick its personality, get a name'],
     ['#/famous', 'Famous couples', 'How the great romances of history and fiction rate'],
-    ['#/custom', 'Get your name written up', 'Not in SPASM? David will write yours'],
+    ['#/custom', 'Get your name written up', `Not in SPASM? David will write yours${STRIPE_LINK ? ` for ${PRICE}` : ''}`],
     ['#/notify', 'Name of the day, every morning', 'A notification with each day\'s name'],
   ];
   view.innerHTML = `${logo()}<h1>More fun</h1>` + items.map(([h, t, d]) => `<a class="more-item" href="${h}"><b>${t}</b><span>${d}</span></a>`).join('');
@@ -786,13 +788,14 @@ function customPage(q) {
   setBar({ back: true });
   view.classList.add('scroll');
   view.innerHTML = `${logo()}<h1>Get your name written up</h1>
-    <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice${STRIPE_LINK ? ' for A$10' : ''}.</p>
+    <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice.</p>
+    ${STRIPE_LINK ? `<div class="price"><span>Price</span><b>${PRICE}</b><small>About US$7. One-off payment, GST included. Paid securely through Stripe, which shows overseas buyers the exact amount in their own currency.</small></div>` : ''}
     <form id="cust">
       <div class="field"><label for="cn">Name</label><div class="input-row"><input id="cn" required maxlength="40" value="${esc(q.get('n') || '')}">
         <div class="toggle"><button type="button" data-g="M">M</button><button type="button" data-g="F">F</button></div></div></div>
       <div class="field"><label for="cnote">Anything David should know? (optional)</label><textarea id="cnote" maxlength="1000"></textarea></div>
       <div class="field"><label for="cemail">Your email, so David can send it to you</label><div class="input-row"><input id="cemail" type="email" required maxlength="120"></div></div>
-      <button class="btn" type="submit">${STRIPE_LINK ? 'Continue to payment' : 'Send request'}</button>
+      <button class="btn" type="submit">${STRIPE_LINK ? `Pay ${PRICE} and send request` : 'Send request'}</button>
       <p class="hint">${STRIPE_LINK ? 'You pay securely with Stripe, then your email app opens so you can send David the details.' : 'Your email app will open with the request filled in. David will reply with the price and how to pay.'}</p>
     </form>`;
   let g = q.get('g') === 'M' ? 'M' : 'F';
@@ -997,7 +1000,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 19;
+const APP_VERSION = 20;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
