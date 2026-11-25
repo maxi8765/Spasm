@@ -1,4 +1,4 @@
-import { submitName, logMiss, json } from './submit.js';
+import { submitName, logMiss, adminList, json } from './submit.js';
 
 // Cloudflare Worker: serves the static app from ./public and handles the submit-name API.
 // "Submit a name" requests go to the NAME_SUBMISSIONS KV namespace if it is bound.
@@ -11,6 +11,7 @@ export default {
     }
     if (url.pathname === '/api/miss' && request.method === 'POST') return logMiss(request, env);
     if (url.pathname === '/api/status') return json({ storage: !!env.NAME_SUBMISSIONS });
+    if (url.pathname === '/api/admin') return adminList(request, env);
     return env.ASSETS.fetch(request);
   },
 };

@@ -31,3 +31,29 @@ export async function logMiss(request, env) {
   await env.NAME_SUBMISSIONS.put(key, String(prev + 1));
   return new Response(null, { status: 204 });
 }
+
+// Private list of submissions and missed searches. Needs the ADMIN_KEY secret, passed as ?key=
+export async function adminList(request, env) {
+  const key = new URL(request.url).searchParams.get('key') || '';
+  if (!env.ADMIN_KEY) return json({ error: 'ADMIN_KEY is not set up yet' }, 503);
+  if (key !== env.ADMIN_KEY) return json({ error: 'Wrong key' }, 403);
+  if (!env.NAME_SUBMISSIONS) return json({ error: 'Storage is not connected' }, 503);
+  const submissions = [], misses = [];
+  let cursor;
+  do {
+    const page = await env.NAME_SUBMISSIONS.list({ cursor, limit: 1000 });
+    for (const k of page.keys) {
+      if (k.name.startsWith('miss:')) {
+        const [, gender, name] = k.name.split(':');
+        misses.push({ name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
+      } else if (!k.name.startsWith('push:')) {
+        const v = await env.NAME_SUBMISSIONS.get(k.name);
+        try { submissions.push(JSON.parse(v)); } catch { /* skip */ }
+      }
+    }
+    cursor = page.list_complete ? null : page.cursor;
+  } while (cursor);
+  submissions.sort((a, b) => (a.at < b.at ? 1 : -1));
+  misses.sort((a, b) => b.count - a.count);
+  return new Response(JSON.stringify({ submissions, misses }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+}

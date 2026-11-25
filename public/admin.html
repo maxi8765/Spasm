@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>SPASM admin</title><link rel="icon" href="/img/icon-192.png">
+<style>
+body{margin:0;background:#1d1c28;color:#eee;font:15px/1.5 system-ui,sans-serif}
+header{background:#000;padding:12px;text-align:center}header img{height:28px}
+main{max-width:760px;margin:0 auto;padding:16px}
+input,button{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid #4a495d;background:#15141e;color:#fff}
+button{background:#5552ff;border:0;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin:8px 0 24px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid #333}
+th{color:#a7a6b8;font-weight:600}.muted{color:#a7a6b8}.err{color:#ff8a8a}a{color:#c9b8ff}
+</style></head><body>
+<header><a href="/"><img src="/img/logo.png" alt="SPASM"></a></header>
+<main>
+<h1>Submissions</h1>
+<form id="f"><input id="k" type="password" placeholder="Admin key" autocomplete="current-password"> <button>Show</button> <button type="button" id="csv">Download CSV</button></form>
+<p id="msg" class="muted"></p>
+<div id="out"></div>
+</main>
+<script>
+const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let data = null;
+const k = document.getElementById('k');
+try { k.value = sessionStorage.getItem('spasm.admin') || ''; } catch {}
+async function load(e) {
+  if (e) e.preventDefault();
+  const msg = document.getElementById('msg');
+  msg.textContent = 'Loading...'; msg.className = 'muted';
+  const r = await fetch('/api/admin?key=' + encodeURIComponent(k.value), { cache: 'no-store' });
+  const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
+  if (!r.ok) { msg.textContent = j.error; msg.className = 'err'; return; }
+  try { sessionStorage.setItem('spasm.admin', k.value); } catch {}
+  data = j;
+  msg.textContent = `${j.submissions.length} submissions, ${j.misses.length} names people searched for that SPASM doesn't have.`;
+  document.getElementById('out').innerHTML =
+    '<h2>Submitted names</h2><table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th></tr>' +
+    j.submissions.map((s) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}</td></tr>`).join('') + '</table>' +
+    '<h2>Searched for but missing</h2><table><tr><th>Name</th><th>Gender</th><th>Searches</th></tr>' +
+    j.misses.map((m) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td></tr>`).join('') + '</table>';
+}
+document.getElementById('f').onsubmit = load;
+document.getElementById('csv').onclick = async () => {
+  if (!data) await load();
+  if (!data) return;
+  const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [['Type', 'Name', 'Gender', 'Notes', 'Email', 'When or searches']]
+    .concat(data.submissions.map((s) => ['Submitted', s.name, s.gender, s.note, s.email, s.at]))
+    .concat(data.misses.map((m) => ['Missing', m.name, m.gender, '', '', m.count]));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + rows.map((r) => r.map(q).join(',')).join('\n')], { type: 'text/csv' }));
+  a.download = 'spasm-submissions.csv'; a.click();
+};
+if (k.value) load();
+</script>
+</body></html>
