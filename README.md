@@ -2,7 +2,7 @@
 
 Web rebuild of the SPASM app (David Hocking's Name Theory): name meanings, romantic and sexual compatibility, best bub names, and kiss / marry / avoid.
 
-Static site on Cloudflare Pages. No build step; everything is in `public/`.
+Cloudflare Worker serving the static app in `public/` (no build step). `src/worker.js` handles the submit-name API.
 
 ## Data
 
@@ -17,10 +17,10 @@ To update the data after editing the workbook:
 
 ## Local
 
-    npm run dev      # wrangler pages dev, includes the submit-name function
+    npm run dev      # wrangler dev
 
 ## Deploy
 
-Cloudflare Pages project connected to this repo: framework preset None, build command empty, output directory `public`.
+Cloudflare Workers Builds, connected to this repo. Deploy command: `npx wrangler deploy` (reads `wrangler.toml`). Every push to main redeploys.
 
-"Submit a name" needs a KV namespace bound as `NAME_SUBMISSIONS` (Pages project > Settings > Bindings). Without it the form shows an error and nothing is stored.
+"Submit a name" needs a KV namespace bound as `NAME_SUBMISSIONS` (add it to `wrangler.toml`). Without it the form shows an error and nothing is stored.

@@ -1,9 +1,14 @@
 name = "spasm"
-pages_build_output_dir = "public"
+main = "src/worker.js"
 compatibility_date = "2026-11-01"
 
-# Optional: create a KV namespace for "submit a name" and paste its id here
-# (npx wrangler kv namespace create NAME_SUBMISSIONS)
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+# Optional: KV namespace for "submit a name"
+# (npx wrangler kv namespace create NAME_SUBMISSIONS, then paste the id)
 # [[kv_namespaces]]
 # binding = "NAME_SUBMISSIONS"
 # id = "<namespace id>"
