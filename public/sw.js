@@ -1,13 +1,13 @@
 // Offline support: cache the shell and data files as they are used.
-const CACHE = 'spasm-v11';
-const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/engine.js', '/js/help.js', '/js/icons.js', '/js/share.js',
+const CACHE = 'spasm-v13';
+const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/engine.js', '/js/help.js', '/js/icons.js', '/js/share.js', '/js/i18n.js',
   '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png', '/paper.html', '/data/names.json?v=2', '/data/tables.json?v=2'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
+  if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/') || url.pathname === '/version.json') return;
   // network first so updates land, cache as fallback
   e.respondWith(fetch(e.request).then((res) => {
     if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); }

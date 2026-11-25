@@ -15,6 +15,28 @@ export const TRAITS = ['Charisma', 'Spontaneity', 'Emotional savvy', 'Sexual adv
   'Creativity', 'Humour', 'Spirituality', 'Leadership', 'Generosity'];
 
 // Traits on a common 1-5 scale (charisma is scored out of 10 in the data)
+export const ENNEA = [null,
+  ['The Reformer', 'Principled, purposeful and self-controlled, with a strong sense of right and wrong.'],
+  ['The Helper', 'Warm, generous and people-pleasing, happiest when needed.'],
+  ['The Achiever', 'Driven, adaptable and image-conscious, built for success.'],
+  ['The Individualist', 'Sensitive, expressive and self-aware, sometimes moody.'],
+  ['The Investigator', 'Curious, private and inventive, more at home with ideas than small talk.'],
+  ['The Loyalist', 'Committed, responsible and security-minded, quick to spot trouble.'],
+  ['The Enthusiast', 'Spontaneous, versatile and fun-seeking, allergic to boredom.'],
+  ['The Challenger', 'Self-confident, decisive and protective, does not back down.'],
+  ['The Peacemaker', 'Easygoing, accepting and reassuring, avoids conflict at all costs.'],
+];
+export const SEXTYPE = [null,
+  ['The Homebody', 'Prefers a cup of tea and an early night.'],
+  ['The Steady', 'Affectionate, reliable, and in no particular hurry.'],
+  ['The Curious', 'Open to suggestions, within reason.'],
+  ['The Adventurer', 'Keen, inventive and rarely short of ideas.'],
+  ['The Explorer', 'Has a Play Cupboard, and is not afraid to use it.'],
+];
+
+function hashStr(str) { let h = 2166136261; for (const ch of str) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function seededRand(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
 function traitsOf(str) {
   if (!str) return null;
   return [...str].map((ch, i) => {
@@ -186,5 +208,36 @@ export function createEngine(namesRows, tables, rand = Math.random) {
     return commonOnly ? sample(top, LIST_A + LIST_Z, 0) : sample(top);
   }
 
-  return { names, find, chooseNames, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
+  // Same shuffled order for both partners, whichever order the parents are entered in
+  function bubPoolShared(P1, P2, babyG) {
+    const t = babyType(P1, P2);
+    const exclude = new Set([P1.n.toLowerCase(), P2.n.toLowerCase()]);
+    const pool = names.filter((r) => r.g === babyG && r.e === t && !exclude.has(r.n.toLowerCase())).sort((a, b) => (a.n < b.n ? -1 : 1));
+    const seed = hashStr([P1.g + P1.n, P2.g + P2.n].map((x) => x.toLowerCase()).sort().join('|') + babyG);
+    const r = seededRand(seed);
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    return pool;
+  }
+
+  // Every pairing in a group, best first. Overall = average of couple and sexual scores.
+  function group(people) {
+    const pairs = [];
+    for (let i = 0; i < people.length; i++) for (let j = i + 1; j < people.length; j++) {
+      const A = people[i], B = people[j];
+      const c = tables.couple[WORD[A.e] + 'with' + WORD[B.e]].score;
+      const sx = tables.sexual['S' + WORD[A.s] + 'with' + WORD[B.s]].score;
+      pairs.push({ A, B, i, j, couple: c, sex: sx, overall: (c + sx) / 2 });
+    }
+    return pairs.sort((a, b) => b.overall - a.overall);
+  }
+
+  // Names for a pet, boat or car: traits picked get top marks, the rest sit in the middle
+  function petNames(g, picked, shortlist = 60) {
+    const target = Array.from({ length: 10 }, (_, i) => (picked.includes(i) ? 5 : 3));
+    const pool = names.filter((r) => (g === 'X' || r.g === g) && r.t);
+    const ranked = pool.map((r) => [r.t.reduce((d, v, i) => d + (v - target[i]) ** 2, 0), r]).sort((a, b) => a[0] - b[0]);
+    return sample(ranked.slice(0, shortlist).map((x) => x[1]));
+  }
+
+  return { names, find, chooseNames, bubPoolShared, group, petNames, search, byLetter, compatibility, bubNames, bubPool, babyType, mates, sexScore, fillNames, similar, nameOfDay };
 }

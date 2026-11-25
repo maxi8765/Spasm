@@ -1,5 +1,6 @@
-import { createEngine, TRAITS } from './engine.js';
-import { HELP } from './help.js';
+import { createEngine, TRAITS, ENNEA, SEXTYPE } from './engine.js';
+import { HELP, HELP_I18N } from './help.js';
+import { getLang, setLang, tr, startTranslating, LANGS } from './i18n.js';
 import { ICON } from './icons.js';
 import { shareCard } from './share.js';
 
@@ -18,7 +19,10 @@ const MODE_INFO = {
 };
 
 let E = null;
+let NICK = {};
 const descCache = new Map();
+// Set this to your Stripe Payment Link (https://buy.stripe.com/...) to take payment for custom write-ups
+const STRIPE_LINK = '';
 
 // ---------- data ----------
 async function boot() {
@@ -28,10 +32,19 @@ async function boot() {
     fetch(`/data/tables.json?v=${DATA_VERSION}`).then((r) => r.json()),
   ]);
   E = createEngine(rows, tables);
+  fetch(`/data/nicknames.json?v=${DATA_VERSION}`).then((r) => r.json()).then((n) => { NICK = n; }).catch(() => {});
   const wait = Math.max(0, 1000 - (Date.now() - started)); // logo shows for 1 second
   setTimeout(() => { $('#splash').classList.add('gone'); setTimeout(() => $('#splash').remove(), 400); }, wait);
   window.addEventListener('hashchange', route);
   route();
+  startTranslating();
+  // language picker in the menu
+  const lp = document.getElementById('langs');
+  if (lp) {
+    const cur = getLang();
+    lp.innerHTML = LANGS.map(([k, l]) => `<button class="chip${k === cur ? ' on' : ''}" data-l="${k}">${l}</button>`).join('');
+    lp.onclick = (e) => { const b = e.target.closest('button'); if (!b) return; setLang(b.dataset.l); location.reload(); };
+  }
 }
 
 async function describe(r) {
@@ -93,7 +106,8 @@ function openMenu() {
 }
 function openHelp(key) {
   const h = $('#help');
-  $('.modal-body', h).innerHTML = HELP[key] || '';
+  const L = HELP_I18N[getLang()];
+  $('.modal-body', h).innerHTML = (L && L[key]) || HELP[key] || '';
   h.hidden = false;
   h.onclick = (e) => { if (e.target === h || e.target.closest('.modal-close') || e.target.tagName === 'A') h.hidden = true; };
 }
@@ -116,7 +130,11 @@ function sharer(title, text, link) {
 }
 // Share a result as an image card plus a link to it
 function cardSharer(spec, text) {
-  return () => { toast('Making your image...'); return shareCard(spec, text, toast); };
+  return () => {
+    toast('Making your image...');
+    const s = { ...spec, kicker: spec.kicker && tr(spec.kicker), title: spec.title && tr(spec.title), scoreLabel: spec.scoreLabel && tr(spec.scoreLabel), tags: spec.tags && spec.tags.map(([t, c]) => [tr(t), c]) };
+    return shareCard(s, text, toast);
+  };
 }
 function logMiss(name, g) {
   try { navigator.sendBeacon('/api/miss', new Blob([JSON.stringify({ name, gender: g })], { type: 'application/json' })); } catch { /* best effort */ }
@@ -259,7 +277,7 @@ function home() {
     <a class="tile" href="#/bub" style="color:var(--blue)">${ICON.baby}<span style="color:#fff">Your best bub names?</span></a>
     <a class="tile" href="#/kma" style="color:var(--blue)">${ICON.balloons}<span style="color:#fff">Kiss, marry or avoid</span></a>
   </div>
-  <a class="btn slim choose-link" href="#/choose">Choose a name by personality</a>
+  <div class="btn-row home-more"><a class="btn slim" href="#/choose">Choose a name</a><a class="btn slim secondary" href="#/more">More fun</a></div>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
@@ -306,6 +324,19 @@ function meaningForm() {
   draw();
 }
 
+function typeBox(r) {
+  const e = ENNEA[r.e], x = SEXTYPE[r.s];
+  return `<section class="types"><h2>Type</h2>
+    <div class="type"><span class="tag blue">Enneagram ${r.e}</span><div><b>${e[0]}</b><br><span class="hint">${e[1]}</span></div></div>
+    <div class="type"><span class="tag" style="background:var(--pink)">Adventurer ${r.s}</span><div><b>${x[0]}</b><br><span class="hint">${x[1]}</span></div></div></section>`;
+}
+function nickBox(r) {
+  const list = NICK[r.g + ':' + r.n];
+  if (!list || !list.length) return '';
+  return `<section class="nicks"><h2>Also goes by</h2><div class="chips">${list.map((n) => `<a class="chip" href="#/meaning/${r.g}/${enc(n)}">${esc(n)}</a>`).join('')}</div>
+    <a class="hint" href="#/compare/${r.g}/${enc(r.n)}/${r.g}/${enc(list[0])}">Compare ${esc(r.n)} with ${esc(list[0])}</a></section>`;
+}
+
 function profile(t) {
   return `<section class="profile"><h2>Personality profile</h2>${TRAITS.map((name, i) => `
     <div class="trait"><span class="tl">${name}</span><span class="tb"><span style="width:${Math.round(t[i] / 5 * 100)}%"></span></span></div>`).join('')}</section>`;
@@ -320,6 +351,8 @@ async function meaningResult(g, name) {
   const me = getMe();
   const isMe = me && me.n === r.n && me.g === r.g;
   view.innerHTML = `${logo()}<h1>${esc(r.n)}</h1><span class="tag ${r.g}">${GLABEL[r.g]}</span><hr class="rule"><p class="body">${esc(d)}</p>
+    ${typeBox(r)}
+    ${nickBox(r)}
     ${r.t ? profile(r.t) : ''}
     ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
@@ -585,6 +618,200 @@ function chooseResult(g, tstr, q) {
   view.append(hint, row);
 }
 
+function morePage() {
+  setBar({ back: true });
+  view.classList.add('scroll');
+  const items = [
+    ['#/group', 'Group compatibility', 'Who suits whom in your friend group, office or wedding party'],
+    ['#/compare', 'Compare two names', 'Personality profiles side by side'],
+    ['#/choose', 'Choose a name by personality', 'Find names to match the traits you want'],
+    ['#/pet', 'Name your pet, boat or car', 'Pick its personality, get a name'],
+    ['#/famous', 'Famous couples', 'How the great romances of history and fiction rate'],
+    ['#/custom', 'Get your name written up', 'Not in SPASM? David will write yours'],
+  ];
+  view.innerHTML = `${logo()}<h1>More fun</h1>` + items.map(([h, t, d]) => `<a class="more-item" href="${h}"><b>${t}</b><span>${d}</span></a>`).join('');
+}
+
+function groupForm() {
+  setBar({ back: true, help: 'group' });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Group compatibility</h1><p class="hint" style="font-size:15px">Add up to 12 people and SPASM ranks every pairing.</p><div id="people"></div>`;
+  const people = $('#people');
+  const pickers = [];
+  const add = (name = '', g = 'F') => {
+    const p = picker({ label: `Person ${pickers.length + 1}`, g, name, id: 'gp' + pickers.length });
+    pickers.push(p); people.append(p.el);
+  };
+  const me = meRecord();
+  add(me ? me.n : '', me ? me.g : 'F'); add('', 'M'); add('', 'F');
+  const more = document.createElement('button');
+  more.className = 'btn secondary'; more.textContent = '+ Add someone';
+  more.onclick = () => { if (pickers.length < 12) add(); if (pickers.length >= 12) more.remove(); };
+  const go = document.createElement('button');
+  go.className = 'btn'; go.textContent = 'Rank the pairings';
+  go.onclick = () => {
+    const filled = pickers.filter((p) => p.el.querySelector('input').value.trim());
+    const recs = filled.map((p) => p.get());
+    if (recs.some((r) => !r)) return;
+    if (recs.length < 2) { toast('Add at least two people'); return; }
+    location.hash = '#/group/' + recs.map((r) => `${r.g}:${enc(r.n)}`).join(',');
+  };
+  view.append(more, go);
+}
+
+function groupResult(list) {
+  const people = list.split(',').map((x) => { const [g, ...n] = x.split(':'); return E.find(decodeURIComponent(n.join(':')), g); }).filter(Boolean);
+  if (people.length < 2) return groupForm();
+  view.classList.add('scroll');
+  const pairs = E.group(people);
+  const best = pairs[0], worst = pairs[pairs.length - 1];
+  const shareText = `SPASM says the best match in our group is ${best.A.n} and ${best.B.n} (${pct(best.overall)}). The worst: ${worst.A.n} and ${worst.B.n} (${pct(worst.overall)}).`;
+  setBar({ back: true, help: 'group', share: cardSharer({ kicker: 'Group compatibility', title: `${best.A.n} + ${best.B.n}`, score: pct(best.overall), scoreLabel: 'Best match', list: pairs.slice(0, 6).map((p) => `${p.A.n} + ${p.B.n}`) }, shareText) });
+  const cell = (v) => `<td style="background:hsla(${Math.round(v * 120)},70%,45%,.55)">${Math.round(v * 100)}</td>`;
+  const grid = `<div class="grid-wrap"><table class="gtable"><tr><th></th>${people.map((p) => `<th>${esc(p.n)}</th>`).join('')}</tr>${people.map((p, i) => `<tr><th>${esc(p.n)}</th>${people.map((q, j) => {
+    if (i === j) return '<td class="self"></td>';
+    const pr = pairs.find((x) => (x.i === i && x.j === j) || (x.i === j && x.j === i));
+    return cell(pr.overall);
+  }).join('')}</tr>`).join('')}</table></div>`;
+  view.innerHTML = `${logo()}<h1>Group compatibility</h1><p class="for-line">Overall = average of couple and sexual compatibility</p>
+    <ol class="ranked">${pairs.map((p) => `<li><a href="#/compat/${p.A.g}/${enc(p.A.n)}/${p.B.g}/${enc(p.B.n)}"><span>${esc(p.A.n)} + ${esc(p.B.n)}</span><b>${pct(p.overall)}</b></a></li>`).join('')}</ol>
+    <h2>Grid</h2>${grid}<a class="btn secondary" href="#/group">Start again</a>`;
+}
+
+function compareForm() {
+  setBar({ back: true });
+  view.innerHTML = `${logo()}<h1>Compare two names</h1>`;
+  const me = meRecord();
+  const a = picker({ label: 'First name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
+  const b = picker({ label: 'Second name', g: 'F', id: 'n2' });
+  const go = document.createElement('button');
+  go.className = 'btn'; go.textContent = 'Compare';
+  go.onclick = () => { const A = a.get(), B = b.get(); if (A && B) location.hash = `#/compare/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}`; };
+  view.append(a.el, b.el, go);
+}
+
+function compareResult(gA, nA, gB, nB) {
+  const A = E.find(nA, gA), B = E.find(nB, gB);
+  if (!A) return notFound(nA, gA);
+  if (!B) return notFound(nB, gB);
+  setBar({ back: true });
+  view.classList.add('scroll');
+  const w = (r, i) => (r.t ? Math.round(r.t[i] / 5 * 100) : 0);
+  const rows = TRAITS.map((t, i) => `<div class="cmp-row"><span class="tl">${t}</span>
+      <span class="tb a"><span style="width:${w(A, i)}%"></span></span>
+      <span class="tb b"><span style="width:${w(B, i)}%"></span></span></div>`).join('');
+  view.innerHTML = `${logo()}<h1>${esc(A.n)} vs ${esc(B.n)}</h1>
+    <div class="cmp-legend"><span class="ka"></span>${esc(A.n)} <span class="kb"></span>${esc(B.n)}</div>
+    <div class="cmp-types"><div><b>${esc(A.n)}</b><br>${ENNEA[A.e][0]}<br><span class="hint">${SEXTYPE[A.s][0]}</span></div><div><b>${esc(B.n)}</b><br>${ENNEA[B.e][0]}<br><span class="hint">${SEXTYPE[B.s][0]}</span></div></div>
+    ${rows}
+    <div class="btn-row"><a class="btn secondary" href="#/meaning/${A.g}/${enc(A.n)}">${esc(A.n)}</a><a class="btn secondary" href="#/meaning/${B.g}/${enc(B.n)}">${esc(B.n)}</a></div>
+    <a class="btn" href="#/compat/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}">Their romantic compatibility</a>`;
+}
+
+const PETS = [['dog', 'Dog'], ['cat', 'Cat'], ['horse', 'Horse'], ['bird', 'Bird'], ['boat', 'Boat'], ['car', 'Car'], ['other', 'Something else']];
+const PET_WORDS = ['Charming', 'Unpredictable', 'Sensitive', 'Adventurous', 'Hard-working', 'Clever', 'Funny', 'Soulful', 'Bossy', 'Generous'];
+
+function petForm() {
+  setBar({ back: true, help: 'pet' });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Name your pet, boat or car</h1>
+    <div class="field"><label>What are you naming?</label><div class="chips pick" id="ptype">${PETS.map(([k, l], i) => `<button class="chip${i === 0 ? ' on' : ''}" data-k="${k}">${l}</button>`).join('')}</div></div>
+    <div class="field"><label>Boy, girl or either?</label><div class="toggle wide" id="pg"><button data-g="M">Boy</button><button data-g="F">Girl</button><button data-g="X" class="on">Either</button></div></div>
+    <div class="field"><label>Pick up to three words for its personality</label><div class="chips pick" id="pwords">${PET_WORDS.map((w, i) => `<button class="chip" data-i="${i}">${w}</button>`).join('')}</div></div>
+    <button class="btn" id="go">Find names</button>`;
+  const one = (box) => (e) => { const b = e.target.closest('button'); if (!b) return; box.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); };
+  $('#ptype').onclick = one($('#ptype'));
+  $('#pg').onclick = one($('#pg'));
+  $('#pwords').onclick = (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (!b.classList.contains('on') && $('#pwords').querySelectorAll('.on').length >= 3) { toast('Three is plenty'); return; }
+    b.classList.toggle('on');
+  };
+  $('#go').onclick = () => {
+    const words = [...$('#pwords').querySelectorAll('.on')].map((b) => b.dataset.i);
+    if (!words.length) { toast('Pick at least one word'); return; }
+    location.hash = `#/pet/${$('#ptype .on').dataset.k}/${$('#pg .on').dataset.g}/${words.join('-')}`;
+  };
+}
+
+function petResult(kind, g, words, q) {
+  const picked = words.split('-').map(Number).filter((n) => n >= 0 && n < 10);
+  const label = (PETS.find(([k]) => k === kind) || PETS[6])[1].toLowerCase();
+  const base = `#/pet/${kind}/${g}/${words}`;
+  let rows = null;
+  if (q.get('n')) {
+    rows = q.get('n').split(',').map((x) => { const [gg, ...n] = decodeURIComponent(x).split(':'); return E.find(n.join(':'), gg); }).filter(Boolean);
+    if (!rows.length) rows = null;
+  }
+  if (!rows) {
+    rows = E.petNames(g === 'M' || g === 'F' ? g : 'X', picked);
+    history.replaceState(null, '', `${base}?n=${rows.map((r) => enc(r.g + ':' + r.n)).join(',')}`);
+  }
+  const traits = picked.map((i) => PET_WORDS[i].toLowerCase()).join(', ');
+  setBar({ back: true, help: 'pet', share: cardSharer({ kicker: `Names for a ${traits} ${label}`, title: 'SPASM pet names', list: rows.map((r) => r.n) }, `SPASM's names for my ${traits} ${label}: ${rows.map((r) => r.n).join(', ')}`) });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Names for your ${esc(label)}</h1><p class="for-line">${esc(traits)}</p>`;
+  view.append(nameList(rows, { fav: 'names', favLabel: (r) => `${r.n} (for the ${label})` }));
+  const row = document.createElement('div');
+  row.className = 'btn-row';
+  row.innerHTML = `<a class="btn secondary" href="#/pet">Start again</a><button class="btn">Refresh list</button>`;
+  $('button', row).onclick = () => { location.hash = base; };
+  view.append(row);
+}
+
+const FAMOUS = [
+  ['Romeo', 'M', 'Juliet', 'F', 'Shakespeare'], ['Romeo', 'M', 'Rosaline', 'F', 'Before Juliet'],
+  ['Antony', 'M', 'Cleopatra', 'F', 'Ancient Egypt'], ['Albert', 'M', 'Victoria', 'F', 'Royalty'],
+  ['Adam', 'M', 'Eve', 'F', 'The original couple'], ['Clyde', 'M', 'Bonnie', 'F', 'Outlaws'],
+  ['Edward', 'M', 'Jane', 'F', 'Jane Eyre'], ['Rhett', 'M', 'Scarlett', 'F', 'Gone with the Wind'],
+  ['Arthur', 'M', 'Guinevere', 'F', 'Camelot'], ['Paris', 'M', 'Helen', 'F', 'Troy'],
+  ['Samson', 'M', 'Delilah', 'F', 'The Bible'], ['Odysseus', 'M', 'Penelope', 'F', 'The Odyssey'],
+  ['Henry', 'M', 'Anne', 'F', 'The Tudors'], ['Jack', 'M', 'Jill', 'F', 'Up the hill'], ['Fred', 'M', 'Wilma', 'F', 'Bedrock'],
+];
+
+function famousPage() {
+  setBar({ back: true });
+  view.classList.add('scroll');
+  const items = FAMOUS.map(([a, ga, b, gb, note]) => {
+    const A = E.find(a, ga), B = E.find(b, gb);
+    if (!A || !B) return '';
+    const c = E.compatibility(A, B, 0, 0);
+    return `<li><a href="#/compat/${ga}/${enc(a)}/${gb}/${enc(b)}"><span>${esc(a)} + ${esc(b)}<small>${esc(note)}</small></span><b>${pct(c.coupleScore)}</b></a></li>`;
+  }).join('');
+  view.innerHTML = `${logo()}<h1>Famous couples</h1><p class="for-line">Couple compatibility, by first name alone</p><ol class="ranked">${items}</ol>`;
+}
+
+function customPage(q) {
+  setBar({ back: true });
+  view.classList.add('scroll');
+  view.innerHTML = `${logo()}<h1>Get your name written up</h1>
+    <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice.</p>
+    <form id="cust">
+      <div class="field"><label for="cn">Name</label><div class="input-row"><input id="cn" required maxlength="40" value="${esc(q.get('n') || '')}">
+        <div class="toggle"><button type="button" data-g="M">M</button><button type="button" data-g="F">F</button></div></div></div>
+      <div class="field"><label for="cnote">Anything David should know? (optional)</label><textarea id="cnote" maxlength="1000"></textarea></div>
+      <div class="field"><label for="cemail">Your email, so David can send it to you</label><div class="input-row"><input id="cemail" type="email" required maxlength="120"></div></div>
+      <button class="btn" type="submit">${STRIPE_LINK ? 'Continue to payment' : 'Send request'}</button>
+      <p class="hint">${STRIPE_LINK ? 'You pay securely with Stripe, then your email app opens so you can send David the details.' : 'Your email app will open with the request filled in. David will reply with the price and how to pay.'}</p>
+    </form>`;
+  let g = q.get('g') === 'M' ? 'M' : 'F';
+  const setGT = (v) => { g = v; view.querySelectorAll('.toggle button').forEach((x) => x.classList.toggle('on', x.dataset.g === v)); };
+  view.querySelectorAll('.toggle button').forEach((b) => b.onclick = () => setGT(b.dataset.g));
+  setGT(g);
+  $('#cust').onsubmit = (e) => {
+    e.preventDefault();
+    const name = $('#cn').value.trim(), email = $('#cemail').value.trim(), note = $('#cnote').value.trim();
+    const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})`;
+    const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
+    const mail = `mailto:${FEEDBACK}?subject=${enc(subject)}&body=${enc(body)}`;
+    const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}` : '';
+    view.innerHTML = `${logo()}<h1>Nearly done</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab, then send the email that opens here.' : 'Send the email that opens, and David will be in touch.'}</p>
+      <a class="btn" href="${mail}">Open the email again</a>${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn secondary" href="#/">Back to home</a>`;
+    if (pay) window.open(pay, '_blank', 'noopener');
+    location.href = mail;
+  };
+}
+
 function mePage() {
   setBar({ back: true });
   const me = meRecord();
@@ -602,21 +829,33 @@ function mePage() {
   }
 }
 
-async function swipePage(gA, nA, gB, nB, babyG) {
+async function swipePage(gA, nA, gB, nB, babyG, q) {
   const A = E.find(nA, gA), B = E.find(nB, gB);
   if (!A) return notFound(nA, gA);
   if (!B) return notFound(nB, gB);
   const kind = babyG === 'M' ? 'boys' : 'girls';
   setBar({ back: true, help: 'bub' });
-  const pool = E.bubPool(A, B, babyG);
-  const liked = [];
+  const pool = E.bubPoolShared(A, B, babyG);
+  const theirs = new Set((q.get('with') || '').split(',').filter(Boolean).map((n) => decodeURIComponent(n).toLowerCase()));
+  const partnerMode = theirs.size > 0;
+  const liked = [], matches = [];
   let i = 0;
   view.innerHTML = `${logo()}<p class="for-line">${kind[0].toUpperCase() + kind.slice(1)} names for ${esc(A.n)} and ${esc(B.n)}</p>
     <div class="swipe-stage"><div class="swipe-card" id="card"></div></div>
     <div class="swipe-btns"><button class="nope" aria-label="Skip">&times;</button><button class="yep" aria-label="Like">${ICON.hearts}</button></div>
     <p class="hint" style="text-align:center">Swipe right to shortlist, left to skip. <span id="left"></span></p>
+    <button class="btn secondary slim" id="sendp">${partnerMode ? 'Send my likes back to my partner' : 'Swipe with your partner'}</button>
+    ${partnerMode ? `<h2>Matches with your partner <small id="mcount" style="color:var(--pink)">0</small></h2><div id="matches" class="chips"></div>` : ''}
     <h2>Shortlist <small id="count" style="color:var(--muted)">0</small></h2><ul class="list" id="short"></ul>`;
   const card = $('#card'), short = $('#short');
+  $('#sendp').onclick = () => {
+    const url = `${location.origin}/#/swipe/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}/${babyG}?with=${liked.map((r) => enc(r.n)).join(',')}`;
+    const text = liked.length
+      ? `I've liked ${liked.length} ${kind} names on SPASM. Swipe through the same list and see which ones we both like:`
+      : `Let's pick ${kind} names together on SPASM. Swipe through this list and see which ones we both like:`;
+    if (navigator.share) navigator.share({ title: 'SPASM baby names', text, url }).catch(() => {});
+    else navigator.clipboard.writeText(`${text} ${url}`).then(() => toast('Link copied, send it to your partner'), () => prompt('Send this link to your partner', url));
+  };
   const show = async () => {
     $('#left').textContent = `${pool.length - i} to go.`;
     if (i >= pool.length) { card.innerHTML = '<div class="swipe-name">That\'s every name</div><p class="swipe-desc">Your shortlist is below and saved in favourites.</p>'; return; }
@@ -634,6 +873,12 @@ async function swipePage(gA, nA, gB, nB, babyG) {
       addFavQuiet('bub', `${r.n} (for ${A.n} and ${B.n})`, `#/meaning/${r.g}/${enc(r.n)}`);
       short.insertAdjacentHTML('beforeend', `<li><a class="name" href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a></li>`);
       $('#count').textContent = liked.length;
+      if (theirs.has(r.n.toLowerCase())) {
+        matches.push(r);
+        $('#mcount').textContent = matches.length;
+        $('#matches').insertAdjacentHTML('beforeend', `<a class="chip match" href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`);
+        toast(`It's a match! You both like ${r.n}`);
+      }
     }
     card.style.transition = 'transform .25s, opacity .25s';
     card.style.transform = `translateX(${like ? 140 : -140}%) rotate(${like ? 18 : -18}deg)`;
@@ -654,7 +899,7 @@ function notFound(name, g) {
   setBar({ back: true });
   const sims = GLABEL[g] ? E.similar(name, g) : [];
   if (GLABEL[g]) logMiss(name, g);
-  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/submit?n=${enc(name)}&g=${g}">Submit a name to be added to SPASM</a><a class="btn secondary" href="#/">Home</a>`;
+  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/submit?n=${enc(name)}&g=${g}">Submit a name to be added to SPASM</a><a class="btn secondary" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David</a><a class="btn secondary" href="#/">Home</a>`;
 }
 
 // ---------- router ----------
@@ -678,11 +923,51 @@ function route() {
     case 'submit': return submitPage(q);
     case 'me': return mePage();
     case 'choose': return a.length >= 2 ? chooseResult(a[0], a[1], q) : chooseForm(q);
-    case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4]) : bubForm();
+    case 'swipe': return a.length >= 5 ? swipePage(a[0], a[1], a[2], a[3], a[4], q) : bubForm();
+    case 'more': return morePage();
+    case 'group': return a.length >= 1 ? groupResult(a[0]) : groupForm();
+    case 'compare': return a.length >= 4 ? compareResult(a[0], a[1], a[2], a[3]) : compareForm();
+    case 'pet': return a.length >= 3 ? petResult(a[0], a[1], a[2], q) : petForm();
+    case 'famous': return famousPage();
+    case 'custom': return customPage(q);
     default: return home();
   }
 }
 
 boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. Check your connection and refresh.</p>'; $('#splash')?.remove(); });
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+// ---------- updates ----------
+// Installed copies check for a new release whenever they're opened or brought back to the front.
+// Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
+const APP_VERSION = 13;
+let updateShown = false;
+function showUpdate() {
+  if (updateShown) return;
+  updateShown = true;
+  if (document.visibilityState === 'hidden') { location.reload(); return; }
+  const bar = document.createElement('button');
+  bar.id = 'updatebar';
+  bar.textContent = 'SPASM has been updated. Tap to refresh.';
+  bar.onclick = () => location.reload();
+  document.body.append(bar);
+  // if they leave the app, refresh quietly so it's current when they come back
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') location.reload(); }, { once: true });
+}
+async function checkForUpdate(reg) {
+  try {
+    const r = await fetch('/version.json', { cache: 'no-store' });
+    const { v } = await r.json();
+    if (v > APP_VERSION) { if (reg) reg.update().catch(() => {}); showUpdate(); }
+  } catch { /* offline */ }
+}
+if ('serviceWorker' in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) showUpdate(); });
+  navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((reg) => {
+    checkForUpdate(reg);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { reg.update().catch(() => {}); checkForUpdate(reg); } });
+    setInterval(() => { reg.update().catch(() => {}); checkForUpdate(reg); }, 30 * 60 * 1000);
+  }).catch(() => checkForUpdate(null));
+} else {
+  checkForUpdate(null);
+}

@@ -55,3 +55,9 @@ console.log('funny, unspiritual men ->', picks.map(r => r.n + ' ' + r.t[6] + '/'
 const common = E.chooseNames('F', [5,5,5,5,5,5,5,5,5,5], true);
 assert.ok(common.length === 7 && common.every(r => r.c === 'a'));
 console.log('all-5 common women ->', common.map(r => r.n).join(', '));
+// shared pool is the same whichever parent comes first
+const p1 = E.bubPoolShared(ian, nic, 'F').map(r => r.n), p2 = E.bubPoolShared(nic, ian, 'F').map(r => r.n);
+assert.deepEqual(p1, p2); assert.equal(p1.length, 330);
+const grp = E.group([ian, nic, taj, val]); assert.equal(grp.length, 6); assert.ok(grp[0].overall >= grp[5].overall);
+const pets = E.petNames('X', [6, 1]); assert.equal(pets.length, 7);
+console.log('group best', grp[0].A.n, '+', grp[0].B.n, grp[0].overall, '| funny spontaneous pet ->', pets.map(r => r.n).join(', '));

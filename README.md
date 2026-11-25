@@ -17,6 +17,10 @@ Then bump `DATA_VERSION` in `public/js/app.js` so phones fetch the new data.
 
 `npm run export-csv` writes all names to `exports/spasm_names.csv`.
 
+## Releasing
+
+Run `python3 scripts/bump_version.py` before every push. Installed copies check `version.json` when opened or brought to the front, show an "updated, tap to refresh" bar, and refresh themselves when backgrounded. Nobody has to reinstall.
+
 ## Local
 
     npm run dev      # wrangler dev
@@ -38,3 +42,7 @@ The site is an installable PWA, so it can be listed on Google Play as a Trusted 
 1. Go to pwabuilder.com, enter the live URL, and choose Package for stores > Android. Use package ID `pro.spasm.app` (or similar) and keep the signing key it generates somewhere safe.
 2. Copy the `assetlinks.json` PWABuilder produces into `public/.well-known/assetlinks.json` and push, so the app opens without a browser bar.
 3. Upload the `.aab` in Google Play Console (one-off US$25 developer fee). Store screenshots are in `public/img/screen-1.png` to `screen-4.png`, the icon is `public/img/icon-512.png`.
+
+## Credits
+
+Nickname links from github.com/carltonnorthern/nicknames (Apache License 2.0), filtered to names in SPASM. Comfortaa font (SIL Open Font License).
