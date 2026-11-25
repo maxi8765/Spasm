@@ -846,12 +846,15 @@ function groupResult(list) {
   const verdict = groupVerdict(pairs.score);
   const shareText = `Our group scored ${pct(pairs.score)} on SPASM: ${verdict}. Best mates: ${best.A.n} and ${best.B.n} (${pct(best.overall)}). Keep apart: ${worst.A.n} and ${worst.B.n} (${pct(worst.overall)}).`;
   setBar({ back: true, help: 'group', share: cardSharer({ kicker: 'Group friendship score', title: people.map((p) => p.n).join(', '), score: pct(pairs.score), scoreLabel: verdict, list: pairs.slice(0, 6).map((p) => `${p.A.n} + ${p.B.n}`) }, shareText) });
-  const cell = (v) => `<td style="background:hsla(${Math.round(v * 120)},70%,45%,.55)">${Math.round(v * 100)}</td>`;
+  // green / yellow / orange / red bands
+  const band = (v) => (v >= 0.75 ? '#1f9d55' : v >= 0.6 ? '#d4b106' : v >= 0.45 ? '#e8742a' : '#d63a3a');
+  const cell = (v) => `<td style="background:${band(v)};color:#fff">${Math.round(v * 100)}</td>`;
   const grid = `<div class="grid-wrap"><table class="gtable"><tr><th></th>${people.map((p) => `<th>${esc(p.n)}</th>`).join('')}</tr>${people.map((p, i) => `<tr><th>${esc(p.n)}</th>${people.map((q, j) => {
     if (i === j) return '<td class="self"></td>';
     const pr = pairs.find((x) => (x.i === i && x.j === j) || (x.i === j && x.j === i));
     return cell(pr.overall);
-  }).join('')}</tr>`).join('')}</table></div>`;
+  }).join('')}</tr>`).join('')}</table></div>
+    <div class="glegend"><span style="background:#1f9d55"></span>75+ <span style="background:#d4b106"></span>60-74 <span style="background:#e8742a"></span>45-59 <span style="background:#d63a3a"></span>under 45</div>`;
   view.innerHTML = `${logo()}<h1>Group compatibility</h1>
     <div class="group-score"><span class="gs-num">${pct(pairs.score)}</span><span class="gs-label">${verdict}</span></div>
     <p class="for-line">How well this group gets on as friends. Best mates: ${esc(best.A.n)} and ${esc(best.B.n)}. Keep apart: ${esc(worst.A.n)} and ${esc(worst.B.n)}.</p>
@@ -1254,7 +1257,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 36;
+const APP_VERSION = 37;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

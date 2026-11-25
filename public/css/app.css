@@ -314,3 +314,5 @@ main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purp
 .group-score { display: flex; align-items: baseline; gap: 14px; margin: 4px 0 6px; }
 .group-score .gs-num { font-size: 56px; font-weight: 700; color: #fff; }
 .group-score .gs-label { font-size: 20px; font-weight: 700; color: #f04e98; }
+.glegend { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 8px 0 16px; }
+.glegend span { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-left: 6px; }

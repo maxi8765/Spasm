@@ -62,7 +62,7 @@ export const HELP = {
   group: `<h2>Group compatibility</h2>
 <h3>HOW TO USE THIS PAGE</h3>
 <p>Add up to twelve people, choosing each name from the pop-up list and nominating their gender. SPASM rates how well every pair would get on as friends and lists them from best to worst, then gives the whole group a score. Friendship is worked out from each pair's personality types and how closely they match on charisma, spontaneity, emotional savvy, humour and generosity. Romance and sex don't come into it.</p>
-<p>Tap any pairing to compare the two side by side. The grid shows every pairing at a glance: green is good, red is trouble.</p>
+<p>Tap any pairing to compare the two side by side. The grid shows every pairing at a glance: green is great, yellow is fine, orange is shaky and red is trouble.</p>
 <h3>IMPORTANT POINTS</h3>
 <p>${SHARE}</p>${SCIENCE}`,
   pet: `<h2>Name your pet, boat or car</h2>
