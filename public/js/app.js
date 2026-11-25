@@ -90,9 +90,9 @@ function toast(msg) {
   t.textContent = msg; t.hidden = false;
   clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 2200);
 }
-function sharer(title, text) {
+function sharer(title, text, link) {
   return async () => {
-    const url = location.href;
+    const url = link || location.href;
     if (navigator.share) {
       try { await navigator.share({ title: 'SPASM: ' + title, text, url }); } catch { /* cancelled */ }
       return;
@@ -213,7 +213,7 @@ function nameList(rows, opts = {}) {
 
 // ---------- pages ----------
 function home() {
-  setBar({ help: 'home' });
+  setBar({ help: 'home', share: sharer('What does your name say about you?', 'SPASM describes your personality just from your name, rates the romantic compatibility of any two people, suggests baby names and tells you who to kiss, marry or avoid.', location.origin + '/') });
   view.innerHTML = `<div class="grid">
     <a class="tile" href="#/meaning" style="color:var(--blue)">${ICON.head}<span style="color:#fff">What does that name mean?<br>(Based on the Name Theory&trade;)</span></a>
     <a class="tile" href="#/compat" style="color:var(--blue)">${ICON.hearts}<span style="color:#fff">Romantic compatibility</span></a>
