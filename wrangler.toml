@@ -7,6 +7,10 @@ directory = "./public"
 binding = "ASSETS"
 run_worker_first = ["/api/*"]
 
+# Every morning at 7:30am Brisbane time (21:30 UTC), tell spasm.pages.dev to send the name of the day
+[triggers]
+crons = ["30 21 * * *"]
+
 # Optional: KV namespace for "submit a name"
 # (npx wrangler kv namespace create NAME_SUBMISSIONS, then paste the id)
 # [[kv_namespaces]]
