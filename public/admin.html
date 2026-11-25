@@ -33,6 +33,7 @@ nav.tabs{display:flex;gap:8px;margin:10px 0}nav.tabs button{background:#2c2b3b}n
 <header><a href="/"><img src="/img/logo.png" alt="SPASM"></a></header>
 <main>
 <h1>SPASM admin</h1>
+<div id="dbbar" class="row hidden"><button class="sec" id="dbcsv">Download the full name database (CSV)</button><span id="dbmsg" class="muted"></span></div>
 <form id="f" class="row"><input id="k" type="password" placeholder="Admin password" autocomplete="current-password"> <button>Sign in</button></form>
 <p id="msg" class="muted"></p>
 
@@ -241,6 +242,33 @@ $('#csv').onclick = () => {
   a.download = 'spasm-submissions.csv'; a.click();
 };
 
+// Full name database: built-in names plus David's additions (his version wins), with descriptions
+$('#dbcsv').onclick = async () => {
+  const msg = $('#dbmsg'); msg.className = 'muted'; msg.textContent = 'Building the file...';
+  try {
+    const [rows, extra] = await Promise.all([
+      fetch('/data/names.json?v=2').then((r) => r.json()),
+      fetch('/api/admin/names?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()).then((j) => j.names || []),
+    ]);
+    const shardKey = (n, g) => { const L = n[0].toUpperCase(); return g + '-' + (L >= 'A' && L <= 'Z' ? L : '_'); };
+    const keys = [...new Set(rows.map((r) => shardKey(r[0], r[1])))];
+    const shards = Object.fromEntries(await Promise.all(keys.map(async (k) => [k, await fetch(`/data/desc/${k}.json?v=2`).then((r) => r.json()).catch(() => ({}))])));
+    const added = new Map(extra.map((r) => [r.g + ':' + r.n.toLowerCase(), r]));
+    const out = rows.filter((r) => !added.has(r[1] + ':' + r[0].toLowerCase())).map((r) => {
+      const t = [...r[5]].map((c) => (c === 'A' ? 10 : +c));
+      return { n: r[0], g: r[1], c: r[2], e: r[3], s: r[4], t, score: t.reduce((a, b) => a + b, 0), d: shards[shardKey(r[0], r[1])]?.[r[0]] || '', src: 'Original' };
+    }).concat(extra.map((r) => ({ ...r, src: 'Added ' + (r.at || '').slice(0, 10) })));
+    out.sort((a, b) => a.n.localeCompare(b.n) || a.g.localeCompare(b.g));
+    const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+    const head = ['Name', 'Gender', 'Common (a) / unusual (z)', ...TRAITS, 'Hocko score', 'Enneagram type', 'Sexual adventurer type', 'Description', 'Source'];
+    const lines = [head.map(q).join(',')].concat(out.map((r) => [r.n, r.g === 'M' ? 'Male' : 'Female', r.c, ...r.t, r.score, r.e, r.s, r.d, r.src].map(q).join(',')));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv' }));
+    a.download = `spasm-names-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+    msg.textContent = `${out.length.toLocaleString()} names downloaded.`;
+  } catch { msg.className = 'err'; msg.textContent = 'Sorry, the download failed. Try again.'; }
+};
+
 $('#f').onsubmit = async (e) => {
   e.preventDefault();
   key = $('#k').value;
@@ -249,7 +277,7 @@ $('#f').onsubmit = async (e) => {
   const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
   if (!r.ok) { m.className = 'err'; m.textContent = j.error; return; }
   try { sessionStorage.setItem('spasm.admin', key); } catch {}
-  m.textContent = ''; $('#f').classList.add('hidden'); $('#app').classList.remove('hidden');
+  m.textContent = ''; $('#f').classList.add('hidden'); $('#app').classList.remove('hidden'); $('#dbbar').classList.remove('hidden');
   await loadAll();
 };
 if ($('#k').value) $('#f').requestSubmit();
