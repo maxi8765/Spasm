@@ -285,3 +285,12 @@ main.home .custom-link { margin: 8px 0 0; background: linear-gradient(90deg, var
 
 main.home .home-more .btn, main.home .custom-link { padding: 11px 6px; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-height: 700px) { main.home .home-more .btn, main.home .custom-link { padding: 9px 6px; font-size: 14px; } main.home .tile { font-size: 14px; } }
+
+/* home: every feature as a tile, all on one screen */
+main.home .home-grid { grid-template-rows: repeat(5, 1fr); gap: 10px; }
+main.home .home-grid .tile { padding: 8px 8px; justify-content: center; gap: 6px; font-size: 14px; line-height: 1.2; border-radius: 16px; color: var(--blue); }
+main.home .home-grid .tile span { color: #fff; }
+main.home .home-grid .tile svg { height: 42%; max-height: 64px; width: auto; }
+main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; }
+.daily-me { margin-left: auto; color: var(--muted); font-size: 13px; }
+@media (max-height: 700px) { main.home .home-grid .tile { font-size: 12.5px; gap: 4px; } main.home .daily { padding: 6px 14px; } main.home .daily-n { font-size: 19px; } main.home .home-grid { gap: 8px; } }

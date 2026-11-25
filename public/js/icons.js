@@ -13,5 +13,11 @@ export const ICON = {
   kiss: s('<path d="M8 32c6-8 14-12 18-9 3 2 3 2 6 0s3-2 6 0c4-3 12 1 18 9-6 9-14 13-24 13S14 41 8 32z"/><path d="M8 32c10 2 18 2 24 0s14-2 24 0"/>', 'stroke-width="3.5"'),
   ring: s('<circle cx="32" cy="40" r="15"/><path d="m24 14 8-8 8 8-8 10z"/>', 'stroke-width="3.5"'),
   avoid: s('<circle cx="32" cy="32" r="22"/><path d="m16 16 32 32"/>', 'stroke-width="4"'),
+  sliders: s('<path d="M12 18h40M12 32h40M12 46h40"/><circle cx="24" cy="18" r="5" fill="#1b1a26"/><circle cx="40" cy="32" r="5" fill="#1b1a26"/><circle cx="28" cy="46" r="5" fill="#1b1a26"/>', 'stroke-width="4"'),
+  group: s('<circle cx="22" cy="22" r="7"/><circle cx="42" cy="22" r="7"/><circle cx="32" cy="36" r="7"/><path d="M10 50c1-7 6-11 12-11M54 50c-1-7-6-11-12-11M20 58c1-7 6-11 12-11s11 4 12 11"/>', 'stroke-width="3.5"'),
+  bars: s('<path d="M12 18h28M12 28h40M12 38h20M12 48h34"/>', 'stroke-width="5"'),
+  paw: s('<ellipse cx="32" cy="42" rx="11" ry="9"/><circle cx="18" cy="28" r="5"/><circle cx="26" cy="18" r="5"/><circle cx="38" cy="18" r="5"/><circle cx="46" cy="28" r="5"/>', 'stroke-width="3.5"'),
+  star: s('<path d="m32 8 7 15 16 2-12 11 3 16-14-8-14 8 3-16L9 25l16-2z"/>', 'stroke-width="3.5"'),
+  pen: s('<path d="M44 10 54 20 24 50l-13 3 3-13z"/><path d="m38 16 10 10"/>', 'stroke-width="3.5"'),
   refresh: s('<path d="M50 30a18 18 0 1 0-5 13"/><path d="M50 14v16H34"/>', 'stroke-width="4"'),
 };

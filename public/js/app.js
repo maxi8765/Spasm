@@ -269,17 +269,21 @@ function home() {
   setBar({ help: 'home', share: sharer('What does your name say about you?', 'SPASM describes your personality just from your name, rates the romantic compatibility of any two people, suggests baby names and tells you who to kiss, marry or avoid.', location.origin + '/') });
   const me = meRecord(), nd = E.nameOfDay();
   view.className = 'home';
+  const tiles = [
+    ['#/meaning', ICON.head, 'What does that name mean?'],
+    ['#/compat', ICON.hearts, 'Romantic compatibility'],
+    ['#/bub', ICON.baby, 'Your best bub names?'],
+    ['#/kma', ICON.balloons, 'Kiss, marry or avoid'],
+    ['#/choose', ICON.sliders, 'Choose a name by personality'],
+    ['#/group', ICON.group, 'Group compatibility'],
+    ['#/compare', ICON.bars, 'Compare two names'],
+    ['#/pet', ICON.paw, 'Name your pet, boat or car'],
+    ['#/famous', ICON.star, 'Famous couples'],
+    ['#/custom', ICON.pen, `Get your name written up${STRIPE_LINK ? ` (${PRICE})` : ''}`, 'paid'],
+  ];
   view.innerHTML = `
-  <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span></a>
-  ${me ? `<p class="hello">Hi ${esc(me.n)}. <a href="#/meaning/${me.g}/${enc(me.n)}">Your name</a> &middot; <a href="#/me">change</a></p>` : `<p class="hello"><a href="#/me">Tell SPASM your name</a> to save typing it every time.</p>`}
-  <div class="grid">
-    <a class="tile" href="#/meaning" style="color:var(--blue)">${ICON.head}<span style="color:#fff">What does that name mean?<br>(Based on the Name Theory&trade;)</span></a>
-    <a class="tile" href="#/compat" style="color:var(--blue)">${ICON.hearts}<span style="color:#fff">Romantic compatibility</span></a>
-    <a class="tile" href="#/bub" style="color:var(--blue)">${ICON.baby}<span style="color:#fff">Your best bub names?</span></a>
-    <a class="tile" href="#/kma" style="color:var(--blue)">${ICON.balloons}<span style="color:#fff">Kiss, marry or avoid</span></a>
-  </div>
-  <div class="btn-row home-more"><a class="btn slim" href="#/choose">Choose a name</a><a class="btn slim secondary" href="#/more">More fun</a></div>
-  <a class="btn slim custom-link" href="#/custom">Get your name written up${STRIPE_LINK ? ` (${PRICE})` : ''}</a>
+  <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span>${me ? `<span class="daily-me">Hi ${esc(me.n)}</span>` : ''}</a>
+  <div class="grid home-grid">${tiles.map(([h, ic, t, cls]) => `<a class="tile${cls ? ' ' + cls : ''}" href="${h}">${ic}<span>${esc(t)}</span></a>`).join('')}</div>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
@@ -1000,7 +1004,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 22;
+const APP_VERSION = 23;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
