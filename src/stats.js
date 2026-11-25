@@ -83,7 +83,8 @@ async function sha256(s) {
   return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
 export async function weeklyReport(request, env) {
-  const t = new URL(request.url).searchParams.get('t') || '';
+  const u = new URL(request.url);
+  const t = u.searchParams.get('t') || u.pathname.split('/')[3] || '';
   if ((await sha256(t)) !== REPORT_HASH) return json({ error: 'Wrong token' }, 403);
   if (!env.STATS) return json({ error: 'The usage database is not connected yet' }, 503);
   const db = env.STATS;

@@ -22,7 +22,7 @@ export default {
     if (url.pathname === '/api/admin/stats') return adminStats(request, env);
     if (url.pathname === '/api/famous') return request.method === 'POST' ? famousAdd(request, env) : famousList(env);
     if (url.pathname === '/api/admin/famous') return famousAdmin(request, env);
-    if (url.pathname === '/api/report') return weeklyReport(request, env);
+    if (url.pathname === '/api/report' || url.pathname.startsWith('/api/report/')) return weeklyReport(request, env);
     if (url.pathname === '/api/push/key') return pushKey(env);
     if (url.pathname === '/api/push/subscribe' && request.method === 'POST') return pushSubscribe(request, env);
     if (url.pathname === '/api/push/unsubscribe' && request.method === 'POST') return pushUnsubscribe(request, env);
