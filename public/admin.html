@@ -101,7 +101,7 @@ const SEX = ['', 'The Homebody', 'The Steady', 'The Curious', 'The Adventurer', 
 const ENNEA_D = ['', 'Principled, purposeful and self-controlled, with a strong sense of right and wrong.', 'Warm, generous and people-pleasing, happiest when needed.', 'Driven, adaptable and image-conscious, built for success.', 'Sensitive, expressive and self-aware, sometimes moody.', 'Curious, private and inventive, more at home with ideas than small talk.', 'Committed, responsible and security-minded, quick to spot trouble.', 'Spontaneous, versatile and fun-seeking, allergic to boredom.', 'Self-confident, decisive and protective, does not back down.', 'Easygoing, accepting and reassuring, avoids conflict at all costs.'];
 const SEX_D = ['', 'Prefers a cup of tea and an early night.', 'Affectionate, reliable, and in no particular hurry.', 'Open to suggestions, within reason.', 'Keen, inventive and rarely short of ideas.', 'Has a Play Cupboard, and is not afraid to use it.'];
 let PARTNER = {};
-fetch('/data/tables.json?v=2').then((r) => r.json()).then((t) => { PARTNER = t.partner || {}; drawRef(); }).catch(drawRef);
+fetch('/data/tables.json?v=3').then((r) => r.json()).then((t) => { PARTNER = t.partner || {}; drawRef(); }).catch(drawRef);
 function drawRef() {
   const band = (e) => { const b = BANDS.find(([, , t]) => t === e); return b ? (b[0] === 1 ? `${b[1]} or less` : b[1] === 60 ? `${b[0]} or more` : `${b[0]} to ${b[1]}`) : ''; };
   const order = BANDS.map(([, , e]) => e);
@@ -136,7 +136,7 @@ $('#traits').addEventListener('input', () => { recalc(); highlightRef(); }); rec
 
 // warn if the name is already in SPASM
 async function checkExists() {
-  if (!builtIn) { try { builtIn = await (await fetch('/data/names.json?v=2')).json(); } catch { builtIn = []; } }
+  if (!builtIn) { try { builtIn = await (await fetch('/data/names.json?v=3')).json(); } catch { builtIn = []; } }
   const n = $('#nn').value.trim().toLowerCase(), g = $('#ng').value;
   const inBuilt = builtIn.some((r) => r[1] === g && r[0].toLowerCase() === n);
   const inAdded = (data?.added || []).some((r) => r.g === g && r.n.toLowerCase() === n);
@@ -248,12 +248,12 @@ $('#dbcsv').onclick = async () => {
   const msg = $('#dbmsg'); msg.className = 'muted'; msg.textContent = 'Building the file...';
   try {
     const [rows, extra] = await Promise.all([
-      fetch('/data/names.json?v=2').then((r) => r.json()),
+      fetch('/data/names.json?v=3').then((r) => r.json()),
       fetch('/api/admin/names?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()).then((j) => j.names || []),
     ]);
     const shardKey = (n, g) => { const L = n[0].toUpperCase(); return g + '-' + (L >= 'A' && L <= 'Z' ? L : '_'); };
     const keys = [...new Set(rows.map((r) => shardKey(r[0], r[1])))];
-    const shards = Object.fromEntries(await Promise.all(keys.map(async (k) => [k, await fetch(`/data/desc/${k}.json?v=2`).then((r) => r.json()).catch(() => ({}))])));
+    const shards = Object.fromEntries(await Promise.all(keys.map(async (k) => [k, await fetch(`/data/desc/${k}.json?v=3`).then((r) => r.json()).catch(() => ({}))])));
     const added = new Map(extra.map((r) => [r.g + ':' + r.n.toLowerCase(), r]));
     const out = rows.filter((r) => !added.has(r[1] + ':' + r[0].toLowerCase())).map((r) => {
       const t = [...r[5]].map((c) => (c === 'A' ? 10 : +c));

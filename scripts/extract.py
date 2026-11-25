@@ -15,6 +15,9 @@ def num(x):
     try: return int(float(str(x).strip()))
     except Exception: return None
 
+import os
+CORR = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'corrections.json')))
+
 names = []
 issues = collections.Counter()
 for sheet, g in (('Data Female','F'),('Data Male','M')):
@@ -27,6 +30,11 @@ for sheet, g in (('Data Female','F'),('Data Male','M')):
         cat = (str(r[2]).strip().lower() if r[2] else '')
         traits = [num(x) for x in r[3:13]]
         score = num(r[13])
+        fix = CORR.get(g+':'+name) if name.lower() not in seen else None
+        if fix:
+            if 'traits' in fix: traits = list(fix['traits']); score = sum(traits); r = list(r); r[23] = None
+            if 'description' in fix and not desc: desc = fix['description']
+            if 'category' in fix: cat = fix['category']
         if score is None and all(t is not None for t in traits): score = sum(traits)
         ennea = num(r[23])
         calc = ennea_from_score(score) if score is not None else None

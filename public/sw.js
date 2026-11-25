@@ -1,7 +1,7 @@
 // Offline support: cache the shell and data files as they are used.
-const CACHE = 'spasm-v32';
+const CACHE = 'spasm-v33';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/engine.js', '/js/help.js', '/js/icons.js', '/js/share.js', '/js/i18n.js', '/js/tattoo.js',
-  '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png', '/paper.html', '/data/names.json?v=2', '/data/tables.json?v=2'];
+  '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png', '/paper.html', '/data/names.json?v=3', '/data/tables.json?v=3'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
@@ -18,7 +18,7 @@ self.addEventListener('fetch', (e) => {
 // ---------- name of the day notifications ----------
 // Same choice as nameOfDay() in js/engine.js, so the notification matches the home screen.
 async function nameOfDay() {
-  const res = await fetch('/data/names.json?v=2');
+  const res = await fetch('/data/names.json?v=3');
   const rows = await res.json();
   const pool = rows.filter((r) => r[2] === 'a');
   const d = new Date();
@@ -34,7 +34,7 @@ async function showDaily() {
     url = `/#/meaning/${g}/${encodeURIComponent(n)}`;
     title = `Name of the day: ${n}`;
     try {
-      const shard = await (await fetch(`/data/desc/${g}-${L >= 'A' && L <= 'Z' ? L : '_'}.json?v=2`)).json();
+      const shard = await (await fetch(`/data/desc/${g}-${L >= 'A' && L <= 'Z' ? L : '_'}.json?v=3`)).json();
       const d = shard[n] || '';
       if (d) body = d.length > 140 ? d.slice(0, 137).replace(/\s+\S*$/, '') + '...' : d;
     } catch { /* keep default body */ }
