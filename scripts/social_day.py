@@ -10,7 +10,7 @@ import base64, datetime, functools, http.server, os, sys, threading
 from playwright.sync_api import sync_playwright
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'public')
-date = sys.argv[1] if len(sys.argv) > 1 else (datetime.datetime.utcnow() + datetime.timedelta(hours=10)).strftime('%Y-%m-%d')
+date = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] else (datetime.datetime.utcnow() + datetime.timedelta(hours=10)).strftime('%Y-%m-%d')
 out = sys.argv[2] if len(sys.argv) > 2 else 'social-out'
 os.makedirs(out, exist_ok=True)
 
