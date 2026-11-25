@@ -103,7 +103,7 @@ export async function renderCard(spec) {
   ctx.fillStyle = '#fff'; ctx.font = '700 38px Comfortaa, sans-serif'; ctx.textAlign = 'center';
   ctx.fillText('What does your name say? ' + SITE, W / 2, H - 52);
   ctx.fillStyle = '#a7a6b8'; ctx.font = '400 24px Comfortaa, sans-serif';
-  ctx.fillText('\u00a9 David Hocking', W / 2, H - 16);
+  ctx.fillText('\u00a9 2026 David Hocking', W / 2, H - 16);
   ctx.textAlign = 'left';
 
   return new Promise((res) => c.toBlob(res, 'image/png'));

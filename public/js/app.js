@@ -257,7 +257,7 @@ function home() {
     <a class="tile" href="#/bub" style="color:var(--blue)">${ICON.baby}<span style="color:#fff">Your best bub names?</span></a>
     <a class="tile" href="#/kma" style="color:var(--blue)">${ICON.balloons}<span style="color:#fff">Kiss, marry or avoid</span></a>
   </div>
-  <p class="copy">&copy; David Hocking</p>`;
+  <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
