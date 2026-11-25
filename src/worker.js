@@ -10,6 +10,7 @@ export default {
       return submitName(request, env);
     }
     if (url.pathname === '/api/miss' && request.method === 'POST') return logMiss(request, env);
+    if (url.pathname === '/api/status') return json({ storage: !!env.NAME_SUBMISSIONS });
     return env.ASSETS.fetch(request);
   },
 };
