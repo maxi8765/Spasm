@@ -22,7 +22,7 @@ let E = null;
 let NICK = {};
 const descCache = new Map();
 // Set this to your Stripe Payment Link (https://buy.stripe.com/...) to take payment for custom write-ups
-const STRIPE_LINK = '';
+const STRIPE_LINK = 'https://buy.stripe.com/7sYcN71N1gBBfTqg1jb7y00';
 
 // ---------- data ----------
 async function boot() {
@@ -786,7 +786,7 @@ function customPage(q) {
   setBar({ back: true });
   view.classList.add('scroll');
   view.innerHTML = `${logo()}<h1>Get your name written up</h1>
-    <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice.</p>
+    <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice${STRIPE_LINK ? ' for A$10' : ''}.</p>
     <form id="cust">
       <div class="field"><label for="cn">Name</label><div class="input-row"><input id="cn" required maxlength="40" value="${esc(q.get('n') || '')}">
         <div class="toggle"><button type="button" data-g="M">M</button><button type="button" data-g="F">F</button></div></div></div>
@@ -997,7 +997,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 18;
+const APP_VERSION = 19;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
