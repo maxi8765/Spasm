@@ -1,5 +1,11 @@
 /data/*
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=86400
+/js/*
+  Cache-Control: no-cache
+/css/*
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache
 /img/*
   Cache-Control: public, max-age=86400
 /*

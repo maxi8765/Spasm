@@ -9,6 +9,7 @@ const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const enc = encodeURIComponent;
 const GLABEL = { M: 'Male', F: 'Female' };
 const FEEDBACK = 'yoohoohocko@gmail.com';
+const DATA_VERSION = 2; // bump whenever public/data changes, so phones fetch the new files
 const MODES = ['kiss', 'marry', 'avoid'];
 const MODE_INFO = {
   kiss: { title: 'Kiss', icon: ICON.kiss, blurb: 'Hook up with' },
@@ -23,8 +24,8 @@ const descCache = new Map();
 async function boot() {
   const started = Date.now();
   const [rows, tables] = await Promise.all([
-    fetch('/data/names.json').then((r) => r.json()),
-    fetch('/data/tables.json').then((r) => r.json()),
+    fetch(`/data/names.json?v=${DATA_VERSION}`).then((r) => r.json()),
+    fetch(`/data/tables.json?v=${DATA_VERSION}`).then((r) => r.json()),
   ]);
   E = createEngine(rows, tables);
   const wait = Math.max(0, 1000 - (Date.now() - started)); // logo shows for 1 second
@@ -36,7 +37,7 @@ async function boot() {
 async function describe(r) {
   const L = r.n[0].toUpperCase();
   const k = r.g + '-' + (L >= 'A' && L <= 'Z' ? L : '_');
-  if (!descCache.has(k)) descCache.set(k, fetch(`/data/desc/${k}.json`).then((x) => x.json()));
+  if (!descCache.has(k)) descCache.set(k, fetch(`/data/desc/${k}.json?v=${DATA_VERSION}`).then((x) => x.json()));
   const shard = await descCache.get(k);
   return shard[r.n] || '';
 }

@@ -13,6 +13,8 @@ To update the data after editing the workbook:
     XLSM="/path/to/Spasm June 2019.xlsm" npm run data
     npm test
 
+Then bump `DATA_VERSION` in `public/js/app.js` so phones fetch the new data.
+
 `npm run export-csv` writes all names to `exports/spasm_names.csv`.
 
 ## Local
