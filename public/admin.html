@@ -4,43 +4,233 @@
 <style>
 body{margin:0;background:#1d1c28;color:#eee;font:15px/1.5 system-ui,sans-serif}
 header{background:#000;padding:12px;text-align:center}header img{height:28px}
-main{max-width:760px;margin:0 auto;padding:16px}
-input,button{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid #4a495d;background:#15141e;color:#fff}
-button{background:#5552ff;border:0;cursor:pointer}
-table{width:100%;border-collapse:collapse;margin:8px 0 24px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid #333}
-th{color:#a7a6b8;font-weight:600}.muted{color:#a7a6b8}.err{color:#ff8a8a}a{color:#c9b8ff}
+main{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+input,button,select,textarea{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid #4a495d;background:#15141e;color:#fff}
+textarea{width:100%;min-height:120px;box-sizing:border-box}
+button{background:#5552ff;border:0;cursor:pointer}button.sec{background:#2c2b3b}button.small{padding:5px 10px;font-size:13px}
+table{width:100%;border-collapse:collapse;margin:8px 0 24px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid #333;vertical-align:top}
+th{color:#a7a6b8;font-weight:600}.muted{color:#a7a6b8}.err{color:#ff8a8a}.ok{color:#7be0a5}a{color:#c9b8ff}
+.card{background:#26253a;border-radius:16px;padding:16px;margin:14px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.row>label{min-width:110px;color:#a7a6b8}
+.trait{display:grid;grid-template-columns:170px 1fr 34px;gap:10px;align-items:center;margin:6px 0}
+.trait input[type=range]{width:100%;accent-color:#a855f7;padding:0}
+.trait b{text-align:right}
+.result{display:flex;gap:18px;flex-wrap:wrap;background:#15141e;border-radius:12px;padding:10px 14px;margin:10px 0}
+.result div{min-width:120px}.result small{display:block;color:#a7a6b8}.result b{font-size:20px}
+nav.tabs{display:flex;gap:8px;margin:10px 0}nav.tabs button{background:#2c2b3b}nav.tabs button.on{background:#a855f7}
+.hidden{display:none}
+#ref table td,#ref table th{font-size:14px}#ref tr.hit td{background:#3a2a5a}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0}
+.kpi{background:#26253a;border-radius:14px;padding:12px 14px}.kpi small{display:block;color:#a7a6b8;font-size:12.5px}.kpi b{font-size:26px}.kpi span{display:block;color:#a7a6b8;font-size:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:640px){.two{grid-template-columns:1fr}}
+.bars{display:flex;align-items:flex-end;gap:3px;height:160px;border-bottom:1px solid #4a495d}
+.bars .d{flex:1;display:flex;align-items:flex-end;gap:1px;height:100%}
+.bars .d i{flex:1;display:block;border-radius:3px 3px 0 0;min-height:1px}
+.a{background:#5552ff}.b{background:#a855f7}.c{background:#f04e98}
+.sw{display:inline-block;width:12px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:middle}
+.blist div{display:grid;grid-template-columns:1fr 50px;gap:8px;margin:5px 0}.blist .bar{grid-column:1/-1;height:6px;background:#2c2b3b;border-radius:3px;overflow:hidden}.blist .bar i{display:block;height:100%;background:#a855f7}
 </style></head><body>
 <header><a href="/"><img src="/img/logo.png" alt="SPASM"></a></header>
 <main>
-<h1>Submissions</h1>
-<form id="f"><input id="k" type="password" placeholder="Admin key" autocomplete="current-password"> <button>Show</button> <button type="button" id="csv">Download CSV</button></form>
+<h1>SPASM admin</h1>
+<form id="f" class="row"><input id="k" type="password" placeholder="Admin password" autocomplete="current-password"> <button>Sign in</button></form>
 <p id="msg" class="muted"></p>
-<div id="out"></div>
+
+<div id="app" class="hidden">
+<nav class="tabs"><button data-t="usage" class="on">Usage</button><button data-t="add">Add a name</button><button data-t="subs">Requests</button><button data-t="added">Added names</button></nav>
+
+<section id="t-usage">
+  <p id="umsg" class="muted"></p>
+  <div class="kpis" id="kpis"></div>
+  <div class="card"><h3 style="margin-top:0">Opens and visitors, last 30 days</h3><div id="chart"></div>
+    <p class="muted" style="margin:6px 0 0"><span class="sw a"></span> opens <span class="sw b"></span> unique visitors <span class="sw c"></span> new visitors</p></div>
+  <div class="two">
+    <div class="card"><h3 style="margin-top:0">Most used, last 30 days</h3><div id="pages"></div></div>
+    <div class="card"><h3 style="margin-top:0">Countries, last 30 days</h3><div id="countries"></div></div>
+  </div>
+  <p class="muted">Counts are anonymous. Paid write-ups are confirmed in Stripe; "write-up requests" counts people who pressed the pay button.</p>
+</section>
+
+<section id="t-add" class="hidden">
+<div class="card">
+  <h2 style="margin-top:0">Add or update a name</h2>
+  <p class="muted" style="margin-top:0">It appears in SPASM straight away. Adding a name that already exists replaces its description and scores.</p>
+  <div class="row"><label for="nn">Name</label><input id="nn" maxlength="40" style="flex:1"></div>
+  <div class="row"><label>Gender</label><select id="ng"><option value="F">Female</option><option value="M">Male</option></select>
+    <label style="min-width:auto;margin-left:12px">Type</label><select id="nc"><option value="a">a: common</option><option value="z">z: unusual</option></select></div>
+  <p id="exists" class="muted"></p>
+  <label for="nd" class="muted">Description</label>
+  <textarea id="nd" maxlength="4000"></textarea>
+  <h3>Psychological scores</h3>
+  <div id="traits"></div>
+  <div class="result">
+    <div><small>Hocko score</small><b id="rs">0</b></div>
+    <div><small>Enneagram type</small><b id="re">-</b></div>
+    <div><small>Sexual adventurer type</small><b id="rx">-</b></div>
+  </div>
+  <div class="row"><button id="save">Save name</button><button class="sec" id="clear" type="button">Clear</button><span id="smsg"></span></div>
+</div>
+<div class="card" id="ref">
+  <h2 style="margin-top:0">Reference: the types</h2>
+  <p class="muted" style="margin-top:0">The Hocko score is the ten scores added up. It decides the Enneagram type. The sexual adventurer type is the sexual adventurousness score on its own.</p>
+  <h3>Enneagram types</h3><div id="reftypes"></div>
+  <h3>Sexual adventurer types</h3><div id="refsex"></div>
+</div>
+</section>
+
+<section id="t-subs" class="hidden">
+  <p class="muted" id="subcount"></p>
+  <button class="sec" id="csv">Download CSV</button>
+  <h2>Submitted names</h2><div id="subs"></div>
+  <h2>Searched for but missing</h2><div id="miss"></div>
+</section>
+
+<section id="t-added" class="hidden">
+  <h2>Names added here</h2><div id="added"></div>
+</section>
+</div>
 </main>
-<script>
+<script type="module">
 const esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-let data = null;
-const k = document.getElementById('k');
-try { k.value = sessionStorage.getItem('spasm.admin') || ''; } catch {}
-async function load(e) {
-  if (e) e.preventDefault();
-  const msg = document.getElementById('msg');
-  msg.textContent = 'Loading...'; msg.className = 'muted';
-  const r = await fetch('/api/admin?key=' + encodeURIComponent(k.value), { cache: 'no-store' });
-  const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
-  if (!r.ok) { msg.textContent = j.error; msg.className = 'err'; return; }
-  try { sessionStorage.setItem('spasm.admin', k.value); } catch {}
-  data = j;
-  msg.textContent = `${j.submissions.length} submissions, ${j.misses.length} names people searched for that SPASM doesn't have.`;
-  document.getElementById('out').innerHTML =
-    '<h2>Submitted names</h2><table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th></tr>' +
-    j.submissions.map((s) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}</td></tr>`).join('') + '</table>' +
-    '<h2>Searched for but missing</h2><table><tr><th>Name</th><th>Gender</th><th>Searches</th></tr>' +
-    j.misses.map((m) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td></tr>`).join('') + '</table>';
+const $ = (s) => document.querySelector(s);
+const TRAITS = ['Charisma', 'Spontaneity', 'Emotional savvy', 'Sexual adventurousness', 'Motivation', 'Creativity', 'Humour', 'Spirituality', 'Leadership', 'Generosity'];
+const BANDS = [[41, 60, 7], [38, 40, 8], [36, 37, 3], [34, 35, 2], [32, 33, 6], [30, 31, 9], [28, 29, 4], [25, 27, 1], [1, 24, 5]];
+const ENNEA = ['', 'The Reformer', 'The Helper', 'The Achiever', 'The Individualist', 'The Investigator', 'The Loyalist', 'The Enthusiast', 'The Challenger', 'The Peacemaker'];
+const SEX = ['', 'The Homebody', 'The Steady', 'The Curious', 'The Adventurer', 'The Explorer'];
+const ENNEA_D = ['', 'Principled, purposeful and self-controlled, with a strong sense of right and wrong.', 'Warm, generous and people-pleasing, happiest when needed.', 'Driven, adaptable and image-conscious, built for success.', 'Sensitive, expressive and self-aware, sometimes moody.', 'Curious, private and inventive, more at home with ideas than small talk.', 'Committed, responsible and security-minded, quick to spot trouble.', 'Spontaneous, versatile and fun-seeking, allergic to boredom.', 'Self-confident, decisive and protective, does not back down.', 'Easygoing, accepting and reassuring, avoids conflict at all costs.'];
+const SEX_D = ['', 'Prefers a cup of tea and an early night.', 'Affectionate, reliable, and in no particular hurry.', 'Open to suggestions, within reason.', 'Keen, inventive and rarely short of ideas.', 'Has a Play Cupboard, and is not afraid to use it.'];
+let PARTNER = {};
+fetch('/data/tables.json?v=2').then((r) => r.json()).then((t) => { PARTNER = t.partner || {}; drawRef(); }).catch(drawRef);
+function drawRef() {
+  const band = (e) => { const b = BANDS.find(([, , t]) => t === e); return b ? (b[0] === 1 ? `${b[1]} or less` : b[1] === 60 ? `${b[0]} or more` : `${b[0]} to ${b[1]}`) : ''; };
+  const order = BANDS.map(([, , e]) => e);
+  document.getElementById('reftypes').innerHTML = '<table><tr><th>Score</th><th>Type</th><th>Description</th><th>Marry</th><th>Avoid</th></tr>' +
+    order.map((e) => `<tr data-e="${e}"><td>${band(e)}</td><td><b>${e}</b> ${ENNEA[e]}</td><td class="muted">${ENNEA_D[e]}</td><td>${PARTNER[e] ? PARTNER[e].best + ' ' + ENNEA[PARTNER[e].best].replace('The ', '') : ''}</td><td>${PARTNER[e] ? PARTNER[e].worst + ' ' + ENNEA[PARTNER[e].worst].replace('The ', '') : ''}</td></tr>`).join('') + '</table>';
+  document.getElementById('refsex').innerHTML = '<table><tr><th>Score</th><th>Type</th><th>Description</th></tr>' +
+    [1, 2, 3, 4, 5].map((x) => `<tr data-x="${x}"><td>${x}</td><td><b>${x}</b> ${SEX[x]}</td><td class="muted">${SEX_D[x]}</td></tr>`).join('') + '</table>';
+  highlightRef();
 }
-document.getElementById('f').onsubmit = load;
-document.getElementById('csv').onclick = async () => {
-  if (!data) await load();
+function highlightRef() {
+  const t = [...document.querySelectorAll('#traits input')].map((x) => +x.value);
+  const s = t.reduce((a, b) => a + b, 0);
+  const e = (BANDS.find(([lo, hi]) => s >= lo && s <= hi) || [0, 0, 5])[2];
+  document.querySelectorAll('#reftypes tr[data-e]').forEach((r) => r.classList.toggle('hit', +r.dataset.e === e));
+  document.querySelectorAll('#refsex tr[data-x]').forEach((r) => r.classList.toggle('hit', +r.dataset.x === t[3]));
+}
+let key = '', data = null, builtIn = null;
+try { $('#k').value = sessionStorage.getItem('spasm.admin') || ''; } catch {}
+
+// trait sliders
+$('#traits').innerHTML = TRAITS.map((t, i) => `<div class="trait"><span>${t} <span class="muted">(1-${i ? 5 : 10})</span></span>
+  <input type="range" min="1" max="${i ? 5 : 10}" value="${i ? 3 : 6}" data-i="${i}"><b id="tv${i}">${i ? 3 : 6}</b></div>`).join('');
+const sliders = () => [...document.querySelectorAll('#traits input')];
+function recalc() {
+  const t = sliders().map((x) => +x.value);
+  t.forEach((v, i) => { $('#tv' + i).textContent = v; });
+  const s = t.reduce((a, b) => a + b, 0);
+  const e = (BANDS.find(([lo, hi]) => s >= lo && s <= hi) || [0, 0, 5])[2];
+  $('#rs').textContent = s; $('#re').textContent = `${e}: ${ENNEA[e]}`; $('#rx').textContent = `${t[3]}: ${SEX[t[3]]}`;
+}
+$('#traits').addEventListener('input', () => { recalc(); highlightRef(); }); recalc();
+
+// warn if the name is already in SPASM
+async function checkExists() {
+  if (!builtIn) { try { builtIn = await (await fetch('/data/names.json?v=2')).json(); } catch { builtIn = []; } }
+  const n = $('#nn').value.trim().toLowerCase(), g = $('#ng').value;
+  const inBuilt = builtIn.some((r) => r[1] === g && r[0].toLowerCase() === n);
+  const inAdded = (data?.added || []).some((r) => r.g === g && r.n.toLowerCase() === n);
+  $('#exists').innerHTML = !n ? '' : inAdded ? 'Already added here. Saving will update it.' : inBuilt ? 'This name is already in SPASM. Saving will replace its description and scores.' : '<span class="ok">New name.</span>';
+}
+$('#nn').addEventListener('input', checkExists); $('#ng').addEventListener('change', checkExists);
+
+function fillForm(r) {
+  $('#nn').value = r.n || ''; $('#ng').value = r.g || 'F'; $('#nc').value = r.c || 'a'; $('#nd').value = r.d || '';
+  if (r.t) sliders().forEach((x, i) => { x.value = r.t[i]; });
+  recalc(); highlightRef(); checkExists(); showTab('add'); window.scrollTo(0, 0); $('#nd').focus();
+}
+$('#clear').onclick = () => fillForm({ g: $('#ng').value, t: [6, 3, 3, 3, 3, 3, 3, 3, 3, 3] });
+
+$('#save').onclick = async () => {
+  const body = { name: $('#nn').value, gender: $('#ng').value, category: $('#nc').value, description: $('#nd').value, traits: sliders().map((x) => +x.value) };
+  const m = $('#smsg'); m.className = 'muted'; m.textContent = 'Saving...';
+  const r = await fetch('/api/admin/names?key=' + encodeURIComponent(key), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
+  if (!r.ok) { m.className = 'err'; m.textContent = j.error; return; }
+  m.className = 'ok'; m.innerHTML = `Saved. <a href="/#/meaning/${j.name.g}/${encodeURIComponent(j.name.n)}" target="_blank">See it in SPASM</a>`;
+  await loadAll();
+};
+
+function showTab(t) {
+  document.querySelectorAll('nav.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === t));
+  ['usage', 'add', 'subs', 'added'].forEach((x) => $('#t-' + x).classList.toggle('hidden', x !== t));
+}
+document.querySelector('nav.tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) showTab(b.dataset.t); };
+
+const PAGE_NAMES = { home: 'Home screen', meaning: 'What does that name mean?', compat: 'Romantic compatibility', bub: 'Best bub names', kma: 'Kiss, marry or avoid', choose: 'Choose a name by personality', group: 'Group compatibility', compare: 'Compare two names', pet: 'Pet, boat or car names', famous: 'Famous couples', custom: 'Get your name written up', swipe: 'Swipe baby names', favourites: 'Favourites', notify: 'Name of the day sign-up', submit: 'Submit a name', me: 'Your name', more: 'More fun' };
+const COUNTRY = (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c) || c; } catch { return c; } };
+async function loadStats() {
+  const r = await fetch('/api/admin/stats?key=' + encodeURIComponent(key), { cache: 'no-store' });
+  const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
+  if (!r.ok) { $('#umsg').textContent = j.error; $('#umsg').className = 'err'; return; }
+  const sum = (ev, f = 'n', det) => j.totals.filter((t) => t.event === ev && (det === undefined || t.detail === det)).reduce((a, t) => a + t[f], 0);
+  const kpi = (label, v, sub) => `<div class="kpi"><small>${label}</small><b>${v.toLocaleString()}</b>${sub ? `<span>${sub}</span>` : ''}</div>`;
+  $('#kpis').innerHTML =
+    kpi('Opens today', sum('open', 'today'), `${sum('open', 'n7').toLocaleString()} in the last 7 days`) +
+    kpi('Unique visitors, 7 days', j.unique7, `${j.unique30.toLocaleString()} in 30 days`) +
+    kpi('All-time visitors', j.uniqueAll) +
+    kpi('Installed to home screen', sum('install'), `${sum('open', 'n', 'app').toLocaleString()} opens from the installed app`) +
+    kpi('Daily notification subscribers', j.subscribers) +
+    kpi('Shares', sum('share'), `${sum('share', 'n7').toLocaleString()} in 7 days`) +
+    kpi('Write-up requests', sum('writeup'), `${sum('writeup', 'n7')} in 7 days`) +
+    kpi('Name submissions', sum('submit_name')) +
+    kpi('Favourites saved', sum('favourite')) +
+    kpi('Partner swipe invites', sum('swipe_partner')) +
+    kpi('Names added by David', j.addedNames);
+  // last 30 days chart
+  const days = [...Array(30)].map((_, i) => { const d = new Date(j.today + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - 29 + i); return d.toISOString().slice(0, 10); });
+  const m = (arr) => Object.fromEntries(arr.map((x) => [x.day, x.n]));
+  const O = m(j.daily), U = m(j.uniques), N = m(j.newVisitors);
+  const max = Math.max(1, ...days.map((d) => O[d] || 0));
+  $('#chart').innerHTML = `<div class="bars">${days.map((d) => `<div class="d" title="${d}: ${O[d] || 0} opens, ${U[d] || 0} visitors, ${N[d] || 0} new">
+    <i class="a" style="height:${(O[d] || 0) / max * 100}%"></i><i class="b" style="height:${(U[d] || 0) / max * 100}%"></i><i class="c" style="height:${(N[d] || 0) / max * 100}%"></i></div>`).join('')}</div>
+    <div class="muted" style="display:flex;justify-content:space-between;font-size:12px"><span>${days[0]}</span><span>${days[29]}</span></div>`;
+  const blist = (rows, label) => { const mx = Math.max(1, ...rows.map((r) => r.n)); return rows.length ? `<div class="blist">${rows.map((r) => `<div><span>${esc(label(r.detail))}</span><b>${r.n}</b><span class="bar"><i style="width:${r.n / mx * 100}%"></i></span></div>`).join('')}</div>` : '<p class="muted">No data yet.</p>'; };
+  $('#pages').innerHTML = blist(j.pages.filter((p) => p.detail !== 'home' && p.detail !== 'admin'), (d) => PAGE_NAMES[d] || d);
+  $('#countries').innerHTML = blist(j.countries, (c) => (c === '??' ? 'Unknown' : COUNTRY(c)));
+}
+
+async function loadAll() {
+  loadStats();
+  const [a, b] = await Promise.all([
+    fetch('/api/admin?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()),
+    fetch('/api/admin/names?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()),
+  ]);
+  data = { ...a, added: b.names || [] };
+  $('#subcount').textContent = `${data.submissions.length} submissions, ${data.misses.length} names people searched for that SPASM doesn't have.`;
+  $('#subs').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th><th></th></tr>' +
+    data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}</td><td><button class="small" data-sub="${i}">Add</button></td></tr>`).join('') + '</table>';
+  $('#miss').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Searches</th><th></th></tr>' +
+    data.misses.map((m, i) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td><td><button class="small" data-miss="${i}">Add</button></td></tr>`).join('') + '</table>';
+  $('#added').innerHTML = data.added.length ? '<table><tr><th>Name</th><th>Gender</th><th>Type</th><th>Score</th><th></th></tr>' +
+    data.added.map((r, i) => `<tr><td><a href="/#/meaning/${r.g}/${encodeURIComponent(r.n)}" target="_blank">${esc(r.n)}</a></td><td>${r.g}</td><td>${r.e} / ${r.s}</td><td>${r.score}</td><td><button class="small" data-edit="${i}">Edit</button> <button class="small sec" data-del="${i}">Delete</button></td></tr>`).join('') + '</table>'
+    : '<p class="muted">None yet.</p>';
+  checkExists();
+}
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('button'); if (!b || !data) return;
+  const cap = (s) => String(s || '').replace(/\b\w/g, (c) => c.toUpperCase());
+  if (b.dataset.sub) { const s = data.submissions[+b.dataset.sub]; fillForm({ n: cap(s.name), g: s.gender, d: '' }); }
+  if (b.dataset.miss) { const m = data.misses[+b.dataset.miss]; fillForm({ n: cap(m.name), g: m.gender, d: '' }); }
+  if (b.dataset.edit) fillForm(data.added[+b.dataset.edit]);
+  if (b.dataset.del) {
+    const r = data.added[+b.dataset.del];
+    b.textContent = 'Deleting...';
+    await fetch('/api/admin/names?key=' + encodeURIComponent(key), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: r.n, gender: r.g }) });
+    await loadAll();
+  }
+});
+
+$('#csv').onclick = () => {
   if (!data) return;
   const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
   const rows = [['Type', 'Name', 'Gender', 'Notes', 'Email', 'When or searches']]
@@ -50,6 +240,18 @@ document.getElementById('csv').onclick = async () => {
   a.href = URL.createObjectURL(new Blob(['﻿' + rows.map((r) => r.map(q).join(',')).join('\n')], { type: 'text/csv' }));
   a.download = 'spasm-submissions.csv'; a.click();
 };
-if (k.value) load();
+
+$('#f').onsubmit = async (e) => {
+  e.preventDefault();
+  key = $('#k').value;
+  const m = $('#msg'); m.className = 'muted'; m.textContent = 'Checking...';
+  const r = await fetch('/api/admin?key=' + encodeURIComponent(key), { cache: 'no-store' });
+  const j = await r.json().catch(() => ({ error: 'Could not read the response' }));
+  if (!r.ok) { m.className = 'err'; m.textContent = j.error; return; }
+  try { sessionStorage.setItem('spasm.admin', key); } catch {}
+  m.textContent = ''; $('#f').classList.add('hidden'); $('#app').classList.remove('hidden');
+  await loadAll();
+};
+if ($('#k').value) $('#f').requestSubmit();
 </script>
 </body></html>

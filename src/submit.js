@@ -46,7 +46,7 @@ export async function adminList(request, env) {
       if (k.name.startsWith('miss:')) {
         const [, gender, name] = k.name.split(':');
         misses.push({ name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
-      } else if (!k.name.startsWith('push:')) {
+      } else if (!k.name.startsWith('push:') && !k.name.startsWith('name:')) {
         const v = await env.NAME_SUBMISSIONS.get(k.name);
         try { submissions.push(JSON.parse(v)); } catch { /* skip */ }
       }

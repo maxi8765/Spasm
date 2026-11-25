@@ -29,16 +29,28 @@ const PRICE = 'A$10'; // keep in step with the Stripe payment link
 // ---------- data ----------
 async function boot() {
   const started = Date.now();
-  const [rows, tables] = await Promise.all([
+  const [rows, tables, extra] = await Promise.all([
     fetch(`/data/names.json?v=${DATA_VERSION}`).then((r) => r.json()),
     fetch(`/data/tables.json?v=${DATA_VERSION}`).then((r) => r.json()),
+    loadExtraNames(),
   ]);
+  // Names David has added on the admin page replace or extend the built-in list
+  if (extra.length) {
+    const key = (r) => r[1] + ':' + r[0].toLowerCase();
+    const added = new Map(extra.map((x) => [key(x.row), x]));
+    for (const x of extra) extraDesc.set(key(x.row), x.d);
+    const merged = rows.filter((r) => !added.has(key(r))).concat(extra.map((x) => x.row));
+    merged.sort((a, b) => (a[0].toLowerCase() < b[0].toLowerCase() ? -1 : a[0].toLowerCase() > b[0].toLowerCase() ? 1 : 0));
+    rows.length = 0; rows.push(...merged);
+  }
   E = createEngine(rows, tables);
   fetch(`/data/nicknames.json?v=${DATA_VERSION}`).then((r) => r.json()).then((n) => { NICK = n; }).catch(() => {});
   const wait = Math.max(0, 1000 - (Date.now() - started)); // logo shows for 1 second
   setTimeout(() => { $('#splash').classList.add('gone'); setTimeout(() => $('#splash').remove(), 400); }, wait);
   window.addEventListener('hashchange', route);
   route();
+  track('open', matchMedia('(display-mode: standalone)').matches || navigator.standalone ? 'app' : 'web');
+  window.addEventListener('appinstalled', () => track('install'));
   startTranslating();
   // language picker in the menu
   const lp = document.getElementById('langs');
@@ -49,7 +61,33 @@ async function boot() {
   }
 }
 
+// Anonymous usage counts for David's dashboard: a random id per browser, nothing personal
+const VID = (() => {
+  try {
+    let v = localStorage.getItem('spasm.vid');
+    if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('spasm.vid', v); }
+    return v;
+  } catch { return ''; }
+})();
+function track(e, d = '') {
+  try { navigator.sendBeacon('/api/track', new Blob([JSON.stringify({ e, d, v: VID })], { type: 'application/json' })); } catch { /* best effort */ }
+}
+
+const extraDesc = new Map();
+async function loadExtraNames() {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 3000);
+    const r = await fetch('/api/names/extra', { signal: ctl.signal });
+    clearTimeout(t);
+    if (!r.ok) return [];
+    return (await r.json()).names || [];
+  } catch { return []; }
+}
+
 async function describe(r) {
+  const added = extraDesc.get(r.g + ':' + r.n.toLowerCase());
+  if (added) return added;
   const L = r.n[0].toUpperCase();
   const k = r.g + '-' + (L >= 'A' && L <= 'Z' ? L : '_');
   if (!descCache.has(k)) descCache.set(k, fetch(`/data/desc/${k}.json?v=${DATA_VERSION}`).then((x) => x.json()));
@@ -77,6 +115,7 @@ function addFav(group, label, href) {
   if (f[group].some((x) => x.label === label)) { toast('Already in favourites'); return; }
   f[group].unshift({ label, href });
   saveFavs(f);
+  track('favourite', group);
   toast('Saved to favourites');
 }
 
@@ -121,6 +160,7 @@ function toast(msg) {
 }
 function sharer(title, text, link) {
   return async () => {
+    track('share', 'app');
     const url = link || location.href;
     if (navigator.share) {
       try { await navigator.share({ title: 'SPASM: ' + title, text, url }); } catch { /* cancelled */ }
@@ -133,6 +173,7 @@ function sharer(title, text, link) {
 // Share a result as an image card plus a link to it
 function cardSharer(spec, text) {
   return () => {
+    track('share', (location.hash.split('/')[1] || 'home').split('?')[0]);
     toast('Making your image...');
     const s = { ...spec, kicker: spec.kicker && tr(spec.kicker), title: spec.title && tr(spec.title), scoreLabel: spec.scoreLabel && tr(spec.scoreLabel), tags: spec.tags && spec.tags.map(([t, c]) => [tr(t), c]) };
     return shareCard(s, text, toast);
@@ -554,6 +595,7 @@ function submitPage(q) {
     const fd = new FormData(e.target);
     const body = { name: fd.get('name').trim(), gender: g, note: fd.get('note').trim(), email: fd.get('email').trim() };
     if (E.find(body.name, g)) { $('#serr').innerHTML = `We already have ${esc(body.name)}. <a href="#/meaning/${g}/${enc(body.name)}">Have a look</a>.`; return; }
+    track('submit_name');
     let stored = false;
     try {
       const res = await fetch('/api/submit-name', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
@@ -810,6 +852,7 @@ function customPage(q) {
   $('#cust').onsubmit = (e) => {
     e.preventDefault();
     const name = $('#cn').value.trim(), email = $('#cemail').value.trim(), note = $('#cnote').value.trim();
+    track('writeup');
     const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})`;
     const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
     const mail = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(body)}`;
@@ -862,6 +905,7 @@ async function notifyPage() {
       const ok = await fetch('/api/push/subscribe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(sub) });
       if (!ok.ok) throw new Error('save');
       toast("You're signed up");
+      track('notify_on');
     } catch { toast("Sorry, that didn't work. Try again later."); }
     draw();
   }
@@ -914,6 +958,7 @@ async function swipePage(gA, nA, gB, nB, babyG, q) {
     <h2>Shortlist <small id="count" style="color:var(--muted)">0</small></h2><ul class="list" id="short"></ul>`;
   const card = $('#card'), short = $('#short');
   $('#sendp').onclick = () => {
+    track('swipe_partner');
     const url = `${location.origin}/#/swipe/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}/${babyG}?with=${liked.map((r) => enc(r.n)).join(',')}`;
     const text = liked.length
       ? `I've liked ${liked.length} ${kind} names on SPASM. Swipe through the same list and see which ones we both like:`
@@ -978,6 +1023,7 @@ function route() {
   const q = new URLSearchParams(qs);
   window.scrollTo(0, 0);
   const [page, ...a] = parts;
+  if (E) track('page', page || 'home');
   switch (page) {
     case undefined: return home();
     case 'meaning': return a.length >= 2 ? meaningResult(a[0], a[1]) : meaningForm();
@@ -1005,7 +1051,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 25;
+const APP_VERSION = 26;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
