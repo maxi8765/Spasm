@@ -1139,6 +1139,32 @@ function notFound(name, g) {
   view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David${STRIPE_LINK ? ` (${PRICE})` : ''}</a><a class="btn secondary" href="#/">Home</a>`;
 }
 
+// ---------- Play Store review prompt ----------
+// Only inside the Android store app (a Trusted Web Activity opens us with an android-app:// referrer),
+// once, after the third reading.
+const PLAY_ID = 'pro.spasm.app';
+try { if (document.referrer.startsWith('android-app://')) sessionStorage.setItem('spasm.twa', '1'); } catch { /* ignore */ }
+function countReading() {
+  try {
+    const n = (+localStorage.getItem('spasm.readings') || 0) + 1;
+    localStorage.setItem('spasm.readings', String(n));
+    if (n >= 3 && sessionStorage.getItem('spasm.twa') && !localStorage.getItem('spasm.reviewAsked')) {
+      localStorage.setItem('spasm.reviewAsked', '1');
+      setTimeout(showReviewAsk, 2500);
+    }
+  } catch { /* private mode */ }
+}
+function showReviewAsk() {
+  if (document.getElementById('reviewask')) return;
+  const bar = document.createElement('div');
+  bar.id = 'installtip'; bar.dataset.kind = 'review';
+  bar.innerHTML = `<img src="/img/icon-192.png" alt=""><div><b>Enjoying SPASM?</b><span>A quick review on Google Play helps other people find it.</span></div>
+    <button class="btn" id="reviewgo">Review</button><button class="tipclose" aria-label="Not now">&times;</button>`;
+  document.body.append(bar);
+  $('#reviewgo').onclick = () => { track('review_tap'); location.href = `https://play.google.com/store/apps/details?id=${PLAY_ID}`; bar.remove(); };
+  $('.tipclose', bar).onclick = () => bar.remove();
+}
+
 // ---------- router ----------
 function route() {
   $('#menu').hidden = true; $('#help').hidden = true;
@@ -1152,6 +1178,7 @@ function route() {
   window.scrollTo(0, 0);
   const [page, ...a] = parts;
   if (E) track('page', page || 'home');
+  if (a.length >= 2) countReading();
   switch (page) {
     case undefined: return home();
     case 'meaning': return a.length >= 2 ? meaningResult(a[0], a[1]) : meaningForm();
@@ -1183,7 +1210,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 34;
+const APP_VERSION = 35;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
