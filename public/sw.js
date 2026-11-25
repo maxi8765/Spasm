@@ -1,5 +1,5 @@
 // Offline support: cache the shell and data files as they are used.
-const CACHE = 'spasm-v17';
+const CACHE = 'spasm-v18';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/engine.js', '/js/help.js', '/js/icons.js', '/js/share.js', '/js/i18n.js',
   '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png', '/paper.html', '/data/names.json?v=2', '/data/tables.json?v=2'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
