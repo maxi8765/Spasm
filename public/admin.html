@@ -217,7 +217,7 @@ async function loadAll() {
   data = { ...a, added: b.names || [] };
   $('#subcount').textContent = `${data.submissions.length} submissions, ${data.misses.length} names people searched for that SPASM doesn't have.`;
   $('#subs').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th><th></th></tr>' +
-    data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}</td><td><button class="small" data-sub="${i}">Add</button></td></tr>`).join('') + '</table>';
+    data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}${s.ref ? `<br>${esc(s.ref)}${s.paid ? ' (pay link opened)' : ''}` : ''}</td><td><button class="small" data-sub="${i}">Add</button></td></tr>`).join('') + '</table>';
   $('#miss').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Searches</th><th></th></tr>' +
     data.misses.map((m, i) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td><td><button class="small" data-miss="${i}">Add</button></td></tr>`).join('') + '</table>';
   $('#added').innerHTML = data.added.length ? '<table><tr><th>Name</th><th>Gender</th><th>Type</th><th>Score</th><th></th></tr>' +
@@ -255,7 +255,7 @@ $('#csv').onclick = () => {
   if (!data) return;
   const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
   const rows = [['Type', 'Name', 'Gender', 'Notes', 'Email', 'When or searches']]
-    .concat(data.submissions.map((s) => ['Submitted', s.name, s.gender, s.note, s.email, s.at]))
+    .concat(data.submissions.map((s) => ['Submitted', s.name, s.gender, s.note, s.email, s.at, s.ref || '']))
     .concat(data.misses.map((m) => ['Missing', m.name, m.gender, '', '', m.count]));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['﻿' + rows.map((r) => r.map(q).join(',')).join('\n')], { type: 'text/csv' }));

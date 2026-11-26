@@ -10,10 +10,12 @@ export async function submitName(request, env) {
     name, gender,
     note: String(body.note || '').slice(0, 1000),
     email: String(body.email || '').slice(0, 120),
+    paid: body.paid ? 'Stripe' : '',
+    ref: 'SP' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).slice(2, 4).toUpperCase(),
     at: new Date().toISOString(),
   };
   await env.NAME_SUBMISSIONS.put(`${record.at}:${gender}:${name.toLowerCase()}`, JSON.stringify(record));
-  return json({ ok: true });
+  return json({ ok: true, ref: record.ref });
 }
 
 export const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json' } });

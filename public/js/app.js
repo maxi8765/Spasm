@@ -1062,17 +1062,25 @@ function customPage(q) {
   const setGT = (v) => { g = v; view.querySelectorAll('.toggle button').forEach((x) => x.classList.toggle('on', x.dataset.g === v)); };
   view.querySelectorAll('.toggle button').forEach((b) => b.onclick = () => setGT(b.dataset.g));
   setGT(g);
-  $('#cust').onsubmit = (e) => {
+  $('#cust').onsubmit = async (e) => {
     e.preventDefault();
     const name = $('#cn').value.trim(), email = $('#cemail').value.trim(), note = $('#cnote').value.trim();
     track('writeup');
-    const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})`;
-    const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
+    // open the payment tab now, while we still have the tap (popup blockers), and point it at Stripe once saved
+    const payWin = STRIPE_LINK ? window.open('', '_blank') : null;
+    // save the request on the server first, so it shows on the admin page even if the email never gets sent
+    let ref = '';
+    try {
+      const res = await fetch('/api/submit-name', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, gender: g, email, note, paid: !!STRIPE_LINK }) });
+      ref = (await res.json()).ref || '';
+    } catch { /* offline: the email still carries everything */ }
+    const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})${ref ? ` [${ref}]` : ''}`;
+    const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${ref ? `\nReference: ${ref}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
     const mail = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(body)}`;
-    const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}` : '';
+    const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}${ref ? `&client_reference_id=${enc(ref)}` : ''}` : '';
     view.innerHTML = `${logo()}<h1>Nearly done</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab, then send the email that opens here.' : 'Send the email that opens, and David will be in touch.'}</p>
       <a class="btn" href="${mail}">Open the email again</a>${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn secondary" href="#/">Back to home</a>`;
-    if (pay) window.open(pay, '_blank', 'noopener');
+    if (pay) { if (payWin) payWin.location = pay; else window.open(pay, '_blank', 'noopener'); }
     location.href = mail;
   };
 }
@@ -1311,7 +1319,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 45;
+const APP_VERSION = 46;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
