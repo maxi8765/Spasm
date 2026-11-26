@@ -325,3 +325,4 @@ main.home .home-grid .tile.start .start-here { position: absolute; top: -9px; le
 .photo-pick { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; border: 2px dashed #4a495d; color: var(--muted); cursor: pointer; }
 .photo-pick img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; }
 .menu-panel a.menu-me { font-size: 20px; font-weight: 700; color: #c9b8ff; }
+main.home .daily { background: linear-gradient(180deg, var(--card1), var(--card2)); box-shadow: 0 8px 24px rgba(0,0,0,.25); justify-content: flex-end; text-align: right; }
