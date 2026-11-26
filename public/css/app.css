@@ -292,7 +292,7 @@ main.home .home-grid .tile { padding: 8px 8px; justify-content: center; gap: 6px
 main.home .home-grid .tile span { color: #fff; }
 main.home .home-grid .tile svg { height: 42%; max-height: 64px; width: auto; }
 main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purple), var(--pink)); color: #fff; }
-.daily-me { margin-left: auto; color: var(--muted); font-size: 13px; }
+.hi-me { display: block; color: var(--muted); font-size: 15px; text-decoration: none; margin: 0 4px 6px; }
 @media (max-height: 700px) { main.home .home-grid .tile { font-size: 12.5px; gap: 4px; } main.home .daily { padding: 6px 14px; } main.home .daily-n { font-size: 19px; } main.home .home-grid { gap: 8px; } }
 
 #installtip { position: fixed; left: 10px; right: 10px; bottom: calc(10px + var(--safe-bottom)); z-index: 45; display: flex; align-items: center; gap: 12px; background: #fff; color: #1b1a26; border-radius: 18px; padding: 12px 12px 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.45); max-width: 540px; margin: 0 auto; animation: tipin .3s ease-out; }
