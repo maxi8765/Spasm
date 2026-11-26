@@ -214,6 +214,7 @@ async function loadStats() {
   $('#countries').innerHTML = blist(j.countries, (c) => (c === '??' ? 'Unknown' : COUNTRY(c)));
 }
 
+const gone = {};
 async function loadAll() {
   loadStats();
   const [a, b] = await Promise.all([
@@ -221,6 +222,11 @@ async function loadAll() {
     fetch('/api/admin/names?key=' + encodeURIComponent(key), { cache: 'no-store' }).then((r) => r.json()),
   ]);
   data = { ...a, added: b.names || [] };
+  // hide entries deleted in the last 2 minutes; Cloudflare can keep listing them briefly
+  const now = Date.now(); Object.keys(gone).forEach((k) => { if (now - gone[k] > 120000) delete gone[k]; });
+  data.submissions = (data.submissions || []).filter((r) => !gone[r.k]);
+  data.misses = (data.misses || []).filter((r) => !gone[r.k]);
+  data.added = data.added.filter((r) => !gone['added:' + r.g + ':' + r.n]);
   $('#subcount').textContent = `${data.submissions.length} submissions, ${data.misses.length} names people searched for that SPASM doesn't have.`;
   $('#subs').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th><th></th></tr>' +
     data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}${s.photo ? `<br><a href="/api/photo/${esc(s.photo)}" target="_blank"><img src="/api/photo/${esc(s.photo)}" alt="photo" style="width:56px;height:56px;object-fit:cover;border-radius:8px;margin-top:4px"></a>` : ''}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}${s.ref ? `<br>${esc(s.ref)}${s.paid ? ' (pay link opened)' : ''}` : ''}</td><td><button class="small" data-sub="${i}">Add</button>${s.paid ? '<br><span class="muted">Paid, kept</span>' : ` <button class="small sec" data-sdel="${i}">Delete</button>`}</td></tr>`).join('') + '</table>';
@@ -254,13 +260,15 @@ document.addEventListener('click', async (e) => {
     b.textContent = 'Deleting...';
     const res = await fetch('/api/admin?key=' + encodeURIComponent(key), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: r.k }) });
     if (!res.ok) { b.textContent = (await res.json().catch(() => ({}))).error || 'Failed'; return; }
-    await loadAll();
+    gone[r.k] = Date.now();
+    b.closest('tr').remove();
   }
   if (b.dataset.del) {
     const r = data.added[+b.dataset.del];
     b.textContent = 'Deleting...';
     await fetch('/api/admin/names?key=' + encodeURIComponent(key), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: r.n, gender: r.g }) });
-    await loadAll();
+    gone['added:' + r.g + ':' + r.n] = Date.now();
+    b.closest('tr').remove();
   }
 });
 

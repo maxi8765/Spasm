@@ -66,10 +66,12 @@ export async function adminList(request, env) {
     for (const k of page.keys) {
       if (k.name.startsWith('miss:')) {
         const [, gender, name] = k.name.split(':');
-        misses.push({ k: k.name, name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
+        const c = parseInt((await env.NAME_SUBMISSIONS.get(k.name, { cacheTtl: 30 })) || '0', 10);
+        if (c) misses.push({ k: k.name, name, gender, count: c });
       } else if (!/^(push|name|famous|rl|tr|photo):/.test(k.name)) {
-        const v = await env.NAME_SUBMISSIONS.get(k.name);
-        try { submissions.push({ ...JSON.parse(v), k: k.name }); } catch { /* skip */ }
+        const v = await env.NAME_SUBMISSIONS.get(k.name, { cacheTtl: 30 });
+        if (!v) continue; // deleted but still listed for a moment
+        try { const r = JSON.parse(v); if (r && r.name) submissions.push({ ...r, k: k.name }); } catch { /* skip */ }
       }
     }
     cursor = page.list_complete ? null : page.cursor;
