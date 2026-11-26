@@ -316,3 +316,6 @@ main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purp
 .group-score .gs-label { font-size: 20px; font-weight: 700; color: #f04e98; }
 .glegend { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 8px 0 16px; }
 .glegend span { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-left: 6px; }
+.book-box { display: block; margin: 18px 0; padding: 14px 16px; border-radius: 14px; background: rgba(240, 78, 152, .14); border: 1px solid rgba(240, 78, 152, .5); color: #fff; text-decoration: none; }
+.book-box b { display: block; font-size: 17px; margin-bottom: 4px; }
+.book-box span { color: var(--muted); font-size: 14px; }

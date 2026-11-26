@@ -26,6 +26,9 @@ const descCache = new Map();
 // Set this to your Stripe Payment Link (https://buy.stripe.com/...) to take payment for custom write-ups
 const STRIPE_LINK = 'https://buy.stripe.com/7sYcN71N1gBBfTqg1jb7y00';
 const PRICE = 'A$10'; // keep in step with the Stripe payment link
+const BOOK_URL = 'https://www.amazon.com.au/Why-Shouldnt-Call-Son-Clint/dp/0980545935';
+const bookBox = () => `<a class="book-box" href="${BOOK_URL}" target="_blank" rel="noopener" data-book="1"><b>Why Shouldn't I Call My Son Clint?</b><span>David Hocking's book on the secret sounds of names. Buy it on Amazon</span></a>`;
+document.addEventListener('click', (e) => { if (e.target.closest('[data-book]')) track('book'); });
 
 // ---------- data ----------
 async function boot() {
@@ -408,6 +411,7 @@ async function meaningResult(g, name) {
     ${r.t ? profile(r.t) : ''}
     <a class="btn secondary" href="#/tattoo/${r.g}/${enc(r.n)}">Tattoo designs for ${esc(r.n)}</a>
     ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
+    ${bookBox()}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
   $('#fav').onclick = () => addFav('names', `${r.n} (${r.g})`, location.hash);
   if (!isMe) $('#isme').onclick = () => { setMe(r); toast(`Hi ${r.n}, SPASM will remember you`); $('#isme').remove(); };
@@ -806,6 +810,7 @@ function morePage() {
     ['#/tattoo', 'Name tattoo designs', 'Twelve tattoo lettering styles for any name, free to download'],
     ['#/custom', 'Get your name written up', `Not in SPASM? David will write yours${STRIPE_LINK ? ` for ${PRICE}` : ''}`],
     ['#/notify', 'Name of the day, every morning', 'A notification with each day\'s name'],
+    [BOOK_URL, 'Buy David\'s book', 'Why Shouldn\'t I Call My Son Clint?, on Amazon'],
   ];
   view.innerHTML = `${logo()}<h1>More fun</h1>` + items.map(([h, t, d]) => `<a class="more-item" href="${h}"><b>${t}</b><span>${d}</span></a>`).join('');
 }
@@ -1257,7 +1262,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 38;
+const APP_VERSION = 39;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

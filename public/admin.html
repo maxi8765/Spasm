@@ -193,6 +193,7 @@ async function loadStats() {
     kpi('Favourites saved', sum('favourite')) +
     kpi('Partner swipe invites', sum('swipe_partner')) +
     kpi('Tattoo designs downloaded', sum('tattoo'), `${sum('tattoo', 'n7')} in 7 days`) +
+    kpi('Book link taps', sum('book'), `${sum('book', 'n7')} in 7 days`) +
     kpi('Names added by David', j.addedNames);
   // last 30 days chart
   const days = [...Array(30)].map((_, i) => { const d = new Date(j.today + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - 29 + i); return d.toISOString().slice(0, 10); });
