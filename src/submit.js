@@ -14,8 +14,27 @@ export async function submitName(request, env) {
     ref: 'SP' + Date.now().toString(36).toUpperCase().slice(-6) + Math.random().toString(36).slice(2, 4).toUpperCase(),
     at: new Date().toISOString(),
   };
+  // optional photo of the person: a JPEG the app has already shrunk, kept under an unguessable link
+  let photoUrl = '';
+  const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(body.photo || ''));
+  if (m && m[1].length < 2_000_000) {
+    const bytes = Uint8Array.from(atob(m[1]), (c) => c.charCodeAt(0));
+    const token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+    await env.NAME_SUBMISSIONS.put(`photo:${token}`, bytes, { metadata: { ref: record.ref } });
+    record.photo = token;
+    photoUrl = new URL(`/api/photo/${token}`, request.url).toString();
+  }
   await env.NAME_SUBMISSIONS.put(`${record.at}:${gender}:${name.toLowerCase()}`, JSON.stringify(record));
-  return json({ ok: true, ref: record.ref });
+  return json({ ok: true, ref: record.ref, photoUrl });
+}
+
+// Serves an uploaded photo. The token is long and random, so only people sent the link can see it.
+export async function getPhoto(request, env) {
+  const token = new URL(request.url).pathname.split('/').pop();
+  if (!/^[a-f0-9]{32}$/.test(token) || !env.NAME_SUBMISSIONS) return new Response('Not found', { status: 404 });
+  const buf = await env.NAME_SUBMISSIONS.get(`photo:${token}`, 'arrayBuffer');
+  if (!buf) return new Response('Not found', { status: 404 });
+  return new Response(buf, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'private, max-age=86400', 'x-robots-tag': 'noindex' } });
 }
 
 export const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json' } });
@@ -48,7 +67,7 @@ export async function adminList(request, env) {
       if (k.name.startsWith('miss:')) {
         const [, gender, name] = k.name.split(':');
         misses.push({ name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
-      } else if (!/^(push|name|famous|rl|tr):/.test(k.name)) {
+      } else if (!/^(push|name|famous|rl|tr|photo):/.test(k.name)) {
         const v = await env.NAME_SUBMISSIONS.get(k.name);
         try { submissions.push(JSON.parse(v)); } catch { /* skip */ }
       }

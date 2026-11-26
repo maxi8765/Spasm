@@ -1,4 +1,4 @@
-import { submitName, logMiss, adminList, json } from './submit.js';
+import { submitName, logMiss, adminList, json, getPhoto } from './submit.js';
 import { pushKey, pushSubscribe, pushUnsubscribe } from './push.js';
 import { extraNames, adminNames } from './names.js';
 import { track, adminStats, weeklyReport } from './stats.js';
@@ -21,6 +21,7 @@ export default {
     if (url.pathname === '/api/names/extra') return extraNames(env);
     if (url.pathname === '/api/track' && request.method === 'POST') return track(request, env);
     if (url.pathname === '/api/admin/stats') return adminStats(request, env);
+    if (url.pathname.startsWith('/api/photo/')) return getPhoto(request, env);
     if (url.pathname === '/api/tr') return translate(request, env);
     if (url.pathname === '/api/famous') return request.method === 'POST' ? famousAdd(request, env) : famousList(env);
     if (url.pathname === '/api/admin/famous') return famousAdmin(request, env);

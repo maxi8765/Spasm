@@ -102,7 +102,7 @@ export const HELP = {
 <p>${SHARE}</p>${SCIENCE}`,
   custom: `<h2>Get your name written up</h2>
 <h3>HOW TO USE THIS PAGE</h3>
-<p>If your name isn't in SPASM, David will write it up for you. Enter the name and gender, anything David should know, and your email so he can send it to you.</p>
+<p>If your name isn't in SPASM, David will write it up for you. Enter the name and gender, anything David should know, and your email so he can send it to you. You can add a photo of the person too. Only David sees it, so only send a photo you have permission to share.</p>
 <p>The price is shown on the page. You pay securely through Stripe, which shows the exact amount in your own currency. Once it's written, David can add your name to SPASM so everyone can look it up.</p>
 <h3>IMPORTANT POINTS</h3>
 <p>Check the spelling. David writes exactly the name you send.</p>`,

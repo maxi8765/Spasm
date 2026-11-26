@@ -1054,10 +1054,29 @@ function customPage(q) {
       <div class="field"><label for="cn">Name</label><div class="input-row"><input id="cn" required maxlength="40" value="${esc(q.get('n') || '')}">
         <div class="toggle"><button type="button" data-g="M">M</button><button type="button" data-g="F">F</button></div></div></div>
       <div class="field"><label for="cnote">Anything David should know? (optional)</label><textarea id="cnote" maxlength="1000"></textarea></div>
+      <div class="field"><label for="cphoto">A photo of the person (optional)</label>
+        <label class="photo-pick" for="cphoto"><img id="cprev" alt="" hidden><span id="cphototxt">Add a photo</span></label>
+        <input id="cphoto" type="file" accept="image/*" hidden>
+        <small class="hint" style="display:block;margin-top:6px">Only David sees it. Please only send a photo you have permission to share.</small></div>
       <div class="field"><label for="cemail">Your email, so David can send it to you</label><div class="input-row"><input id="cemail" type="email" required maxlength="120"></div></div>
       <button class="btn" type="submit">${STRIPE_LINK ? 'Pay and send request' : 'Send request'}</button>
-      <p class="hint">${STRIPE_LINK ? 'You pay securely with Stripe, then your email app opens so you can send David the details.' : 'Your email app will open with the request filled in. David will reply with the price and how to pay.'}</p>
+      <p class="hint">${STRIPE_LINK ? 'You pay securely with Stripe and David gets your request straight away.' : 'David gets your request straight away and will reply with the price and how to pay.'}</p>
     </form>`;
+  // shrink the photo on the phone before it's sent (max 1024px JPEG)
+  let photo = '';
+  $('#cphoto').onchange = async (ev) => {
+    const f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    try {
+      const bmp = await createImageBitmap(f);
+      const s = Math.min(1, 1024 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      photo = c.toDataURL('image/jpeg', 0.82);
+      $('#cprev').src = photo; $('#cprev').hidden = false; $('#cphototxt').textContent = 'Change photo';
+    } catch { photo = ''; toast("That photo couldn't be read. Try another."); }
+  };
   let g = q.get('g') === 'M' ? 'M' : 'F';
   const setGT = (v) => { g = v; view.querySelectorAll('.toggle button').forEach((x) => x.classList.toggle('on', x.dataset.g === v)); };
   view.querySelectorAll('.toggle button').forEach((b) => b.onclick = () => setGT(b.dataset.g));
@@ -1069,13 +1088,14 @@ function customPage(q) {
     // open the payment tab now, while we still have the tap (popup blockers), and point it at Stripe once saved
     const payWin = STRIPE_LINK ? window.open('', '_blank') : null;
     // save the request on the server first, so it shows on the admin page even if the email never gets sent
-    let ref = '';
+    let ref = '', photoUrl = '';
     try {
-      const res = await fetch('/api/submit-name', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, gender: g, email, note, paid: !!STRIPE_LINK }) });
-      ref = (await res.json()).ref || '';
+      const res = await fetch('/api/submit-name', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name, gender: g, email, note, paid: !!STRIPE_LINK, photo }) });
+      const j = await res.json();
+      ref = j.ref || ''; photoUrl = j.photoUrl || '';
     } catch { /* offline: the email still carries everything */ }
     const subject = `SPASM custom write-up: ${name} (${GLABEL[g]})${ref ? ` [${ref}]` : ''}`;
-    const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${ref ? `\nReference: ${ref}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
+    const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${ref ? `\nReference: ${ref}\n` : ''}${photoUrl ? `\nPhoto: ${photoUrl}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
     const mail = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(body)}`;
     const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}${ref ? `&client_reference_id=${enc(ref)}` : ''}` : '';
     if (pay) { if (payWin) payWin.location = pay; else window.open(pay, '_blank', 'noopener'); }
@@ -1084,7 +1104,7 @@ function customPage(q) {
     try {
       const r = await fetch(`https://formsubmit.co/ajax/${FEEDBACK}`, {
         method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({ _subject: subject, _cc: CC, _replyto: email, _template: 'box', _captcha: 'false', Name: name, Gender: GLABEL[g], Email: email, Notes: note || '-', Reference: ref || '-', Payment: STRIPE_LINK ? 'Stripe link opened (check Stripe for this reference)' : '-' }),
+        body: JSON.stringify({ _subject: subject, _cc: CC, _replyto: email, _template: 'box', _captcha: 'false', Name: name, Gender: GLABEL[g], Email: email, Notes: note || '-', Reference: ref || '-', Photo: photoUrl || 'none', Payment: STRIPE_LINK ? 'Stripe link opened (check Stripe for this reference)' : '-' }),
       });
       const j = await r.json().catch(() => ({}));
       sent = r.ok && String(j.success) === 'true';
@@ -1332,7 +1352,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 49;
+const APP_VERSION = 50;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
