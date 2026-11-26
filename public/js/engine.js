@@ -122,6 +122,8 @@ export function createEngine(namesRows, tables, rand = Math.random) {
       sexScore: srow.score,
       sexText: srow.texts[s],
       ci: c, si: s,
+      coupleKey: WORD[A.e] + 'with' + WORD[B.e], sexKey: 'S' + WORD[A.s] + 'with' + WORD[B.s],
+      fill: (t) => fillNames(t, A.e, B.e, A.n, B.n),
     };
   }
 

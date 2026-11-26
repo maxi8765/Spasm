@@ -16,3 +16,6 @@ crons = ["30 21 * * *"]
 # [[kv_namespaces]]
 # binding = "NAME_SUBMISSIONS"
 # id = "<namespace id>"
+
+[ai]
+binding = "AI"

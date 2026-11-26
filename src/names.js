@@ -71,5 +71,7 @@ export async function adminNames(request, env) {
     e: enneaFromScore(score), s: t[3], at: new Date().toISOString(),
   };
   await env.NAME_SUBMISSIONS.put(key, JSON.stringify(rec));
+  // a changed description needs fresh translations
+  await Promise.all(['es', 'zh', 'hi'].map((l) => env.NAME_SUBMISSIONS.delete(`tr:${l}:d:${g}:${name}`)));
   return json({ ok: true, name: rec });
 }

@@ -319,3 +319,5 @@ main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purp
 .book-box { display: block; margin: 18px 0; padding: 14px 16px; border-radius: 14px; background: rgba(240, 78, 152, .14); border: 1px solid rgba(240, 78, 152, .5); color: #fff; text-decoration: none; }
 .book-box b { display: block; font-size: 17px; margin-bottom: 4px; }
 .book-box span { color: var(--muted); font-size: 14px; }
+.translating { opacity: .55; transition: opacity .3s; }
+.tr-note { font-size: 12px; color: var(--muted); margin: -4px 0 12px; font-style: italic; }

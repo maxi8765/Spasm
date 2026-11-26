@@ -3,6 +3,7 @@ import { pushKey, pushSubscribe, pushUnsubscribe } from './push.js';
 import { extraNames, adminNames } from './names.js';
 import { track, adminStats, weeklyReport } from './stats.js';
 import { famousList, famousAdd, famousAdmin } from './famous.js';
+import { translate } from './translate.js';
 
 // Cloudflare Worker: serves the static app from ./public and handles the submit-name API.
 // "Submit a name" requests go to the NAME_SUBMISSIONS KV namespace if it is bound.
@@ -20,6 +21,7 @@ export default {
     if (url.pathname === '/api/names/extra') return extraNames(env);
     if (url.pathname === '/api/track' && request.method === 'POST') return track(request, env);
     if (url.pathname === '/api/admin/stats') return adminStats(request, env);
+    if (url.pathname === '/api/tr') return translate(request, env);
     if (url.pathname === '/api/famous') return request.method === 'POST' ? famousAdd(request, env) : famousList(env);
     if (url.pathname === '/api/admin/famous') return famousAdmin(request, env);
     if (url.pathname === '/api/report' || url.pathname.startsWith('/api/report/')) return weeklyReport(request, env);

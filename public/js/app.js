@@ -90,6 +90,36 @@ async function loadExtraNames() {
   } catch { return []; }
 }
 
+// Machine translations of David's text for non-English languages, made once on the server and cached.
+const TR_NOTE = { es: 'Traducción automática del original en inglés de David.', zh: '由 David 的英文原文自动翻译。', hi: 'David के अंग्रेज़ी मूल से स्वचालित अनुवाद।' };
+async function trText(k) {
+  const lang = getLang();
+  if (lang === 'en' || !TR_NOTE[lang]) return null;
+  const ck = `spasm.tr.${lang}.${k}`;
+  try { const hit = localStorage.getItem(ck); if (hit) return hit; } catch { /* ignore */ }
+  try {
+    const r = await fetch(`/api/tr?lang=${lang}&k=${encodeURIComponent(k)}`);
+    if (!r.ok) return null;
+    const { text } = await r.json();
+    if (text) { try { localStorage.setItem(ck, text); } catch { /* full */ } }
+    return text || null;
+  } catch { return null; }
+}
+// Swap an English paragraph for its translation once it arrives, if the page hasn't changed meanwhile.
+async function translateInto(el, k, fill = (t) => t) {
+  if (!el || getLang() === 'en') return;
+  const hash = location.hash;
+  el.classList.add('translating');
+  const t = await trText(k);
+  el.classList.remove('translating');
+  if (!t || location.hash !== hash || !el.isConnected) return;
+  el.textContent = fill(t);
+  el.dataset.noI18n = '1';
+  if (!el.nextElementSibling || !el.nextElementSibling.classList.contains('tr-note')) {
+    el.insertAdjacentHTML('afterend', `<p class="tr-note">${TR_NOTE[getLang()]}</p>`);
+  }
+}
+
 async function describe(r) {
   const added = extraDesc.get(r.g + ':' + r.n.toLowerCase());
   if (added) return added;
@@ -306,7 +336,7 @@ function nameList(rows, opts = {}) {
       const open = li.classList.toggle('open');
       $('.name', li).setAttribute('aria-expanded', open);
       const d = $('.desc', li);
-      if (open && !d.textContent) { d.textContent = '...'; d.textContent = (await describe(r)) || 'No description yet.'; }
+      if (open && !d.textContent) { d.textContent = '...'; d.textContent = (await describe(r)) || 'No description yet.'; translateInto(d, `d:${r.g}:${r.n}`); }
     }
   });
   return ul;
@@ -413,6 +443,7 @@ async function meaningResult(g, name) {
     ${isMe ? '' : `<button class="btn secondary" id="isme">This is my name</button>`}
     ${bookBox()}
     <div class="fixed-bottom"><button class="btn" id="fav">Save name to favourites</button></div>`;
+  translateInto($('p.body', view), `d:${r.g}:${r.n}`);
   $('#fav').onclick = () => addFav('names', `${r.n} (${r.g})`, location.hash);
   if (!isMe) $('#isme').onclick = () => { setMe(r); toast(`Hi ${r.n}, SPASM will remember you`); $('#isme').remove(); };
 }
@@ -456,6 +487,9 @@ function compatResult(gA, nA, gB, nB, q) {
     <p class="body">${esc(c.sexText)}</p>
     <button class="btn secondary" id="again">Read another description</button>
     <div class="fixed-bottom"><button class="btn" id="fav">Save couple to favourites</button></div>`;
+  const bodies = view.querySelectorAll('p.body');
+  translateInto(bodies[0], `c:${c.coupleKey}:${c.ci}`, c.fill);
+  translateInto(bodies[1], `s:${c.sexKey}:${c.si}`);
   $('#fav').onclick = () => addFav('couples', `${A.n} + ${B.n}`, location.hash);
   $('#again').onclick = () => { location.hash = `#/compat/${A.g}/${enc(A.n)}/${B.g}/${enc(B.n)}`; };
 }
@@ -1166,6 +1200,8 @@ async function swipePage(gA, nA, gB, nB, babyG, q) {
     card.innerHTML = `<div class="swipe-name">${esc(r.n)}</div><p class="swipe-desc">...</p>`;
     const d = await describe(r);
     if (pool[i] === r) $('.swipe-desc', card).textContent = d;
+    const t = await trText(`d:${r.g}:${r.n}`);
+    if (t && pool[i] === r) $('.swipe-desc', card).textContent = t;
   };
   const decide = (like) => {
     if (i >= pool.length) return;
@@ -1275,7 +1311,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 44;
+const APP_VERSION = 45;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
