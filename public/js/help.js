@@ -1,5 +1,5 @@
 // Help copy from "These are the HELP edits.docx" (David Hocking, 2019).
-const SUBMIT = '<a href="#/custom">GET YOUR NAME WRITTEN UP (A$10)</a>';
+const SUBMIT = '<a href="#/custom">GET YOUR NAME WRITTEN UP</a>';
 const MISSING = `If a name doesn't appear on the pop-up list (and make sure you've entered their correct gender), then we haven't encountered it yet. But fear not! ${SUBMIT}`;
 const SCIENCE = '<h3>THE SCIENCE</h3><p>Read the paper: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
 const SHARE = 'Use the SHARE button, top right of screen, to send a link to any of your results anywhere you like.';
@@ -80,14 +80,19 @@ export const HELP = {
 };
 
 // Translated help. Names, links and David's own phrases are kept where they appear in the English.
-const SUBMIT_ZH = '<a href="#/custom">请人为你的名字写介绍（A$10）</a>';
-const SUBMIT_HI = '<a href="#/custom">अपने नाम का विवरण लिखवाएँ (A$10)</a>';
+const SUBMIT_ZH = '<a href="#/custom">请人为你的名字写介绍</a>';
+const SUBMIT_HI = '<a href="#/custom">अपने नाम का विवरण लिखवाएँ</a>';
 const SCI_ZH = '<h3>科学依据</h3><p>阅读论文：<a href="/paper.html">Hocking &amp; Maxwell，<i>Nurture</i>（2026）</a></p>';
 const SCI_HI = '<h3>विज्ञान</h3><p>शोधपत्र पढ़ें: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
 const MISS_ZH = `如果弹出列表里没有这个名字（请先确认性别选对了），说明我们还没收录。别担心！${SUBMIT_ZH}`;
 const MISS_HI = `अगर पॉप-अप सूची में नाम नहीं है (पहले जाँच लें कि लिंग सही चुना है), तो हमारे पास अभी वह नाम नहीं है। चिंता न करें! ${SUBMIT_HI}`;
 const SHARE_ZH = '点右上角的分享按钮，可以把任何结果以图片和链接的形式发到任何地方。';
 const SHARE_HI = 'ऊपर दाईं ओर शेयर बटन दबाकर किसी भी नतीजे को तस्वीर और लिंक के रूप में कहीं भी भेजें।';
+
+const SUBMIT_ES = '<a href="#/custom">Pide que escriban tu nombre</a>';
+const SCI_ES = '<h3>La ciencia</h3><p>Lee el artículo: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
+const MISS_ES = `Si el nombre no aparece en la lista desplegable (comprueba antes que el sexo es el correcto), es que todavía no lo tenemos. ¡No pasa nada! ${SUBMIT_ES}`;
+const SHARE_ES = 'Pulsa el botón de compartir arriba a la derecha para enviar cualquier resultado como imagen y enlace a donde quieras.';
 
 export const HELP_I18N = {
   zh: {
@@ -153,5 +158,37 @@ export const HELP_I18N = {
     pet: `<h2>पालतू, नाव या कार का नाम रखें</h2><h3>इस पेज का इस्तेमाल</h3>
 <p>चुनें कि किसका नाम रख रहे हैं, लड़का है, लड़की या कोई भी, और उसके व्यक्तित्व के लिए तीन शब्द तक चुनें। SPASM सबसे उपयुक्त व्यक्तित्व वाले नाम ढूँढेगा।</p>
 <p>विवरण इंसानों के लिए लिखे गए हैं, तो थोड़ी कल्पना से पढ़ें। और नामों के लिए सूची बदलें दबाएँ।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
+  },
+  es: {
+    home: `<h2>Cómo usar SPASM</h2>
+<h3>¿Qué significa ese nombre?</h3><p>Escribe un nombre (o un apodo), elígelo de la lista desplegable, indica el sexo y descubre la personalidad de esa persona, en sentido figurado o literal.</p>
+<h3>Compatibilidad romántica</h3><p>Escribe dos nombres cualesquiera, indica su sexo y lee su compatibilidad de pareja y sexual.</p>
+<h3>¿Los mejores nombres para tu bebé?</h3><p>¿Quieres saber qué nombres de bebé encajan mejor con una pareja? Escribe el nombre de cada progenitor, elige cada uno de la lista desplegable con el sexo correcto y pulsa nombres de niño o de niña. SPASM te mostrará los nombres ideales para esa pareja.</p>
+<h3>Besar, casarse o evitar</h3><p>Descubre a quién te recomienda SPASM besar, con quién casarte y a quién evitar. Escribe un nombre (el tuyo o el de cualquiera), elígelo de la lista con el sexo correcto y luego elige el sexo de las personas que te interesan. ¡Suerte!</p>
+<p>${MISS_ES}</p>${SCI_ES}`,
+    meaning: `<h2>¿Qué significa ese nombre?</h2><h3>Cómo usar esta página</h3>
+<p>Escribe un nombre (vale un apodo), elígelo de la lista desplegable y usa el selector hombre/mujer para indicar el sexo. También puedes explorar todos los nombres con la barra de la A a la Z.</p><p>${MISS_ES}</p>
+<h3>A tener en cuenta</h3><p>${SHARE_ES}</p><p>Guarda los resultados más divertidos o más raros con el botón de favoritos y enséñaselos a amigos, familia o posibles ligues.</p>${SCI_ES}`,
+    compat: `<h2>Compatibilidad romántica</h2><h3>Cómo usar esta página</h3>
+<p>Escribe un nombre en cada casilla, elige cada uno de la lista desplegable con el sexo correcto y descubre qué tal les irá en el amor. ¡Suerte!</p><p>${MISS_ES}</p>
+<h3>A tener en cuenta</h3><p>${SHARE_ES}</p><p>Guarda los resultados más divertidos con el botón de favoritos.</p>${SCI_ES}`,
+    bub: `<h2>¿Los mejores nombres para tu bebé?</h2><h3>Cómo usar esta página</h3>
+<p>Escribe el nombre de cada progenitor, elige cada uno de la lista desplegable con el sexo correcto y pulsa nombres de niño o de niña. SPASM mostrará los nombres ideales para esa pareja.</p>
+<p>Pulsa "Nueva lista" para ver otros al instante. ¡Toca cualquier nombre para ver cómo será el niño de adulto! También puedes deslizar por todos los nombres, o deslizar con tu pareja para ver cuáles os gustan a los dos.</p>
+<p>${MISS_ES}</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
+    kma: `<h2>¿Besar, casarse o evitar?</h2><h3>Cómo usar esta página</h3>
+<p>Escribe un nombre, elígelo de la lista con el sexo correcto y luego elige el sexo de las personas que te interesan. SPASM te dará nombres para un rollo, para casarte o para evitar del todo. ¡Suerte!</p>
+<h3>A tener en cuenta</h3><p>Toca un nombre de la lista para ver su personalidad. Toca los corazones rosas a la derecha de un nombre para ver vuestra compatibilidad romántica.</p>
+<p>Si te aburre una lista, pulsa "Nueva lista". Desliza a izquierda o derecha sobre el icono grande de arriba para cambiar entre casarse, besar y evitar.</p><p>${SHARE_ES}</p><p>${MISS_ES}</p>${SCI_ES}`,
+    choose: `<h2>Elige un nombre por personalidad</h2><h3>Cómo usar esta página</h3>
+<p>Cada nombre de SPASM tiene una puntuación en diez rasgos. Elige hombre o mujer, ajusta cada rasgo a tu gusto y SPASM encontrará los nombres con la personalidad más parecida. Ideal para elegir un nombre en inglés o un nombre de bebé sin partir de los nombres de los padres.</p>
+<p>Marca "Solo nombres comunes" para quitar los raros. Pulsa "Nueva lista" para ver otros y "Ajustar" para cambiar la configuración. Toca cualquier nombre para ver su descripción y su perfil completo.</p>
+<h3>A tener en cuenta</h3><p>${SHARE_ES}</p><p>Toca la estrella para guardar un nombre en favoritos.</p>${SCI_ES}`,
+    group: `<h2>Compatibilidad de grupo</h2><h3>Cómo usar esta página</h3>
+<p>Añade hasta doce personas, eligiendo cada nombre de la lista con su sexo. SPASM puntúa lo bien que se llevaría cada pareja como amigos, las ordena de mejor a peor y da una puntuación al grupo entero. La amistad se calcula con los tipos de personalidad de cada pareja y lo parecidos que son en carisma, espontaneidad, inteligencia emocional, humor y generosidad. El romance y el sexo no cuentan.</p>
+<p>Toca cualquier pareja para compararlos lado a lado. La tabla muestra todas las parejas de un vistazo: verde es genial, amarillo está bien, naranja es dudoso y rojo es problema.</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
+    pet: `<h2>Nombre para tu mascota, barco o coche</h2><h3>Cómo usar esta página</h3>
+<p>Elige a qué le pones nombre, si es masculino, femenino o cualquiera, y hasta tres palabras para su personalidad. SPASM encontrará los nombres con la personalidad que mejor encaja.</p>
+<p>Las descripciones están escritas para personas, así que léelas con un poco de imaginación. Pulsa "Nueva lista" para ver más nombres.</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
   },
 };

@@ -1,7 +1,7 @@
 // Interface translations (Simplified Chinese, Hindi). Names and David's descriptions stay in English.
 // Works by swapping interface text as screens are drawn, so app.js stays in English.
 
-export const LANGS = [['en', 'English'], ['zh', '中文'], ['hi', 'हिन्दी']];
+export const LANGS = [['en', 'English'], ['es', 'Español'], ['zh', '中文'], ['hi', 'हिन्दी']];
 
 const D = {
   zh: {
@@ -138,6 +138,89 @@ const D = {
     'The Investigator': 'खोजी', 'The Loyalist': 'वफ़ादार', 'The Enthusiast': 'उत्साही', 'The Challenger': 'चुनौती देने वाला', 'The Peacemaker': 'शांतिदूत',
     'The Homebody': 'घरेलू', "Principled, purposeful and self-controlled, with a strong sense of right and wrong.": "सिद्धांतवादी, उद्देश्यपूर्ण और संयमी, सही-गलत की गहरी समझ।", "Warm, generous and people-pleasing, happiest when needed.": "गर्मजोशी भरा, उदार और सबको खुश रखने वाला, ज़रूरत पड़ने पर सबसे खुश।", "Driven, adaptable and image-conscious, built for success.": "मेहनती, लचीला और छवि का ध्यान रखने वाला, सफलता के लिए बना।", "Sensitive, expressive and self-aware, sometimes moody.": "संवेदनशील, अभिव्यक्त करने वाला और आत्म-जागरूक, कभी-कभी मूडी।", "Curious, private and inventive, more at home with ideas than small talk.": "जिज्ञासु, निजी और आविष्कारशील, गपशप से ज़्यादा विचारों में सहज।", "Committed, responsible and security-minded, quick to spot trouble.": "प्रतिबद्ध, ज़िम्मेदार और सुरक्षा का ध्यान रखने वाला, मुसीबत जल्दी भाँप लेता है।", "Spontaneous, versatile and fun-seeking, allergic to boredom.": "सहज, बहुमुखी और मौज-मस्ती पसंद, ऊब से चिढ़।", "Self-confident, decisive and protective, does not back down.": "आत्मविश्वासी, निर्णायक और रक्षक, पीछे नहीं हटता।", "Easygoing, accepting and reassuring, avoids conflict at all costs.": "सरल, स्वीकार करने वाला और भरोसा देने वाला, हर हाल में झगड़े से बचता है।", "Prefers a cup of tea and an early night.": "एक कप चाय और जल्दी सोना पसंद।", "Affectionate, reliable, and in no particular hurry.": "प्यार भरा, भरोसेमंद, और कोई जल्दी नहीं।", "Open to suggestions, within reason.": "सुझावों के लिए खुला, एक हद तक।", "Keen, inventive and rarely short of ideas.": "उत्सुक, आविष्कारशील और विचारों की कमी नहीं।", "Has a Play Cupboard, and is not afraid to use it.": "एक \"प्ले कपबोर्ड\" है, और इस्तेमाल करने से डरता नहीं।", 'The Steady': 'स्थिर', 'The Curious': 'जिज्ञासु', 'The Adventurer': 'साहसी', 'The Explorer': 'खोजकर्ता',
   },
+  es: {
+    'Home': 'Inicio', 'What does that name mean?': '¿Qué significa ese nombre?', '(Based on the Name Theory™)': '(Basado en la Name Theory™)',
+    'Romantic compatibility': 'Compatibilidad romántica', 'Your best bub names?': '¿Los mejores nombres para tu bebé?', 'Your best bub names': 'Los mejores nombres para tu bebé',
+    'Kiss, marry or avoid': 'Besar, casarse o evitar', 'Kiss, marry or avoid?': '¿Besar, casarse o evitar?', 'Favourites': 'Favoritos', 'Your name': 'Tu nombre',
+    'Choose a name by personality': 'Elige un nombre por personalidad', 'Choose a name': 'Elige un nombre', 'More fun': 'Más diversión',
+    'Submit a name to be added to SPASM': 'Envía un nombre para añadirlo a SPASM', 'Send feedback': 'Enviar comentarios', 'The science': 'La ciencia',
+    'Privacy policy': 'Política de privacidad', 'Terms & conditions': 'Términos y condiciones', 'Name of the day': 'Nombre del día',
+    'Tell SPASM your name': 'Dile a SPASM tu nombre', 'to save typing it every time.': ' para no escribirlo cada vez.', 'change': 'cambiar',
+    'Male': 'Hombre', 'Female': 'Mujer', 'Name': 'Nombre', 'Type a name': 'Escribe un nombre', 'Show me': 'Mostrar', 'Or browse': 'O explora',
+    'Previous letter': 'Letra anterior', 'Next letter': 'Letra siguiente', 'This is my name': 'Este es mi nombre',
+    'Save to favourites': 'Guardar en favoritos', 'Save name to favourites': 'Guardar nombre en favoritos', 'Save couple to favourites': 'Guardar pareja en favoritos',
+    'Saved to favourites': 'Guardado en favoritos', 'Already in favourites': 'Ya está en favoritos', 'Personality profile': 'Perfil de personalidad', 'Type': 'Tipo',
+    'Also goes by': 'También conocido como', 'First person': 'Primera persona', 'First person (you)': 'Primera persona (tú)', 'Second person': 'Segunda persona',
+    'Check compatibility': 'Ver compatibilidad', 'Compatibility results': 'Resultados de compatibilidad', 'Couple Compatibility': 'Compatibilidad de pareja',
+    'Sexual Compatibility': 'Compatibilidad sexual', 'Read another': 'Leer otra', 'Read another description': 'Leer otra descripción',
+    'Parent one': 'Primer progenitor', 'Parent two': 'Segundo progenitor', 'Boys names': 'Nombres de niño', 'Girls names': 'Nombres de niña',
+    'Swipe through every name': 'Desliza por todos los nombres', 'Refresh list': 'Nueva lista',
+    "Tap a name to see the child's personality as an adult.": 'Toca un nombre para ver la personalidad del niño de adulto.',
+    "Your name (or anyone's)": 'Tu nombre (o el de cualquiera)', 'Interested in': 'Te interesan', 'Kiss': 'Besar', 'Marry': 'Casarse', 'Avoid': 'Evitar',
+    'Tap a name for their personality, or the pink hearts for your romantic compatibility.': 'Toca un nombre para ver su personalidad, o los corazones rosas para ver vuestra compatibilidad romántica.',
+    'Nothing saved yet. Use the save buttons on any result.': 'Aún no hay nada guardado. Usa los botones de guardar en cualquier resultado.',
+    'Names': 'Nombres', 'Couples': 'Parejas', 'Best bub names': 'Nombres de bebé',
+    "Can't find a name? Tell us and we'll add it.": '¿No encuentras un nombre? Dínoslo y lo añadiremos.',
+    'Anything we should know? (optional)': '¿Algo que debamos saber? (opcional)',
+    "Your email, if you'd like to hear back (optional)": 'Tu correo, si quieres respuesta (opcional)', 'Submit name': 'Enviar nombre',
+    'Thanks!': '¡Gracias!', 'Back to home': 'Volver al inicio', 'Almost there': 'Casi listo', 'Open email again': 'Abrir el correo otra vez',
+    'Your email app should open with the name filled in. Just hit send.': 'Tu app de correo se abrirá con el nombre ya escrito. Solo pulsa enviar.',
+    'SPASM fills this in for you on every page. It stays on this device.': 'SPASM lo rellena por ti en cada página. Se queda en este dispositivo.',
+    'Save': 'Guardar', 'Forget my name': 'Olvidar mi nombre', 'Forgotten': 'Olvidado', 'Hmm.': 'Mmm.', 'Get it written up by David': 'Que David lo escriba',
+    'Swipe right to shortlist, left to skip.': 'Desliza a la derecha para elegir, a la izquierda para pasar.', 'Shortlist': 'Preseleccionados', 'Swipe with your partner': 'Desliza con tu pareja',
+    'Send my likes back to my partner': 'Enviar mis favoritos a mi pareja', 'Matches with your partner': 'Coincidencias con tu pareja',
+    "That's every name": 'Ya están todos los nombres', 'Your shortlist is below and saved in favourites.': 'Tu selección está abajo y guardada en favoritos.',
+    'Name for a': 'Nombre para', 'Common names only': 'Solo nombres comunes', 'Find names': 'Buscar nombres', 'Low': 'Poco', 'High': 'Mucho',
+    'Set how much of each trait you\'d like, and SPASM finds the names that match. Handy for choosing an English name, or a baby name from scratch.': 'Indica cuánto quieres de cada rasgo y SPASM encuentra los nombres que encajan. Útil para elegir un nombre en inglés o un nombre de bebé desde cero.',
+    'Adjust': 'Ajustar', 'Tap a name to read about them.': 'Toca un nombre para leer sobre él.', 'Matched to your profile': 'Según tu perfil',
+    'Charisma': 'Carisma', 'Spontaneity': 'Espontaneidad', 'Emotional savvy': 'Inteligencia emocional', 'Sexual adventurousness': 'Atrevimiento sexual', 'Motivation': 'Motivación',
+    'Creativity': 'Creatividad', 'Humour': 'Humor', 'Spirituality': 'Espiritualidad', 'Leadership': 'Liderazgo', 'Generosity': 'Generosidad',
+    'Draws people in': 'Atrae a la gente', 'Acts on a whim': 'Actúa por impulso', 'Reads the room': 'Sabe leer el ambiente', 'Up for anything': 'Se apunta a todo',
+    'Gets things done': 'Hace que las cosas pasen', 'Makes things': 'Crea cosas', 'Makes people laugh': 'Hace reír', 'Seeks meaning': 'Busca sentido',
+    'Takes charge': 'Toma el mando', 'Gives freely': 'Da sin reservas',
+    'Group compatibility': 'Compatibilidad de grupo', 'Add a famous couple': 'Añade una pareja famosa', "Buy David's book": 'Compra el libro de David', 'Who are they?': '¿Quiénes son?', 'Add couple': 'Añadir pareja', 'Pick their first names from the list (for Becks and Posh, that\'s David and Victoria) and say who they are. Everyone will see it.': 'Elige sus nombres de la lista (para los Beckham, David y Victoria) y di quiénes son. Todo el mundo lo verá.', 'Added for everyone to see': 'Añadida para que todos la vean', 'Already on the list': 'Ya está en la lista', 'Say who they are': 'Di quiénes son', 'Compare two names': 'Compara dos nombres', 'Name your pet, boat or car': 'Nombre para tu mascota, barco o coche',
+    'Famous couples': 'Parejas famosas', 'Get your name written up': 'Pide que escriban tu nombre',
+    'Who suits whom in your friend group, office or wedding party': 'Quién encaja con quién en tu grupo de amigos, oficina o boda',
+    'Personality profiles side by side': 'Perfiles de personalidad lado a lado', 'Find names to match the traits you want': 'Encuentra nombres con los rasgos que quieres',
+    'Pick its personality, get a name': 'Elige su personalidad y obtén un nombre', 'How the great romances of history and fiction rate': 'Cómo puntúan los grandes romances de la historia y la ficción',
+    'Not in SPASM? David will write yours': '¿No está en SPASM? David escribirá el tuyo',
+    'Add up to 12 people and SPASM scores how well the group gets on as friends.': 'Añade hasta 12 personas y SPASM puntúa cómo se lleva el grupo como amigos.', 'Friends for life': 'Amigos para siempre', 'A solid crew': 'Una pandilla sólida', 'Good company, mostly': 'Buena compañía, casi siempre', 'Handle with care': 'Con cuidado', 'Keep them apart': 'Mejor separados', 'Group friendship score': 'Puntuación de amistad del grupo', '+ Add someone': '+ Añadir a alguien',
+    'Rank the pairings': 'Clasificar las parejas', 'Add at least two people': 'Añade al menos dos personas', 'Grid': 'Tabla', 'Start again': 'Empezar de nuevo',
+    'First name': 'Primer nombre', 'Second name': 'Segundo nombre', 'Compare': 'Comparar', 'Their romantic compatibility': 'Su compatibilidad romántica',
+    'What are you naming?': '¿A qué le pones nombre?', 'Boy, girl or either?': '¿Masculino, femenino o cualquiera?', 'Boy': 'Masculino', 'Girl': 'Femenino', 'Either': 'Cualquiera',
+    'Pick up to three words for its personality': 'Elige hasta tres palabras para su personalidad', 'Three is plenty': 'Con tres basta', 'Pick at least one word': 'Elige al menos una palabra',
+    'Dog': 'Perro', 'Cat': 'Gato', 'Horse': 'Caballo', 'Bird': 'Pájaro', 'Boat': 'Barco', 'Car': 'Coche', 'Something else': 'Otra cosa',
+    'Charming': 'Encantador', 'Unpredictable': 'Impredecible', 'Sensitive': 'Sensible', 'Adventurous': 'Aventurero', 'Hard-working': 'Trabajador',
+    'Clever': 'Listo', 'Funny': 'Gracioso', 'Soulful': 'Profundo', 'Bossy': 'Mandón', 'Generous': 'Generoso',
+    'Couple compatibility, by first name alone': 'Compatibilidad de pareja, solo por el nombre',
+    'Send request': 'Enviar solicitud', 'Pay and send request': 'Pagar y enviar solicitud', 'Continue to payment': 'Continuar al pago', 'Nearly done': 'Casi listo', 'Open the email again': 'Abrir el correo otra vez',
+    'Open payment again': 'Abrir el pago otra vez', 'Anything David should know? (optional)': '¿Algo que David deba saber? (opcional)',
+    'Your email, so David can send it to you': 'Tu correo, para que David te lo envíe',
+    'Making your image...': 'Creando tu imagen...', 'Link copied, paste it anywhere': 'Enlace copiado, pégalo donde quieras',
+    'Link copied, send it to your partner': 'Enlace copiado, envíaselo a tu pareja', 'Image saved and link copied': 'Imagen guardada y enlace copiado',
+    'SPASM has been updated. Tap to refresh.': 'SPASM se ha actualizado. Toca para recargar.', 'Pick a name from the pop-up list.': 'Elige un nombre de la lista desplegable.',
+    'No description yet.': 'Aún no hay descripción.', 'Language': 'Idioma', 'Name tattoo designs': 'Diseños de tatuaje con tu nombre', 'Show designs': 'Ver diseños', 'Download': 'Descargar', 'Share': 'Compartir', 'Design downloaded': 'Diseño descargado', 'Black ink': 'Tinta negra', 'Blue ink': 'Tinta azul', 'Red ink': 'Tinta roja', 'Tattoo designs. Tap one to download it.': 'Diseños de tatuaje. Toca uno para descargarlo.', 'Old English': 'Old English', 'Old English with rules': 'Old English con líneas', 'Gothic': 'Gótica', 'Gothic narrow': 'Gótica estrecha', 'Flowing script': 'Caligrafía fluida', 'Fine line script': 'Caligrafía fina', 'Brush script': 'Caligrafía de pincel', 'Elegant script': 'Caligrafía elegante', 'Bold brush': 'Pincel grueso', 'Typewriter': 'Máquina de escribir', 'Script with heart': 'Caligrafía con corazón', 'Script with stars': 'Caligrafía con estrellas', 'Install SPASM': 'Instalar SPASM', 'Install': 'Instalar', 'Install now': 'Instalar ahora', 'Install SPASM on your phone': 'Instala SPASM en tu móvil', 'iPhone and iPad': 'iPhone y iPad', 'Android': 'Android', 'SPASM is on your home screen': 'SPASM está en tu pantalla de inicio', 'Add SPASM to your home screen so it opens like an app, full screen, with daily notifications.': 'Añade SPASM a tu pantalla de inicio para que se abra como una app, a pantalla completa y con notificaciones diarias.', 'Price': 'Precio', 'About US$7. One-off payment, any tax included. Paid securely through Stripe, which shows the exact amount in your own currency at checkout.': 'Unos 7 US$. Pago único, impuestos incluidos. Pago seguro con Stripe, que muestra el importe exacto en tu moneda al pagar.', 'Name of the day, every morning': 'Nombre del día, cada mañana', "A notification with each day's name": 'Una notificación con el nombre de cada día', 'Turn on': 'Activar', 'Turn off': 'Desactivar', 'Send me one now': 'Envíame una ahora', 'Notifications are off.': 'Las notificaciones están desactivadas.', "You're signed up. The name of the day arrives each morning.": 'Estás suscrito. El nombre del día llega cada mañana.', "You're signed up": 'Estás suscrito', 'Notifications off': 'Notificaciones desactivadas', 'On its way': 'En camino', 'What does your name say?': '¿Qué dice tu nombre?',
+    "David Hocking's book on the secret sounds of names. Buy it on Amazon": 'El libro de David Hocking sobre los sonidos secretos de los nombres. Cómpralo en Amazon',
+    'Enjoying SPASM?': '¿Te gusta SPASM?', 'A quick review on Google Play helps other people find it.': 'Una reseña rápida en Google Play ayuda a que otros lo encuentren.', 'Review': 'Reseñar',
+    'Tattoo designs for': 'Diseños de tatuaje para', 'Nicknames': 'Apodos', 'Send': 'Enviar',
+    'The Reformer': 'El Reformador', 'The Helper': 'El Ayudador', 'The Achiever': 'El Triunfador', 'The Individualist': 'El Individualista',
+    'The Investigator': 'El Investigador', 'The Loyalist': 'El Leal', 'The Enthusiast': 'El Entusiasta', 'The Challenger': 'El Desafiador', 'The Peacemaker': 'El Pacificador',
+    'The Homebody': 'El Hogareño', 'The Steady': 'El Constante', 'The Curious': 'El Curioso', 'The Adventurer': 'El Aventurero', 'The Explorer': 'El Explorador',
+    "Principled, purposeful and self-controlled, with a strong sense of right and wrong.": 'Íntegro, decidido y controlado, con un fuerte sentido del bien y del mal.',
+    "Warm, generous and people-pleasing, happiest when needed.": 'Cálido, generoso y complaciente, más feliz cuando lo necesitan.',
+    "Driven, adaptable and image-conscious, built for success.": 'Ambicioso, adaptable y pendiente de su imagen, hecho para el éxito.',
+    "Sensitive, expressive and self-aware, sometimes moody.": 'Sensible, expresivo y consciente de sí mismo, a veces temperamental.',
+    "Curious, private and inventive, more at home with ideas than small talk.": 'Curioso, reservado e ingenioso, más cómodo con las ideas que con la charla.',
+    "Committed, responsible and security-minded, quick to spot trouble.": 'Comprometido, responsable y prudente, detecta los problemas enseguida.',
+    "Spontaneous, versatile and fun-seeking, allergic to boredom.": 'Espontáneo, versátil y amante de la diversión, alérgico al aburrimiento.',
+    "Self-confident, decisive and protective, does not back down.": 'Seguro, decidido y protector, no da marcha atrás.',
+    "Easygoing, accepting and reassuring, avoids conflict at all costs.": 'Tranquilo, tolerante y tranquilizador, evita el conflicto a toda costa.',
+    "Prefers a cup of tea and an early night.": 'Prefiere una taza de té y acostarse temprano.',
+    "Affectionate, reliable, and in no particular hurry.": 'Cariñoso, fiable y sin ninguna prisa.',
+    "Open to suggestions, within reason.": 'Abierto a sugerencias, con sensatez.',
+    "Keen, inventive and rarely short of ideas.": 'Entusiasta, ingenioso y casi nunca le faltan ideas.',
+    "Has a Play Cupboard, and is not afraid to use it.": 'Tiene un armario de juegos y no le da miedo usarlo.',
+  },
 };
 
 // Strings with names or numbers in them
@@ -186,6 +269,30 @@ const P = {
     [/^Not in SPASM\? David will write yours for (.+)$/, (m) => `SPASM में नहीं? David आपका ${m[1]} में लिखेंगे`],
     [/^We don't have (.+) as a (male|female) name yet\.$/, (m) => `हमारे पास अभी ${m[1]} ${m[2] === 'male' ? 'पुरुष' : 'महिला'} नाम नहीं है।`],
   ],
+  es: [
+    [/^How well this group gets on as friends\. Best mates: (.+) and (.+)\. Keep apart: (.+) and (.+)\.$/, (m) => `Qué tal se lleva este grupo como amigos. Mejores amigos: ${m[1]} y ${m[2]}. Mejor separados: ${m[3]} y ${m[4]}.`],
+    [/^Best (boys|girls) names$/, (m) => (m[1] === 'boys' ? 'Mejores nombres de niño' : 'Mejores nombres de niña')],
+    [/^for (.+) and (.+)$/, (m) => `para ${m[1]} y ${m[2]}`],
+    [/^Your best (male|female) names$/, (m) => (m[1] === 'male' ? 'Tus mejores nombres masculinos' : 'Tus mejores nombres femeninos')],
+    [/^Hi (.+)\.$/, (m) => `Hola, ${m[1]}.`],
+    [/^Hi (.+), SPASM will remember you$/, (m) => `Hola, ${m[1]}, SPASM te recordará`],
+    [/^Hi (.+)$/, (m) => `Hola, ${m[1]}`],
+    [/^(\d+) (male|female) names starting with (.)$/, (m) => `${m[1]} nombres ${m[2] === 'male' ? 'masculinos' : 'femeninos'} que empiezan por ${m[3]}`],
+    [/^Names for your (.+)$/, (m) => `Nombres para tu ${(D.es[m[1][0].toUpperCase() + m[1].slice(1)] || m[1]).toLowerCase()}`],
+    [/^Person (\d+)$/, (m) => `Persona ${m[1]}`],
+    [/^Compare (.+) with (.+)$/, (m) => `Comparar a ${m[1]} con ${m[2]}`],
+    [/^(Hook up with|Settle down with|Steer clear of), for (.+) \((Male|Female)\)$/, (m) => `${{ 'Hook up with': 'Para un rollo', 'Settle down with': 'Para sentar la cabeza', 'Steer clear of': 'Mejor evitar' }[m[1]]}, para ${m[2]} (${m[3] === 'Male' ? 'hombre' : 'mujer'})`],
+    [/^It's a match! You both like (.+)$/, (m) => `¡Coincidencia! A los dos os gusta ${m[1]}`],
+    [/^(\d+) to go\.$/, (m) => `Quedan ${m[1]}.`],
+    [/^Enneagram (\d)$/, (m) => `Eneagrama ${m[1]}`],
+    [/^Adventurer (\d)$/, (m) => `Aventurero ${m[1]}`],
+    [/^Strong on (.+)$/, (m) => `Destaca en ${m[1]}`],
+    [/^Get your name written up(?: by David)?(?: \((.+)\))?$/, (m) => `Pide a David que escriba tu nombre${m[1] ? ` (${m[1]})` : ''}`],
+    [/^Pay (.+) and send request$/, (m) => `Pagar ${m[1]} y enviar solicitud`],
+    [/^Add (.+) to SPASM$/, (m) => `Añadir ${m[1]} a SPASM`],
+    [/^Tattoo designs for (.+)$/, (m) => `Diseños de tatuaje para ${m[1]}`],
+    [/^We don't have (.+) as a (male|female) name yet\.$/, (m) => `Todavía no tenemos ${m[1]} como nombre ${m[2] === 'male' ? 'masculino' : 'femenino'}.`],
+  ],
 };
 
 export function getLang() {
@@ -194,7 +301,7 @@ export function getLang() {
     if (saved) return saved;
   } catch { /* private mode */ }
   const n = (navigator.language || 'en').toLowerCase();
-  return n.startsWith('zh') ? 'zh' : n.startsWith('hi') ? 'hi' : 'en';
+  return n.startsWith('zh') ? 'zh' : n.startsWith('hi') ? 'hi' : n.startsWith('es') ? 'es' : 'en';
 }
 export function setLang(l) { try { localStorage.setItem('spasm.lang', l); } catch { /* private mode */ } }
 
