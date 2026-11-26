@@ -1,7 +1,7 @@
 // Offline support: cache the shell and data files as they are used.
-const CACHE = 'spasm-v51';
+const CACHE = 'spasm-v52';
 const SHELL = ['/', '/index.html', '/css/app.css', '/js/app.js', '/js/engine.js', '/js/help.js', '/js/icons.js', '/js/share.js', '/js/i18n.js', '/js/tattoo.js',
-  '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png', '/paper.html', '/data/names.json?v=3', '/data/tables.json?v=3'];
+  '/img/logo.png', '/fonts/comfortaa-latin-400-normal.woff2', '/fonts/comfortaa-latin-700-normal.woff2', '/img/icon-192.png?v=2', '/paper.html', '/data/names.json?v=3', '/data/tables.json?v=3'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
@@ -39,7 +39,7 @@ async function showDaily() {
       if (d) body = d.length > 140 ? d.slice(0, 137).replace(/\s+\S*$/, '') + '...' : d;
     } catch { /* keep default body */ }
   } catch { /* offline: generic message */ }
-  return self.registration.showNotification(title, { body, icon: '/img/icon-192.png', badge: '/img/icon-192.png', tag: 'spasm-daily', data: { url } });
+  return self.registration.showNotification(title, { body, icon: '/img/icon-192.png?v=2', badge: '/img/icon-192.png?v=2', tag: 'spasm-daily', data: { url } });
 }
 self.addEventListener('push', (e) => e.waitUntil(showDaily()));
 self.addEventListener('notificationclick', (e) => {

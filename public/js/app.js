@@ -1352,7 +1352,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 51;
+const APP_VERSION = 52;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
