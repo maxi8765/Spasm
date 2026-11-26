@@ -180,7 +180,7 @@ function openMenu() {
   const m = $('#menu');
   const me = meRecord(), mm = $('#menu-me');
   const hi = { es: 'Hola', pt: 'Olá', zh: '你好', hi: 'नमस्ते' }[getLang()] || 'Hi';
-  if (mm) mm.textContent = me ? `${hi} ${me.n}` : tr('Your name');
+  if (mm) { mm.textContent = me ? `${hi} ${me.n}` : tr('Your name'); mm.href = me ? `#/meaning/${me.g}/${enc(me.n)}` : '#/me'; }
   m.hidden = false;
   m.onclick = (e) => { if (e.target === m || e.target.tagName === 'A') m.hidden = true; };
 }
@@ -1355,7 +1355,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 59;
+const APP_VERSION = 60;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
