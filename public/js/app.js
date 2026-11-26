@@ -1078,10 +1078,23 @@ function customPage(q) {
     const body = `Please write up this name for me.\n\nName: ${name}\nGender: ${GLABEL[g]}\nReply to: ${email}\n${note ? `\nNotes: ${note}\n` : ''}${ref ? `\nReference: ${ref}\n` : ''}${STRIPE_LINK ? '\nI have paid through Stripe.\n' : ''}`;
     const mail = `mailto:${FEEDBACK}?cc=${CC}&subject=${enc(subject)}&body=${enc(body)}`;
     const pay = STRIPE_LINK ? `${STRIPE_LINK}?prefilled_email=${enc(email)}${ref ? `&client_reference_id=${enc(ref)}` : ''}` : '';
-    view.innerHTML = `${logo()}<h1>Nearly done</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab, then send the email that opens here.' : 'Send the email that opens, and David will be in touch.'}</p>
-      <a class="btn" href="${mail}">Open the email again</a>${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn secondary" href="#/">Back to home</a>`;
     if (pay) { if (payWin) payWin.location = pay; else window.open(pay, '_blank', 'noopener'); }
-    location.href = mail;
+    // email David directly through FormSubmit; fall back to the person's own email app if that fails
+    let sent = false;
+    try {
+      const r = await fetch(`https://formsubmit.co/ajax/${FEEDBACK}`, {
+        method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ _subject: subject, _cc: CC, _replyto: email, _template: 'box', _captcha: 'false', Name: name, Gender: GLABEL[g], Email: email, Notes: note || '-', Reference: ref || '-', Payment: STRIPE_LINK ? 'Stripe link opened (check Stripe for this reference)' : '-' }),
+      });
+      const j = await r.json().catch(() => ({}));
+      sent = r.ok && String(j.success) === 'true';
+    } catch { sent = false; }
+    view.innerHTML = sent
+      ? `${logo()}<h1>Thanks!</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab. ' : ''}David has your request and will email it to ${esc(email)} when it's written.</p>
+        ${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn" href="#/">Back to home</a>`
+      : `${logo()}<h1>Nearly done</h1><p class="body">${STRIPE_LINK ? 'Finish paying in the Stripe tab, then send the email that opens here.' : 'Send the email that opens, and David will be in touch.'}</p>
+        <a class="btn" href="${mail}">Open the email again</a>${pay ? `<a class="btn secondary" href="${pay}" target="_blank" rel="noopener">Open payment again</a>` : ''}<a class="btn secondary" href="#/">Back to home</a>`;
+    if (!sent) location.href = mail;
   };
 }
 
@@ -1319,7 +1332,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 46;
+const APP_VERSION = 47;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
