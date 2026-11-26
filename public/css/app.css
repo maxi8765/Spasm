@@ -321,3 +321,5 @@ main.home .home-grid .tile.paid { background: linear-gradient(135deg, var(--purp
 .book-box span { color: var(--muted); font-size: 14px; }
 .translating { opacity: .55; transition: opacity .3s; }
 .tr-note { font-size: 12px; color: var(--muted); margin: -4px 0 12px; font-style: italic; }
+main.home .home-grid .tile.start { background: var(--blue); color: #fff; position: relative; box-shadow: 0 0 0 2px rgba(255,255,255,.35), 0 6px 18px rgba(85,82,255,.45); }
+main.home .home-grid .tile.start .start-here { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.35); font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .03em; background: #fff; color: var(--blue); border-radius: 999px; padding: 2px 8px; }

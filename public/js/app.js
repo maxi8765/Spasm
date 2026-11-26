@@ -349,7 +349,7 @@ function home() {
   view.className = 'home';
   setTimeout(maybeShowInstallTip, 1500);
   const tiles = [
-    ['#/meaning', ICON.head, 'What does that name mean?'],
+    ['#/meaning', ICON.head, 'What does that name mean?', 'start'],
     ['#/compat', ICON.hearts, 'Romantic compatibility'],
     ['#/bub', ICON.baby, 'Your best bub names?'],
     ['#/kma', ICON.balloons, 'Kiss, marry or avoid'],
@@ -362,7 +362,7 @@ function home() {
   ];
   view.innerHTML = `
   <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span>${me ? `<span class="daily-me">Hi ${esc(me.n)}</span>` : ''}</a>
-  <div class="grid home-grid">${tiles.map(([h, ic, t, cls]) => `<a class="tile${cls ? ' ' + cls : ''}" href="${h}">${ic}<span>${esc(t)}</span></a>`).join('')}</div>
+  <div class="grid home-grid">${tiles.map(([h, ic, t, cls]) => `<a class="tile${cls ? ' ' + cls : ''}" href="${h}">${cls === 'start' ? '<em class="start-here">Start here</em>' : ''}${ic}<span>${esc(t)}</span></a>`).join('')}</div>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
 
@@ -1332,7 +1332,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 48;
+const APP_VERSION = 49;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

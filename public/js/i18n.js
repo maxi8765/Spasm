@@ -5,7 +5,7 @@ export const LANGS = [['en', 'English'], ['es', 'Español'], ['pt', 'Português'
 
 const D = {
   zh: {
-    'Home': '首页', 'What does that name mean?': '这个名字是什么意思？', '(Based on the Name Theory™)': '（基于名字理论™）',
+    'Home': '首页', 'Start here': '从这里开始', 'What does that name mean?': '这个名字是什么意思？', '(Based on the Name Theory™)': '（基于名字理论™）',
     'Romantic compatibility': '恋爱匹配度', 'Your best bub names?': '最适合的宝宝名字？', 'Your best bub names': '最适合的宝宝名字',
     'Kiss, marry or avoid': '亲吻、结婚还是避开', 'Kiss, marry or avoid?': '亲吻、结婚还是避开？', 'Favourites': '收藏', 'Your name': '你的名字',
     'Choose a name by personality': '按性格选名字', 'Choose a name': '选名字', 'More fun': '更多乐趣',
@@ -72,7 +72,7 @@ const D = {
     'The Homebody': '宅家型', "Principled, purposeful and self-controlled, with a strong sense of right and wrong.": "有原则、有目标、自律，是非观念很强。", "Warm, generous and people-pleasing, happiest when needed.": "热情、慷慨、乐于讨好别人，被需要时最开心。", "Driven, adaptable and image-conscious, built for success.": "有冲劲、适应力强、注重形象，天生为成功而生。", "Sensitive, expressive and self-aware, sometimes moody.": "敏感、善于表达、有自知之明，偶尔情绪化。", "Curious, private and inventive, more at home with ideas than small talk.": "好奇、注重隐私、富有创意，比起闲聊更喜欢想法。", "Committed, responsible and security-minded, quick to spot trouble.": "忠诚、负责、重视安全感，善于发现麻烦。", "Spontaneous, versatile and fun-seeking, allergic to boredom.": "随性、多才多艺、爱找乐子，最怕无聊。", "Self-confident, decisive and protective, does not back down.": "自信、果断、有保护欲，从不退让。", "Easygoing, accepting and reassuring, avoids conflict at all costs.": "随和、包容、让人安心，不惜一切避免冲突。", "Prefers a cup of tea and an early night.": "更喜欢一杯茶和早点睡觉。", "Affectionate, reliable, and in no particular hurry.": "深情、可靠，而且一点也不着急。", "Open to suggestions, within reason.": "愿意尝试新建议，但有分寸。", "Keen, inventive and rarely short of ideas.": "热情、有创意，点子很少用完。", "Has a Play Cupboard, and is not afraid to use it.": "有一个\"玩具柜\"，而且敢用。", 'The Steady': '稳定型', 'The Curious': '好奇型', 'The Adventurer': '冒险型', 'The Explorer': '探险家',
   },
   hi: {
-    'Home': 'होम', 'What does that name mean?': 'इस नाम का मतलब क्या है?', '(Based on the Name Theory™)': '(नेम थ्योरी™ पर आधारित)',
+    'Home': 'होम', 'Start here': 'यहाँ से शुरू करें', 'What does that name mean?': 'इस नाम का मतलब क्या है?', '(Based on the Name Theory™)': '(नेम थ्योरी™ पर आधारित)',
     'Romantic compatibility': 'रोमांटिक मेल', 'Your best bub names?': 'बच्चे के सबसे अच्छे नाम?', 'Your best bub names': 'बच्चे के सबसे अच्छे नाम',
     'Kiss, marry or avoid': 'किस, शादी या दूरी', 'Kiss, marry or avoid?': 'किस, शादी या दूरी?', 'Favourites': 'पसंदीदा', 'Your name': 'आपका नाम',
     'Choose a name by personality': 'व्यक्तित्व से नाम चुनें', 'Choose a name': 'नाम चुनें', 'More fun': 'और मज़ा',
@@ -139,7 +139,7 @@ const D = {
     'The Homebody': 'घरेलू', "Principled, purposeful and self-controlled, with a strong sense of right and wrong.": "सिद्धांतवादी, उद्देश्यपूर्ण और संयमी, सही-गलत की गहरी समझ।", "Warm, generous and people-pleasing, happiest when needed.": "गर्मजोशी भरा, उदार और सबको खुश रखने वाला, ज़रूरत पड़ने पर सबसे खुश।", "Driven, adaptable and image-conscious, built for success.": "मेहनती, लचीला और छवि का ध्यान रखने वाला, सफलता के लिए बना।", "Sensitive, expressive and self-aware, sometimes moody.": "संवेदनशील, अभिव्यक्त करने वाला और आत्म-जागरूक, कभी-कभी मूडी।", "Curious, private and inventive, more at home with ideas than small talk.": "जिज्ञासु, निजी और आविष्कारशील, गपशप से ज़्यादा विचारों में सहज।", "Committed, responsible and security-minded, quick to spot trouble.": "प्रतिबद्ध, ज़िम्मेदार और सुरक्षा का ध्यान रखने वाला, मुसीबत जल्दी भाँप लेता है।", "Spontaneous, versatile and fun-seeking, allergic to boredom.": "सहज, बहुमुखी और मौज-मस्ती पसंद, ऊब से चिढ़।", "Self-confident, decisive and protective, does not back down.": "आत्मविश्वासी, निर्णायक और रक्षक, पीछे नहीं हटता।", "Easygoing, accepting and reassuring, avoids conflict at all costs.": "सरल, स्वीकार करने वाला और भरोसा देने वाला, हर हाल में झगड़े से बचता है।", "Prefers a cup of tea and an early night.": "एक कप चाय और जल्दी सोना पसंद।", "Affectionate, reliable, and in no particular hurry.": "प्यार भरा, भरोसेमंद, और कोई जल्दी नहीं।", "Open to suggestions, within reason.": "सुझावों के लिए खुला, एक हद तक।", "Keen, inventive and rarely short of ideas.": "उत्सुक, आविष्कारशील और विचारों की कमी नहीं।", "Has a Play Cupboard, and is not afraid to use it.": "एक \"प्ले कपबोर्ड\" है, और इस्तेमाल करने से डरता नहीं।", 'The Steady': 'स्थिर', 'The Curious': 'जिज्ञासु', 'The Adventurer': 'साहसी', 'The Explorer': 'खोजकर्ता',
   },
   es: {
-    'Home': 'Inicio', 'What does that name mean?': '¿Qué significa ese nombre?', '(Based on the Name Theory™)': '(Basado en la Name Theory™)',
+    'Home': 'Inicio', 'Start here': 'Empieza aquí', 'What does that name mean?': '¿Qué significa ese nombre?', '(Based on the Name Theory™)': '(Basado en la Name Theory™)',
     'Romantic compatibility': 'Compatibilidad romántica', 'Your best bub names?': '¿Los mejores nombres para tu bebé?', 'Your best bub names': 'Los mejores nombres para tu bebé',
     'Kiss, marry or avoid': 'Besar, casarse o evitar', 'Kiss, marry or avoid?': '¿Besar, casarse o evitar?', 'Favourites': 'Favoritos', 'Your name': 'Tu nombre',
     'Choose a name by personality': 'Elige un nombre por personalidad', 'Choose a name': 'Elige un nombre', 'More fun': 'Más diversión',
@@ -222,7 +222,7 @@ const D = {
     "Has a Play Cupboard, and is not afraid to use it.": 'Tiene un armario de juegos y no le da miedo usarlo.',
   },
   pt: {
-    'Home': 'Início', 'What does that name mean?': 'O que esse nome significa?', '(Based on the Name Theory™)': '(Baseado na Name Theory™)',
+    'Home': 'Início', 'Start here': 'Comece aqui', 'What does that name mean?': 'O que esse nome significa?', '(Based on the Name Theory™)': '(Baseado na Name Theory™)',
     'Romantic compatibility': 'Compatibilidade romântica', 'Your best bub names?': 'Os melhores nomes para o seu bebê?', 'Your best bub names': 'Os melhores nomes para o seu bebê',
     'Kiss, marry or avoid': 'Beijar, casar ou evitar', 'Kiss, marry or avoid?': 'Beijar, casar ou evitar?', 'Favourites': 'Favoritos', 'Your name': 'Seu nome',
     'Choose a name by personality': 'Escolha um nome pela personalidade', 'Choose a name': 'Escolha um nome', 'More fun': 'Mais diversão',
