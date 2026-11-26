@@ -12,9 +12,9 @@ table{width:100%;border-collapse:collapse;margin:8px 0 24px}th,td{text-align:lef
 th{color:#a7a6b8;font-weight:600}.muted{color:#a7a6b8}.err{color:#ff8a8a}.ok{color:#7be0a5}a{color:#c9b8ff}
 .card{background:#26253a;border-radius:16px;padding:16px;margin:14px 0}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}.row>label{min-width:110px;color:#a7a6b8}
-.trait{display:grid;grid-template-columns:170px 1fr 34px;gap:10px;align-items:center;margin:6px 0}
-.trait input[type=range]{width:100%;accent-color:#a855f7;padding:0}
-.trait b{text-align:right}
+.trait{margin:12px 0}.trait>span{display:block;margin-bottom:5px}
+.seg{display:flex;gap:4px}.seg button{flex:1;min-width:0;height:44px;padding:0;font-size:16px;font-weight:600;background:#2c2b3b;border-radius:8px}
+.seg button.on{background:#a855f7}
 .result{display:flex;gap:18px;flex-wrap:wrap;background:#15141e;border-radius:12px;padding:10px 14px;margin:10px 0}
 .result div{min-width:120px}.result small{display:block;color:#a7a6b8}.result b{font-size:20px}
 nav.tabs{display:flex;gap:8px;margin:10px 0}nav.tabs button{background:#2c2b3b}nav.tabs button.on{background:#a855f7}
@@ -129,11 +129,17 @@ try { $('#k').value = sessionStorage.getItem('spasm.admin') || ''; } catch {}
 
 // trait sliders
 $('#traits').innerHTML = TRAITS.map((t, i) => `<div class="trait"><span>${t} <span class="muted">(1-${i ? 5 : 10})</span></span>
-  <input type="range" min="1" max="${i ? 5 : 10}" value="${i ? 3 : 6}" data-i="${i}"><b id="tv${i}">${i ? 3 : 6}</b></div>`).join('');
+  <input type="hidden" value="${i ? 3 : 6}" data-i="${i}"><div class="seg" id="tv${i}">${Array.from({ length: i ? 5 : 10 }, (_, j) => `<button type="button" data-v="${j + 1}">${j + 1}</button>`).join('')}</div></div>`).join('');
+$('#traits').addEventListener('click', (e) => {
+  const b = e.target.closest('.seg button'); if (!b) return;
+  e.stopPropagation();
+  b.closest('.trait').querySelector('input').value = b.dataset.v;
+  recalc(); highlightRef();
+});
 const sliders = () => [...document.querySelectorAll('#traits input')];
 function recalc() {
   const t = sliders().map((x) => +x.value);
-  t.forEach((v, i) => { $('#tv' + i).textContent = v; });
+  t.forEach((v, i) => { $('#tv' + i).querySelectorAll('button').forEach((b) => b.classList.toggle('on', +b.dataset.v === v)); });
   const s = t.reduce((a, b) => a + b, 0);
   const e = (BANDS.find(([lo, hi]) => s >= lo && s <= hi) || [0, 0, 5])[2];
   $('#rs').textContent = s; $('#re').textContent = `${e}: ${ENNEA[e]}`; $('#rx').textContent = `${t[3]}: ${SEX[t[3]]}`;
@@ -217,9 +223,9 @@ async function loadAll() {
   data = { ...a, added: b.names || [] };
   $('#subcount').textContent = `${data.submissions.length} submissions, ${data.misses.length} names people searched for that SPASM doesn't have.`;
   $('#subs').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Notes</th><th>Email</th><th>When</th><th></th></tr>' +
-    data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}${s.photo ? `<br><a href="/api/photo/${esc(s.photo)}" target="_blank"><img src="/api/photo/${esc(s.photo)}" alt="photo" style="width:56px;height:56px;object-fit:cover;border-radius:8px;margin-top:4px"></a>` : ''}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}${s.ref ? `<br>${esc(s.ref)}${s.paid ? ' (pay link opened)' : ''}` : ''}</td><td><button class="small" data-sub="${i}">Add</button></td></tr>`).join('') + '</table>';
+    data.submissions.map((s, i) => `<tr><td>${esc(s.name)}</td><td>${esc(s.gender)}</td><td>${esc(s.note)}${s.photo ? `<br><a href="/api/photo/${esc(s.photo)}" target="_blank"><img src="/api/photo/${esc(s.photo)}" alt="photo" style="width:56px;height:56px;object-fit:cover;border-radius:8px;margin-top:4px"></a>` : ''}</td><td>${s.email ? `<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>` : ''}</td><td class="muted">${esc((s.at || '').slice(0, 10))}${s.ref ? `<br>${esc(s.ref)}${s.paid ? ' (pay link opened)' : ''}` : ''}</td><td><button class="small" data-sub="${i}">Add</button>${s.paid ? '<br><span class="muted">Paid, kept</span>' : ` <button class="small sec" data-sdel="${i}">Delete</button>`}</td></tr>`).join('') + '</table>';
   $('#miss').innerHTML = '<table><tr><th>Name</th><th>Gender</th><th>Searches</th><th></th></tr>' +
-    data.misses.map((m, i) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td><td><button class="small" data-miss="${i}">Add</button></td></tr>`).join('') + '</table>';
+    data.misses.map((m, i) => `<tr><td>${esc(m.name)}</td><td>${esc(m.gender)}</td><td>${m.count}</td><td><button class="small" data-miss="${i}">Add</button> <button class="small sec" data-mdel="${i}">Delete</button></td></tr>`).join('') + '</table>';
   $('#added').innerHTML = data.added.length ? '<table><tr><th>Name</th><th>Gender</th><th>Type</th><th>Score</th><th></th></tr>' +
     data.added.map((r, i) => `<tr><td><a href="/#/meaning/${r.g}/${encodeURIComponent(r.n)}" target="_blank">${esc(r.n)}</a></td><td>${r.g}</td><td>${r.e} / ${r.s}</td><td>${r.score}</td><td><button class="small" data-edit="${i}">Edit</button> <button class="small sec" data-del="${i}">Delete</button></td></tr>`).join('') + '</table>'
     : '<p class="muted">None yet.</p>';
@@ -243,6 +249,13 @@ document.addEventListener('click', async (e) => {
   if (b.dataset.sub) { const s = data.submissions[+b.dataset.sub]; fillForm({ n: cap(s.name), g: s.gender, d: '' }); }
   if (b.dataset.miss) { const m = data.misses[+b.dataset.miss]; fillForm({ n: cap(m.name), g: m.gender, d: '' }); }
   if (b.dataset.edit) fillForm(data.added[+b.dataset.edit]);
+  if (b.dataset.sdel || b.dataset.mdel) {
+    const r = b.dataset.sdel ? data.submissions[+b.dataset.sdel] : data.misses[+b.dataset.mdel];
+    b.textContent = 'Deleting...';
+    const res = await fetch('/api/admin?key=' + encodeURIComponent(key), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: r.k }) });
+    if (!res.ok) { b.textContent = (await res.json().catch(() => ({}))).error || 'Failed'; return; }
+    await loadAll();
+  }
   if (b.dataset.del) {
     const r = data.added[+b.dataset.del];
     b.textContent = 'Deleting...';

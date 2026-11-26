@@ -66,10 +66,10 @@ export async function adminList(request, env) {
     for (const k of page.keys) {
       if (k.name.startsWith('miss:')) {
         const [, gender, name] = k.name.split(':');
-        misses.push({ name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
+        misses.push({ k: k.name, name, gender, count: parseInt((await env.NAME_SUBMISSIONS.get(k.name)) || '0', 10) });
       } else if (!/^(push|name|famous|rl|tr|photo):/.test(k.name)) {
         const v = await env.NAME_SUBMISSIONS.get(k.name);
-        try { submissions.push(JSON.parse(v)); } catch { /* skip */ }
+        try { submissions.push({ ...JSON.parse(v), k: k.name }); } catch { /* skip */ }
       }
     }
     cursor = page.list_complete ? null : page.cursor;
@@ -77,4 +77,24 @@ export async function adminList(request, env) {
   submissions.sort((a, b) => (a.at < b.at ? 1 : -1));
   misses.sort((a, b) => b.count - a.count);
   return new Response(JSON.stringify({ submissions, misses }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+}
+
+// Deletes one submitted name or missed search. Paid write-up requests can't be deleted.
+export async function adminDelete(request, env) {
+  const key = new URL(request.url).searchParams.get('key') || '';
+  if (!env.ADMIN_KEY || key !== env.ADMIN_KEY) return json({ error: 'Wrong key' }, 403);
+  let body;
+  try { body = await request.json(); } catch { return json({ error: 'Bad request' }, 400); }
+  const k = String(body.k || '');
+  if (!k || /^(push|name|famous|rl|tr|photo):/.test(k)) return json({ error: 'Not allowed' }, 400);
+  if (!k.startsWith('miss:')) {
+    const v = await env.NAME_SUBMISSIONS.get(k);
+    if (!v) return json({ ok: true });
+    let r = {};
+    try { r = JSON.parse(v); } catch { /* delete anyway */ }
+    if (r.paid) return json({ error: 'Paid requests can\'t be deleted' }, 409);
+    if (r.photo) await env.NAME_SUBMISSIONS.delete(`photo:${r.photo}`);
+  }
+  await env.NAME_SUBMISSIONS.delete(k);
+  return json({ ok: true });
 }

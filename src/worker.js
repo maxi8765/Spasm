@@ -1,4 +1,4 @@
-import { submitName, logMiss, adminList, json, getPhoto } from './submit.js';
+import { submitName, logMiss, adminList, adminDelete, json, getPhoto } from './submit.js';
 import { pushKey, pushSubscribe, pushUnsubscribe } from './push.js';
 import { extraNames, adminNames } from './names.js';
 import { track, adminStats, weeklyReport } from './stats.js';
@@ -16,7 +16,7 @@ export default {
     }
     if (url.pathname === '/api/miss' && request.method === 'POST') return logMiss(request, env);
     if (url.pathname === '/api/status') return json({ storage: !!env.NAME_SUBMISSIONS });
-    if (url.pathname === '/api/admin') return adminList(request, env);
+    if (url.pathname === '/api/admin') return request.method === 'DELETE' ? adminDelete(request, env) : adminList(request, env);
     if (url.pathname === '/api/admin/names') return adminNames(request, env);
     if (url.pathname === '/api/names/extra') return extraNames(env);
     if (url.pathname === '/api/track' && request.method === 'POST') return track(request, env);
