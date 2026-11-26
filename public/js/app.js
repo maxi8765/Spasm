@@ -360,9 +360,8 @@ function home() {
     ['#/famous', ICON.star, 'Famous couples'],
     ['#/custom', ICON.pen, 'Get your name written up', 'paid'],
   ];
-  view.innerHTML = `<div class="daily-row">
+  view.innerHTML = `
   <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span></a>
-  <a class="daily mine" href="#/me"><span class="daily-k">Your name</span>${me ? `<span class="daily-n">${esc(me.n)}</span><span class="tag ${me.g}">${GLABEL[me.g]}</span>` : '<span class="daily-n">Add yours</span>'}</a></div>
   <div class="grid home-grid">${tiles.map(([h, ic, t, cls]) => `<a class="tile${cls ? ' ' + cls : ''}" href="${h}">${cls === 'start' ? '<em class="start-here">Start here</em>' : ''}${ic}<span>${esc(t)}</span></a>`).join('')}</div>
   <p class="copy">&copy; 2026 David Hocking</p>`;
 }
@@ -1353,7 +1352,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 56;
+const APP_VERSION = 57;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
