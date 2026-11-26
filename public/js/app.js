@@ -10,7 +10,7 @@ const view = $('#view');
 const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const enc = encodeURIComponent;
 const GLABEL = { M: 'Male', F: 'Female' };
-const FEEDBACK = 'yoohoohocko@gmail.com';
+const FEEDBACK = 'spasmapp@gmail.com';
 const CC = 'maxwell.ian@gmail.com'; // copied on name requests
 const DATA_VERSION = 3; // bump whenever public/data changes, so phones fetch the new files
 const MODES = ['kiss', 'marry', 'avoid'];
@@ -1257,7 +1257,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 37;
+const APP_VERSION = 38;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

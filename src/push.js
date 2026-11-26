@@ -6,7 +6,7 @@
 const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const fromB64url = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
-const CONTACT = 'mailto:yoohoohocko@gmail.com';
+const CONTACT = 'mailto:spasmapp@gmail.com';
 
 async function getVapid(env) {
   const saved = await env.NAME_SUBMISSIONS.get('push:vapid');
