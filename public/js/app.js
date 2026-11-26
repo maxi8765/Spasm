@@ -261,7 +261,7 @@ function picker({ label, g = 'F', name = '', id }) {
         let html = `We don't have ${esc(typed)} as a ${GLABEL[gender].toLowerCase()} name yet.`;
         if (E.find(typed, other)) html += ` We do have it as a <a href="#" data-g="${other}" class="swapg">${GLABEL[other].toLowerCase()} name</a>.`;
         if (sims.length) html += ` Did you mean ${sims.map((x) => `<a href="#" class="sim" data-n="${esc(x.n)}">${esc(x.n)}</a>`).join(', ')}?`;
-        html += ` Or <a href="#/custom?n=${enc(typed)}&g=${gender}">get it written up by David${STRIPE_LINK ? ` (${PRICE})` : ''}</a>.`;
+        html += ` Or <a href="#/custom?n=${enc(typed)}&g=${gender}">get it written up by David</a>.`;
         err.innerHTML = html;
         logMiss(typed, gender);
       }
@@ -328,7 +328,7 @@ function home() {
     ['#/compare', ICON.bars, 'Compare two names'],
     ['#/pet', ICON.paw, 'Name your pet, boat or car'],
     ['#/famous', ICON.star, 'Famous couples'],
-    ['#/custom', ICON.pen, `Get your name written up${STRIPE_LINK ? ` (${PRICE})` : ''}`, 'paid'],
+    ['#/custom', ICON.pen, 'Get your name written up', 'paid'],
   ];
   view.innerHTML = `
   <a class="daily" href="#/meaning/${nd.g}/${enc(nd.n)}"><span class="daily-k">Name of the day</span><span class="daily-n">${esc(nd.n)}</span><span class="tag ${nd.g}">${GLABEL[nd.g]}</span>${me ? `<span class="daily-me">Hi ${esc(me.n)}</span>` : ''}</a>
@@ -808,7 +808,7 @@ function morePage() {
     ['#/pet', 'Name your pet, boat or car', 'Pick its personality, get a name'],
     ['#/famous', 'Famous couples', 'How the great romances of history and fiction rate'],
     ['#/tattoo', 'Name tattoo designs', 'Twelve tattoo lettering styles for any name, free to download'],
-    ['#/custom', 'Get your name written up', `Not in SPASM? David will write yours${STRIPE_LINK ? ` for ${PRICE}` : ''}`],
+    ['#/custom', 'Get your name written up', 'Not in SPASM? David will write yours'],
     ['#/notify', 'Name of the day, every morning', 'A notification with each day\'s name'],
     [BOOK_URL, 'Buy David\'s book', 'Why Shouldn\'t I Call My Son Clint?, on Amazon'],
   ];
@@ -1021,7 +1021,7 @@ function customPage(q) {
         <div class="toggle"><button type="button" data-g="M">M</button><button type="button" data-g="F">F</button></div></div></div>
       <div class="field"><label for="cnote">Anything David should know? (optional)</label><textarea id="cnote" maxlength="1000"></textarea></div>
       <div class="field"><label for="cemail">Your email, so David can send it to you</label><div class="input-row"><input id="cemail" type="email" required maxlength="120"></div></div>
-      <button class="btn" type="submit">${STRIPE_LINK ? `Pay ${PRICE} and send request` : 'Send request'}</button>
+      <button class="btn" type="submit">${STRIPE_LINK ? 'Pay and send request' : 'Send request'}</button>
       <p class="hint">${STRIPE_LINK ? 'You pay securely with Stripe, then your email app opens so you can send David the details.' : 'Your email app will open with the request filled in. David will reply with the price and how to pay.'}</p>
     </form>`;
   let g = q.get('g') === 'M' ? 'M' : 'F';
@@ -1188,7 +1188,7 @@ function notFound(name, g) {
   setBar({ back: true });
   const sims = GLABEL[g] ? E.similar(name, g) : [];
   if (GLABEL[g]) logMiss(name, g);
-  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David${STRIPE_LINK ? ` (${PRICE})` : ''}</a><a class="btn secondary" href="#/">Home</a>`;
+  view.innerHTML = `${logo()}<h1>Hmm.</h1><p class="body">We don't have ${esc(name)} as a ${GLABEL[g] ? GLABEL[g].toLowerCase() : ''} name yet.${sims.length ? ` Did you mean ${sims.map((r) => `<a href="#/meaning/${r.g}/${enc(r.n)}">${esc(r.n)}</a>`).join(', ')}?` : ''}</p><a class="btn" href="#/custom?n=${enc(name)}&g=${g}">Get it written up by David</a><a class="btn secondary" href="#/">Home</a>`;
 }
 
 // ---------- Play Store review prompt ----------
@@ -1262,7 +1262,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 40;
+const APP_VERSION = 41;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
