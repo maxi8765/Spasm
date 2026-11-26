@@ -91,7 +91,7 @@ async function loadExtraNames() {
 }
 
 // Machine translations of David's text for non-English languages, made once on the server and cached.
-const TR_NOTE = { es: 'Traducción automática del original en inglés de David.', zh: '由 David 的英文原文自动翻译。', hi: 'David के अंग्रेज़ी मूल से स्वचालित अनुवाद।' };
+const TR_NOTE = { es: 'Traducción automática del original en inglés de David.', pt: 'Tradução automática do original em inglês do David.', zh: '由 David 的英文原文自动翻译。', hi: 'David के अंग्रेज़ी मूल से स्वचालित अनुवाद।' };
 async function trText(k) {
   const lang = getLang();
   if (lang === 'en' || !TR_NOTE[lang]) return null;
@@ -1332,7 +1332,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 47;
+const APP_VERSION = 48;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

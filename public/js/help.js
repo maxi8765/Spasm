@@ -137,6 +137,11 @@ const SCI_ES = '<h3>La ciencia</h3><p>Lee el artículo: <a href="/paper.html">Ho
 const MISS_ES = `Si el nombre no aparece en la lista desplegable (comprueba antes que el sexo es el correcto), es que todavía no lo tenemos. ¡No pasa nada! ${SUBMIT_ES}`;
 const SHARE_ES = 'Pulsa el botón de compartir arriba a la derecha para enviar cualquier resultado como imagen y enlace a donde quieras.';
 
+const SUBMIT_PT = '<a href="#/custom">Peça a descrição do seu nome</a>';
+const SCI_PT = '<h3>A ciência</h3><p>Leia o artigo: <a href="/paper.html">Hocking &amp; Maxwell, <i>Nurture</i> (2026)</a></p>';
+const MISS_PT = `Se o nome não aparece na lista (confira antes se o sexo está certo), é porque ainda não temos. Sem problema! ${SUBMIT_PT}`;
+const SHARE_PT = 'Toque no botão de compartilhar no canto superior direito para enviar qualquer resultado como imagem e link para onde quiser.';
+
 export const HELP_I18N = {
   zh: {
     home: `<h2>如何使用 SPASM</h2>
@@ -254,5 +259,44 @@ export const HELP_I18N = {
     me: `<h2>Tu nombre</h2><h3>Cómo usar esta página</h3><p>Escribe tu nombre, elígelo de la lista desplegable, indica tu sexo y pulsa Guardar. A partir de ahí SPASM lo rellena por ti en cada página. Se queda en este móvil y nadie más lo ve.</p><p>Si tu nombre aún no está en SPASM, toca el botón que aparece para pedirle a David que lo escriba.</p><p>Usa Olvidar mi nombre para borrarlo.</p>`,
     notify: `<h2>Nombre del día</h2><h3>Cómo usar esta página</h3><p>Activa las notificaciones y SPASM te enviará un nombre nuevo cada mañana. Toca la notificación para leer sobre él.</p><p>En iPhone, primero añade SPASM a tu pantalla de inicio (Compartir y luego Añadir a pantalla de inicio) y activa las notificaciones desde la app instalada.</p><p>Desactívalas aquí cuando quieras.</p>`,
     favourites: `<h2>Favoritos</h2><h3>Cómo usar esta página</h3><p>Aquí está todo lo que has guardado con un botón de favoritos o una estrella: nombres, parejas y listas de nombres de bebé. Toca cualquiera para abrir el resultado otra vez.</p><p>Toca la cruz junto a cualquiera para quitarlo. Los favoritos se quedan en este móvil.</p>`,
+  },
+  pt: {
+    home: `<h2>Como usar o SPASM</h2>
+<h3>O que esse nome significa?</h3><p>Digite um nome (ou apelido), escolha na lista, indique o sexo e descubra a personalidade dessa pessoa, no sentido figurado ou literal.</p>
+<h3>Compatibilidade romântica</h3><p>Digite dois nomes quaisquer, indique o sexo de cada um e leia a compatibilidade do casal e a sexual.</p>
+<h3>Os melhores nomes para o seu bebê?</h3><p>Quer saber quais nomes de bebê combinam melhor com um casal? Digite o nome de cada um dos pais, escolha cada um na lista com o sexo certo e toque em nomes de menino ou de menina. O SPASM mostra os nomes ideais para esse casal.</p>
+<h3>Beijar, casar ou evitar</h3><p>Descubra quem o SPASM recomenda beijar, com quem casar e quem evitar. Digite um nome (o seu ou de qualquer pessoa), escolha na lista com o sexo certo e depois escolha o sexo das pessoas que interessam. Boa sorte!</p>
+<h3>Mais diversão</h3><p>Escolha um nome pela personalidade: defina os traços que quer e o SPASM encontra os nomes que combinam.</p><p>Compatibilidade do grupo: adicione até doze amigos, colegas de casa ou de trabalho e veja como o grupo se dá, par a par.</p><p>Compare dois nomes: dois perfis de personalidade lado a lado.</p><p>Nome para seu pet, barco ou carro: escolha a personalidade e ganhe um nome.</p><p>Casais famosos: a nota dos grandes romances, e adicione os seus para todo mundo ver.</p><p>Tatuagens com o nome: qualquer nome em doze estilos de letra de tatuagem, para baixar de graça.</p><p>Nome do dia: uma notificação com um nome novo toda manhã.</p><p>Seu nome: diga seu nome ao SPASM uma vez e ele preenche para você em todo lugar. Se seu nome ainda não estiver, você pode pedir ao David para escrever.</p><p>Toque no logo do SPASM no topo de qualquer página para voltar ao início. Mude o idioma no fim do menu.</p>
+<p>${MISS_PT}</p>${SCI_PT}`,
+    meaning: `<h2>O que esse nome significa?</h2><h3>Como usar esta página</h3>
+<p>Digite um nome (apelido vale), escolha na lista e use o seletor homem/mulher para indicar o sexo. Você também pode navegar por todos os nomes com a barra de A a Z.</p><p>${MISS_PT}</p>
+<h3>Importante</h3><p>${SHARE_PT}</p><p>Salve os resultados mais engraçados ou mais estranhos com o botão de favoritos e mostre aos amigos, à família ou a possíveis paqueras.</p>${SCI_PT}`,
+    compat: `<h2>Compatibilidade romântica</h2><h3>Como usar esta página</h3>
+<p>Digite um nome em cada campo, escolha cada um na lista com o sexo certo e descubra como vão se sair no amor. Boa sorte!</p><p>${MISS_PT}</p>
+<h3>Importante</h3><p>${SHARE_PT}</p><p>Salve os resultados mais engraçados com o botão de favoritos.</p>${SCI_PT}`,
+    bub: `<h2>Os melhores nomes para o seu bebê?</h2><h3>Como usar esta página</h3>
+<p>Digite o nome de cada um dos pais, escolha cada um na lista com o sexo certo e toque em nomes de menino ou de menina. O SPASM mostra os nomes ideais para esse casal.</p>
+<p>Toque em "Nova lista" para ver outros na hora. Toque em qualquer nome para ver como a criança vai ser quando adulta! Você também pode deslizar por todos os nomes, ou deslizar com seu par para ver de quais os dois gostam.</p>
+<p>${MISS_PT}</p><h3>Importante</h3><p>${SHARE_PT}</p>${SCI_PT}`,
+    kma: `<h2>Beijar, casar ou evitar?</h2><h3>Como usar esta página</h3>
+<p>Digite um nome, escolha na lista com o sexo certo e depois escolha o sexo das pessoas que interessam. O SPASM dá nomes para ficar, para casar ou para evitar de vez. Boa sorte!</p>
+<h3>Importante</h3><p>Toque num nome da lista para ver a personalidade. Toque nos corações rosa à direita de um nome para ver a compatibilidade romântica de vocês.</p>
+<p>Se cansar de uma lista, toque em "Nova lista". Deslize para os lados sobre o ícone grande do topo para trocar entre casar, beijar e evitar.</p><p>${SHARE_PT}</p><p>${MISS_PT}</p>${SCI_PT}`,
+    choose: `<h2>Escolha um nome pela personalidade</h2><h3>Como usar esta página</h3>
+<p>Cada nome do SPASM tem uma nota em dez traços. Escolha homem ou mulher, ajuste cada traço do seu jeito e o SPASM encontra os nomes com a personalidade mais parecida. Ótimo para escolher um nome em inglês ou um nome de bebê sem partir dos nomes dos pais.</p>
+<p>Marque "Só nomes comuns" para tirar os raros. Toque em "Nova lista" para ver outros e em "Ajustar" para mudar as configurações. Toque em qualquer nome para ver a descrição e o perfil completo.</p>
+<h3>Importante</h3><p>${SHARE_PT}</p><p>Toque na estrela para salvar um nome nos favoritos.</p>${SCI_PT}`,
+    group: `<h2>Compatibilidade do grupo</h2><h3>Como usar esta página</h3>
+<p>Adicione até doze pessoas, escolhendo cada nome na lista com o sexo. O SPASM dá uma nota para a amizade de cada par, ordena do melhor para o pior e dá uma nota para o grupo todo. A amizade é calculada pelos tipos de personalidade de cada par e por quanto se parecem em carisma, espontaneidade, inteligência emocional, humor e generosidade. Romance e sexo não contam.</p>
+<p>Toque em qualquer par para comparar lado a lado. A tabela mostra todos os pares de uma vez: verde é ótimo, amarelo está bom, laranja é duvidoso e vermelho é problema.</p><h3>Importante</h3><p>${SHARE_PT}</p>${SCI_PT}`,
+    pet: `<h2>Nome para seu pet, barco ou carro</h2><h3>Como usar esta página</h3>
+<p>Escolha o que vai nomear, se é masculino, feminino ou tanto faz, e até três palavras para a personalidade. O SPASM encontra os nomes com a personalidade que mais combina.</p>
+<p>As descrições foram escritas para pessoas, então leia com um pouco de imaginação. Toque em "Nova lista" para ver mais nomes.</p><h3>Importante</h3><p>${SHARE_PT}</p>${SCI_PT}`,
+    compare: `<h2>Compare dois nomes</h2><h3>Como usar esta página</h3><p>Digite dois nomes e escolha cada um na lista com o sexo. O SPASM mostra os dois perfis de personalidade lado a lado, traço por traço, com o tipo de personalidade de cada um.</p><p>Toque em qualquer um dos nomes embaixo para ler a descrição completa, ou veja a compatibilidade romântica deles.</p><p>${MISS_PT}</p><h3>Importante</h3><p>${SHARE_PT}</p>${SCI_PT}`,
+    famous: `<h2>Casais famosos</h2><h3>Como usar esta página</h3><p>Os grandes romances da história e da ficção, avaliados só pelo nome. Toque num casal para ler a compatibilidade romântica completa.</p><p>Para adicionar um casal, escolha os dois nomes na lista e diga quem são. Para os Beckham, David e Victoria. Seu casal aparece no topo da lista e todo mundo que usa o SPASM vai ver, então nada de palavrão.</p><h3>Importante</h3><p>${SHARE_PT}</p>${SCI_PT}`,
+    custom: `<h2>Peça a descrição do seu nome</h2><h3>Como usar esta página</h3><p>Se seu nome não está no SPASM, o David escreve para você. Informe o nome e o sexo, o que o David deve saber e seu e-mail para ele te enviar.</p><p>O preço aparece na página. Você paga com segurança pelo Stripe, que mostra o valor exato na sua moeda. Quando estiver escrito, o David pode incluir seu nome no SPASM para todos consultarem.</p><h3>Importante</h3><p>Confira a grafia. O David escreve exatamente o nome que você enviar.</p>`,
+    me: `<h2>Seu nome</h2><h3>Como usar esta página</h3><p>Digite seu nome, escolha na lista, indique o sexo e toque em Salvar. A partir daí o SPASM preenche para você em todas as páginas. Fica só neste celular e ninguém mais vê.</p><p>Se seu nome ainda não está no SPASM, toque no botão que aparece para pedir ao David que escreva.</p><p>Use Esquecer meu nome para apagar.</p>`,
+    notify: `<h2>Nome do dia</h2><h3>Como usar esta página</h3><p>Ative as notificações e o SPASM manda um nome novo toda manhã. Toque na notificação para ler sobre ele.</p><p>No iPhone, primeiro adicione o SPASM à tela inicial (Compartilhar e depois Adicionar à Tela de Início) e ative as notificações no app instalado.</p><p>Desative aqui quando quiser.</p>`,
+    favourites: `<h2>Favoritos</h2><h3>Como usar esta página</h3><p>Tudo o que você salvou com um botão de favoritos ou uma estrela fica aqui: nomes, casais e listas de nomes de bebê. Toque em qualquer um para abrir o resultado de novo.</p><p>Toque no x ao lado para remover. Os favoritos ficam só neste celular.</p>`,
   },
 };

@@ -72,6 +72,6 @@ export async function adminNames(request, env) {
   };
   await env.NAME_SUBMISSIONS.put(key, JSON.stringify(rec));
   // a changed description needs fresh translations
-  await Promise.all(['es', 'zh', 'hi'].map((l) => env.NAME_SUBMISSIONS.delete(`tr:${l}:d:${g}:${name}`)));
+  await Promise.all(['es', 'pt', 'zh', 'hi'].map((l) => env.NAME_SUBMISSIONS.delete(`tr:${l}:d:${g}:${name}`)));
   return json({ ok: true, name: rec });
 }

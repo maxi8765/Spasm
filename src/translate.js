@@ -6,7 +6,7 @@
 // Each translation is made once with Workers AI and kept in KV for everyone after that.
 
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'content-type': 'application/json', 'cache-control': status === 200 ? 'public, max-age=86400' : 'no-store' } });
-const LANGS = { es: 'Spanish (neutral, understood in Spain and Latin America)', zh: 'Simplified Chinese', hi: 'Hindi' };
+const LANGS = { es: 'Spanish (neutral, understood in Spain and Latin America)', pt: 'Brazilian Portuguese', zh: 'Simplified Chinese', hi: 'Hindi' };
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const DV = 3;
 
