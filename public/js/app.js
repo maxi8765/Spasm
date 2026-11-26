@@ -1107,8 +1107,21 @@ function mePage() {
   const p = picker({ label: 'Your name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
   const save = document.createElement('button');
   save.className = 'btn'; save.textContent = 'Save';
-  save.onclick = () => { const r = p.get(); if (r) { setMe(r); toast(`Hi ${r.n}`); location.hash = '#/'; } };
-  view.append(p.el, save);
+  const add = document.createElement('a');
+  add.className = 'btn'; add.hidden = true;
+  save.onclick = () => {
+    const r = p.get();
+    if (r) { setMe(r); toast(`Hi ${r.n}`); location.hash = '#/'; return; }
+    const typed = $('#n1').value.trim();
+    if (!typed) return;
+    const g = $('.toggle button.on', p.el)?.dataset.g || 'F';
+    add.href = `#/custom?n=${enc(typed)}&g=${g}`;
+    add.textContent = `Add ${typed} to SPASM`;
+    add.hidden = false;
+    save.className = 'btn secondary';
+  };
+  $('#n1', p.el).addEventListener('input', () => { add.hidden = true; save.className = 'btn'; });
+  view.append(p.el, save, add);
   if (me) {
     const clr = document.createElement('button');
     clr.className = 'btn secondary'; clr.textContent = 'Forget my name';
@@ -1262,7 +1275,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 41;
+const APP_VERSION = 42;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
