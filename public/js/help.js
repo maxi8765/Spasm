@@ -14,6 +14,16 @@ export const HELP = {
 <p>Are you curious to learn what the ideal baby names are for a particular combination of parents? Enter the two potential parents into the respective search bars, REMEMBERING TO SELECT EACH NAME FROM THE POP-UP LIST, ONE AT A TIME, AS WELL AS NOMINATING THEIR CORRECT GENDER, then click on either Boys names or Girls names. Spasm will then offer up a list of ideal children's names for that parent duo. We hope it helps!</p>
 <h3>KISS, MARRY OR AVOID</h3>
 <p>This is where you get to find out who SPASM thinks you should kiss (hook-up with), marry or avoid altogether. Enter a name into the search bar, be it yours or anyone's, REMEMBERING TO SELECT THE NAME FROM THE POP-UP LIST, AS WELL AS NOMINATING THEIR CORRECT GENDER, then select the sex of the people you are 'Interested in' by tapping on the Male/Female toggle switch. Spasm will then offer up a list of people for that person to either hook-up with (kiss), marry or avoid completely. Good luck!</p>
+<h3>MORE TO PLAY WITH</h3>
+<p>Choose a name by personality: set the traits you want and SPASM finds the names that match.</p>
+<p>Group compatibility: add up to twelve friends, housemates or workmates and see how well the group gets on, pair by pair.</p>
+<p>Compare two names: two personality profiles side by side.</p>
+<p>Name your pet, boat or car: pick its personality and get a name.</p>
+<p>Famous couples: how the great romances rate, and add your own for everyone to see.</p>
+<p>Name tattoo designs: any name in twelve tattoo lettering styles, free to download.</p>
+<p>Name of the day: a notification with a new name every morning.</p>
+<p>Your name: tell SPASM your name once and it fills it in for you everywhere. If your name isn't in SPASM yet, you can ask David to write it up.</p>
+<p>Tap the SPASM logo at the top of any page to come back home. Change the language at the bottom of the menu.</p>
 <p>If you can't find a name in the pop-up list anywhere on the app, and you've checked that you've nominated their correct gender using the Male/Female toggle switch, then we haven't encountered it yet. But fear not! ${SUBMIT}</p>${SCIENCE}`,
 
   meaning: `<h2>What does that name mean?</h2>
@@ -77,6 +87,39 @@ export const HELP = {
 <p>Tap a design to see it larger, then Download. You get a high-resolution PNG with a transparent background that your tattoo artist can print, trace or resize.</p>
 <h3>IMPORTANT POINTS</h3>
 <p>Check the spelling before you book. SPASM takes no responsibility for regrettable tattoos.</p>${SCIENCE}`,
+  compare: `<h2>Compare two names</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Enter two names, choosing each from the pop-up list and nominating their gender. SPASM shows both personality profiles side by side, trait by trait, with each name's personality type.</p>
+<p>Tap either name at the bottom to read their full description, or check their romantic compatibility.</p>
+<p>${MISSING}</p>
+<h3>IMPORTANT POINTS</h3>
+<p>${SHARE}</p>${SCIENCE}`,
+  famous: `<h2>Famous couples</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>The great romances of history and fiction, rated by first name alone. Tap any couple to read their full romantic compatibility.</p>
+<p>To add a couple, pick both first names from the pop-up list and say who they are. For Becks and Posh, that's David and Victoria, The Beckhams. Your couple goes to the top of the list and everyone who uses SPASM will see it, so keep it clean.</p>
+<h3>IMPORTANT POINTS</h3>
+<p>${SHARE}</p>${SCIENCE}`,
+  custom: `<h2>Get your name written up</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>If your name isn't in SPASM, David will write it up for you. Enter the name and gender, anything David should know, and your email so he can send it to you.</p>
+<p>The price is shown on the page. You pay securely through Stripe, which shows the exact amount in your own currency. Once it's written, David can add your name to SPASM so everyone can look it up.</p>
+<h3>IMPORTANT POINTS</h3>
+<p>Check the spelling. David writes exactly the name you send.</p>`,
+  me: `<h2>Your name</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Enter your name, choose it from the pop-up list and nominate your gender, then hit Save. SPASM fills it in for you on every page from then on. It stays on this phone and nobody else sees it.</p>
+<p>If your name isn't in SPASM yet, tap the button that appears to ask David to write it up.</p>
+<p>Use Forget my name to clear it.</p>`,
+  notify: `<h2>Name of the day</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Turn on notifications and SPASM sends you a new name every morning. Tap the notification to read about it.</p>
+<p>On iPhone, add SPASM to your home screen first (Share, then Add to Home Screen), then turn notifications on from the installed app.</p>
+<p>Turn it off here any time.</p>`,
+  favourites: `<h2>Favourites</h2>
+<h3>HOW TO USE THIS PAGE</h3>
+<p>Everything you've saved with a favourite button or star lives here: names, couples and baby name lists. Tap any of them to open the result again.</p>
+<p>Tap the cross next to anything to remove it. Favourites stay on this phone.</p>`,
 };
 
 // Translated help. Names, links and David's own phrases are kept where they appear in the English.
@@ -101,6 +144,7 @@ export const HELP_I18N = {
 <h3>恋爱匹配度</h3><p>输入任意两个名字并选好性别，看看他们的情侣匹配度和性匹配度。</p>
 <h3>最适合的宝宝名字？</h3><p>想知道一对父母最适合给孩子起什么名字？分别输入父母双方的名字，记得逐个从弹出列表中选择并选对性别，然后点"男孩名字"或"女孩名字"。SPASM 会为这对父母列出最理想的孩子名字。</p>
 <h3>亲吻、结婚还是避开</h3><p>看看 SPASM 认为你应该亲吻（约会）、结婚还是彻底避开谁。输入一个名字（你的或任何人的），从弹出列表中选择并选对性别，再选择感兴趣对象的性别。SPASM 会列出可以约会、结婚或应当远离的人。祝你好运！</p>
+<h3>更多玩法</h3><p>按性格选名字：设定你想要的特质，SPASM 找出匹配的名字。</p><p>群体匹配度：最多加入十二位朋友、室友或同事，看看整个群体相处得如何。</p><p>比较两个名字：两份性格档案并排对比。</p><p>给宠物、船或车起名：选好性格，得到名字。</p><p>名人情侣：看看历史和小说中的伟大爱情得分多少，也可以添加你自己的，所有人都能看到。</p><p>名字纹身设计：任何名字的十二种纹身字体，免费下载。</p><p>每日名字：每天早上推送一个新名字。</p><p>你的名字：告诉 SPASM 一次，它会在所有页面帮你填好。如果还没有收录你的名字，可以请 David 来写。</p><p>点任意页面顶部的 SPASM 标志即可回到首页。在菜单底部可以切换语言。</p>
 <p>${MISS_ZH}</p>${SCI_ZH}`,
     meaning: `<h2>这个名字是什么意思？</h2><h3>如何使用</h3>
 <p>在搜索栏输入名字（昵称也行），记得从弹出列表中选择，并用男/女开关选对性别，就能看到这个人的性格。也可以用 A 到 Z 栏浏览所有名字。</p><p>${MISS_ZH}</p>
@@ -126,6 +170,12 @@ export const HELP_I18N = {
     pet: `<h2>给宠物、船或车起名</h2><h3>如何使用</h3>
 <p>选好要起名的对象，是男孩、女孩还是都行，再选最多三个词形容它的性格。SPASM 会找出性格最合适的名字。</p>
 <p>名字介绍是为人写的，读的时候发挥一点想象力。点"刷新列表"看更多名字。</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
+    compare: `<h2>比较两个名字</h2><h3>如何使用</h3><p>输入两个名字，分别从弹出列表中选择并选好性别。SPASM 会把两份性格档案逐项并排展示，并标出各自的性格类型。</p><p>点底部任一名字可阅读完整介绍，也可以查看两人的恋爱匹配度。</p><p>${MISS_ZH}</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
+    famous: `<h2>名人情侣</h2><h3>如何使用</h3><p>历史和小说中的伟大爱情，仅凭名字打分。点任意一对可阅读完整的恋爱匹配度。</p><p>添加情侣：从弹出列表中选出两人的名字，再说明他们是谁。比如贝克汉姆夫妇就是 David 和 Victoria。你添加的情侣会出现在列表顶部，所有 SPASM 用户都能看到，请文明用语。</p><h3>要点</h3><p>${SHARE_ZH}</p>${SCI_ZH}`,
+    custom: `<h2>请人为你的名字写介绍</h2><h3>如何使用</h3><p>如果 SPASM 里没有你的名字，David 会为你写一篇。填写名字和性别、想让 David 知道的事，以及你的邮箱，方便他发给你。</p><p>价格显示在页面上。通过 Stripe 安全付款，结账时会以你的货币显示准确金额。写好后，David 可以把你的名字加入 SPASM，让所有人都能查到。</p><h3>要点</h3><p>请检查拼写，David 会完全按照你发送的名字来写。</p>`,
+    me: `<h2>你的名字</h2><h3>如何使用</h3><p>输入你的名字，从弹出列表中选择并选好性别，然后点保存。之后 SPASM 会在每个页面帮你填好。名字只保存在这部手机上，别人看不到。</p><p>如果 SPASM 里还没有你的名字，点出现的按钮请 David 来写。</p><p>点"忘记我的名字"可清除。</p>`,
+    notify: `<h2>每日名字</h2><h3>如何使用</h3><p>打开通知后，SPASM 每天早上给你推送一个新名字。点通知即可阅读。</p><p>iPhone 用户请先把 SPASM 添加到主屏幕（分享，然后添加到主屏幕），再从安装后的应用里打开通知。</p><p>随时可以在这里关闭。</p>`,
+    favourites: `<h2>收藏</h2><h3>如何使用</h3><p>你用收藏按钮或星号保存的所有内容都在这里：名字、情侣和宝宝名字列表。点任意一项可重新打开结果。</p><p>点旁边的叉号可删除。收藏只保存在这部手机上。</p>`,
   },
   hi: {
     home: `<h2>SPASM कैसे इस्तेमाल करें</h2>
@@ -133,6 +183,7 @@ export const HELP_I18N = {
 <h3>रोमांटिक मेल</h3><p>कोई भी दो नाम लिखें, उनके लिंग चुनें, और उनकी जोड़ी का मेल और यौन मेल पढ़ें।</p>
 <h3>बच्चे के सबसे अच्छे नाम?</h3><p>जानना चाहते हैं कि किसी माता-पिता की जोड़ी के लिए बच्चे के सबसे अच्छे नाम कौन से हैं? दोनों के नाम लिखें, हर नाम को पॉप-अप सूची से एक-एक करके चुनें और सही लिंग चुनें, फिर लड़कों या लड़कियों के नाम दबाएँ। SPASM उस जोड़ी के लिए बच्चों के आदर्श नाम दिखाएगा।</p>
 <h3>किस, शादी या दूरी</h3><p>यहाँ पता चलता है कि SPASM के हिसाब से आपको किसे किस करना चाहिए, किससे शादी करनी चाहिए और किससे दूर रहना चाहिए। कोई नाम लिखें (आपका या किसी का भी), पॉप-अप सूची से चुनें और सही लिंग चुनें, फिर जिनमें रुचि है उनका लिंग चुनें। शुभकामनाएँ!</p>
+<h3>और भी मज़ा</h3><p>व्यक्तित्व से नाम चुनें: मनचाहे गुण चुनें और SPASM मेल खाते नाम ढूँढेगा।</p><p>समूह का मेल: बारह तक दोस्त, रूममेट या सहकर्मी जोड़ें और देखें कि समूह कैसे निभाता है।</p><p>दो नामों की तुलना: दो व्यक्तित्व प्रोफ़ाइल आमने-सामने।</p><p>पालतू, नाव या कार का नाम: व्यक्तित्व चुनें, नाम पाएँ।</p><p>मशहूर जोड़ियाँ: महान प्रेम कहानियों का स्कोर देखें, और अपनी जोड़ी जोड़ें जिसे सब देखेंगे।</p><p>नाम के टैटू डिज़ाइन: कोई भी नाम बारह टैटू शैलियों में, मुफ़्त डाउनलोड।</p><p>आज का नाम: हर सुबह एक नए नाम की सूचना।</p><p>आपका नाम: SPASM को एक बार अपना नाम बताएँ, वह हर जगह भर देगा। अगर आपका नाम अभी नहीं है, तो David से लिखवा सकते हैं।</p><p>होम पर लौटने के लिए किसी भी पेज के ऊपर SPASM लोगो पर टैप करें। भाषा मेनू के नीचे बदलें।</p>
 <p>${MISS_HI}</p>${SCI_HI}`,
     meaning: `<h2>इस नाम का मतलब क्या है?</h2><h3>इस पेज का इस्तेमाल</h3>
 <p>सर्च बार में नाम लिखें (उपनाम भी चलेगा), पॉप-अप सूची से नाम चुनना न भूलें, और पुरुष/महिला स्विच से सही लिंग चुनें, फिर उनका व्यक्तित्व जानें। A से Z पट्टी से सारे नाम ब्राउज़ भी कर सकते हैं।</p><p>${MISS_HI}</p>
@@ -158,6 +209,12 @@ export const HELP_I18N = {
     pet: `<h2>पालतू, नाव या कार का नाम रखें</h2><h3>इस पेज का इस्तेमाल</h3>
 <p>चुनें कि किसका नाम रख रहे हैं, लड़का है, लड़की या कोई भी, और उसके व्यक्तित्व के लिए तीन शब्द तक चुनें। SPASM सबसे उपयुक्त व्यक्तित्व वाले नाम ढूँढेगा।</p>
 <p>विवरण इंसानों के लिए लिखे गए हैं, तो थोड़ी कल्पना से पढ़ें। और नामों के लिए सूची बदलें दबाएँ।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
+    compare: `<h2>दो नामों की तुलना</h2><h3>इस पेज का इस्तेमाल</h3><p>दो नाम लिखें, हर एक को पॉप-अप सूची से चुनें और लिंग चुनें। SPASM दोनों व्यक्तित्व प्रोफ़ाइल गुण-दर-गुण आमने-सामने दिखाएगा, साथ में हर नाम का व्यक्तित्व प्रकार।</p><p>पूरा विवरण पढ़ने के लिए नीचे किसी भी नाम पर टैप करें, या उनका रोमांटिक मेल देखें।</p><p>${MISS_HI}</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
+    famous: `<h2>मशहूर जोड़ियाँ</h2><h3>इस पेज का इस्तेमाल</h3><p>इतिहास और कथाओं की महान प्रेम कहानियाँ, सिर्फ़ पहले नाम से आँकी गईं। पूरा रोमांटिक मेल पढ़ने के लिए किसी जोड़ी पर टैप करें।</p><p>जोड़ी जोड़ने के लिए पॉप-अप सूची से दोनों के पहले नाम चुनें और बताएँ कि वे कौन हैं। जैसे बेकहम दंपति के लिए David और Victoria। आपकी जोड़ी सूची में सबसे ऊपर आएगी और SPASM इस्तेमाल करने वाला हर कोई उसे देखेगा, इसलिए भाषा साफ़ रखें।</p><h3>ज़रूरी बातें</h3><p>${SHARE_HI}</p>${SCI_HI}`,
+    custom: `<h2>अपने नाम का विवरण लिखवाएँ</h2><h3>इस पेज का इस्तेमाल</h3><p>अगर आपका नाम SPASM में नहीं है, तो David आपके लिए लिखेंगे। नाम और लिंग, David को जो जानना चाहिए, और आपका ईमेल लिखें ताकि वे आपको भेज सकें।</p><p>कीमत पेज पर दिखती है। भुगतान Stripe से सुरक्षित होता है, जो आपकी मुद्रा में सही राशि दिखाता है। लिखे जाने के बाद David आपका नाम SPASM में जोड़ सकते हैं ताकि सब उसे देख सकें।</p><h3>ज़रूरी बातें</h3><p>वर्तनी जाँच लें। David वही नाम लिखेंगे जो आप भेजेंगे।</p>`,
+    me: `<h2>आपका नाम</h2><h3>इस पेज का इस्तेमाल</h3><p>अपना नाम लिखें, पॉप-अप सूची से चुनें, लिंग चुनें और सहेजें दबाएँ। उसके बाद SPASM हर पेज पर इसे भर देगा। यह इसी फ़ोन पर रहता है और कोई और इसे नहीं देखता।</p><p>अगर आपका नाम अभी SPASM में नहीं है, तो दिखने वाला बटन दबाकर David से लिखवाएँ।</p><p>हटाने के लिए "मेरा नाम भूल जाएँ" दबाएँ।</p>`,
+    notify: `<h2>आज का नाम</h2><h3>इस पेज का इस्तेमाल</h3><p>सूचनाएँ चालू करें और SPASM हर सुबह एक नया नाम भेजेगा। पढ़ने के लिए सूचना पर टैप करें।</p><p>iPhone पर पहले SPASM को होम स्क्रीन पर जोड़ें (शेयर, फिर Add to Home Screen), फिर इंस्टॉल किए गए ऐप से सूचनाएँ चालू करें।</p><p>जब चाहें यहाँ बंद करें।</p>`,
+    favourites: `<h2>पसंदीदा</h2><h3>इस पेज का इस्तेमाल</h3><p>पसंदीदा बटन या सितारे से सहेजी गई हर चीज़ यहाँ है: नाम, जोड़ियाँ और बच्चों के नामों की सूचियाँ। नतीजा फिर खोलने के लिए किसी पर भी टैप करें।</p><p>हटाने के लिए बगल के क्रॉस पर टैप करें। पसंदीदा इसी फ़ोन पर रहते हैं।</p>`,
   },
   es: {
     home: `<h2>Cómo usar SPASM</h2>
@@ -165,6 +222,7 @@ export const HELP_I18N = {
 <h3>Compatibilidad romántica</h3><p>Escribe dos nombres cualesquiera, indica su sexo y lee su compatibilidad de pareja y sexual.</p>
 <h3>¿Los mejores nombres para tu bebé?</h3><p>¿Quieres saber qué nombres de bebé encajan mejor con una pareja? Escribe el nombre de cada progenitor, elige cada uno de la lista desplegable con el sexo correcto y pulsa nombres de niño o de niña. SPASM te mostrará los nombres ideales para esa pareja.</p>
 <h3>Besar, casarse o evitar</h3><p>Descubre a quién te recomienda SPASM besar, con quién casarte y a quién evitar. Escribe un nombre (el tuyo o el de cualquiera), elígelo de la lista con el sexo correcto y luego elige el sexo de las personas que te interesan. ¡Suerte!</p>
+<h3>Más para jugar</h3><p>Elige un nombre por personalidad: marca los rasgos que quieres y SPASM encuentra los nombres que encajan.</p><p>Compatibilidad de grupo: añade hasta doce amigos, compañeros de piso o de trabajo y mira qué tal se lleva el grupo, pareja por pareja.</p><p>Compara dos nombres: dos perfiles de personalidad lado a lado.</p><p>Nombre para tu mascota, barco o coche: elige su personalidad y obtén un nombre.</p><p>Parejas famosas: cómo puntúan los grandes romances, y añade los tuyos para que todos los vean.</p><p>Diseños de tatuaje: cualquier nombre en doce estilos de letra de tatuaje, para descargar gratis.</p><p>Nombre del día: una notificación con un nombre nuevo cada mañana.</p><p>Tu nombre: dile tu nombre a SPASM una vez y lo rellenará por ti en todas partes. Si tu nombre aún no está, puedes pedirle a David que lo escriba.</p><p>Toca el logo de SPASM arriba en cualquier página para volver al inicio. Cambia el idioma al final del menú.</p>
 <p>${MISS_ES}</p>${SCI_ES}`,
     meaning: `<h2>¿Qué significa ese nombre?</h2><h3>Cómo usar esta página</h3>
 <p>Escribe un nombre (vale un apodo), elígelo de la lista desplegable y usa el selector hombre/mujer para indicar el sexo. También puedes explorar todos los nombres con la barra de la A a la Z.</p><p>${MISS_ES}</p>
@@ -190,5 +248,11 @@ export const HELP_I18N = {
     pet: `<h2>Nombre para tu mascota, barco o coche</h2><h3>Cómo usar esta página</h3>
 <p>Elige a qué le pones nombre, si es masculino, femenino o cualquiera, y hasta tres palabras para su personalidad. SPASM encontrará los nombres con la personalidad que mejor encaja.</p>
 <p>Las descripciones están escritas para personas, así que léelas con un poco de imaginación. Pulsa "Nueva lista" para ver más nombres.</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
+    compare: `<h2>Compara dos nombres</h2><h3>Cómo usar esta página</h3><p>Escribe dos nombres, elige cada uno de la lista desplegable con su sexo. SPASM muestra los dos perfiles de personalidad lado a lado, rasgo por rasgo, con el tipo de personalidad de cada uno.</p><p>Toca cualquiera de los nombres abajo para leer su descripción completa, o mira su compatibilidad romántica.</p><p>${MISS_ES}</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
+    famous: `<h2>Parejas famosas</h2><h3>Cómo usar esta página</h3><p>Los grandes romances de la historia y la ficción, puntuados solo por el nombre. Toca una pareja para leer su compatibilidad romántica completa.</p><p>Para añadir una pareja, elige los dos nombres de la lista y di quiénes son. Para los Beckham, David y Victoria. Tu pareja aparece arriba de la lista y la verá todo el que use SPASM, así que nada de groserías.</p><h3>A tener en cuenta</h3><p>${SHARE_ES}</p>${SCI_ES}`,
+    custom: `<h2>Pide que escriban tu nombre</h2><h3>Cómo usar esta página</h3><p>Si tu nombre no está en SPASM, David lo escribirá para ti. Escribe el nombre y el sexo, lo que David deba saber y tu correo para que te lo envíe.</p><p>El precio aparece en la página. Pagas de forma segura con Stripe, que muestra el importe exacto en tu moneda. Cuando esté escrito, David puede añadir tu nombre a SPASM para que todos lo consulten.</p><h3>A tener en cuenta</h3><p>Revisa la ortografía. David escribe exactamente el nombre que envías.</p>`,
+    me: `<h2>Tu nombre</h2><h3>Cómo usar esta página</h3><p>Escribe tu nombre, elígelo de la lista desplegable, indica tu sexo y pulsa Guardar. A partir de ahí SPASM lo rellena por ti en cada página. Se queda en este móvil y nadie más lo ve.</p><p>Si tu nombre aún no está en SPASM, toca el botón que aparece para pedirle a David que lo escriba.</p><p>Usa Olvidar mi nombre para borrarlo.</p>`,
+    notify: `<h2>Nombre del día</h2><h3>Cómo usar esta página</h3><p>Activa las notificaciones y SPASM te enviará un nombre nuevo cada mañana. Toca la notificación para leer sobre él.</p><p>En iPhone, primero añade SPASM a tu pantalla de inicio (Compartir y luego Añadir a pantalla de inicio) y activa las notificaciones desde la app instalada.</p><p>Desactívalas aquí cuando quieras.</p>`,
+    favourites: `<h2>Favoritos</h2><h3>Cómo usar esta página</h3><p>Aquí está todo lo que has guardado con un botón de favoritos o una estrella: nombres, parejas y listas de nombres de bebé. Toca cualquiera para abrir el resultado otra vez.</p><p>Toca la cruz junto a cualquiera para quitarlo. Los favoritos se quedan en este móvil.</p>`,
   },
 };

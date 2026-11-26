@@ -565,7 +565,7 @@ function kmaResult(g, name, seekG, mode, q) {
 }
 
 function favourites() {
-  setBar({ back: true });
+  setBar({ back: true, help: 'favourites' });
   const f = favs();
   const groups = FAV_GROUPS.filter(([k]) => f[k] && f[k].length);
   view.innerHTML = `${logo()}<h1>Favourites</h1>` + (groups.length ? '' : '<p class="empty">Nothing saved yet. Use the save buttons on any result.</p>');
@@ -875,7 +875,7 @@ function groupVerdict(s) {
 }
 
 function compareForm() {
-  setBar({ back: true });
+  setBar({ back: true, help: 'compare' });
   view.innerHTML = `${logo()}<h1>Compare two names</h1>`;
   const me = meRecord();
   const a = picker({ label: 'First name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
@@ -890,7 +890,7 @@ function compareResult(gA, nA, gB, nB) {
   const A = E.find(nA, gA), B = E.find(nB, gB);
   if (!A) return notFound(nA, gA);
   if (!B) return notFound(nB, gB);
-  setBar({ back: true });
+  setBar({ back: true, help: 'compare' });
   view.classList.add('scroll');
   const w = (r, i) => (r.t ? Math.round(r.t[i] / 5 * 100) : 0);
   const rows = TRAITS.map((t, i) => `<div class="cmp-row"><span class="tl">${t}</span>
@@ -966,7 +966,7 @@ const FAMOUS = [
 ];
 
 function famousPage() {
-  setBar({ back: true });
+  setBar({ back: true, help: 'famous' });
   view.classList.add('scroll');
   const li = ([a, ga, b, gb, note]) => {
     const A = E.find(a, ga), B = E.find(b, gb);
@@ -1011,7 +1011,7 @@ function famousPage() {
 }
 
 function customPage(q) {
-  setBar({ back: true });
+  setBar({ back: true, help: 'custom' });
   view.classList.add('scroll');
   view.innerHTML = `${logo()}<h1>Get your name written up</h1>
     <p class="hint" style="font-size:15px">Name not in SPASM, or want more than a paragraph? David Hocking, author of the Name Theory, will write a personal description for the name of your choice.</p>
@@ -1044,7 +1044,7 @@ function customPage(q) {
 }
 
 async function notifyPage() {
-  setBar({ back: true });
+  setBar({ back: true, help: 'notify' });
   view.classList.add('scroll');
   view.innerHTML = `${logo()}<h1>Name of the day, every morning</h1>
     <p class="hint" style="font-size:15px">Get a notification each morning with SPASM's name of the day. Tap it to read the full description.</p>
@@ -1101,7 +1101,7 @@ async function notifyPage() {
 }
 
 function mePage() {
-  setBar({ back: true });
+  setBar({ back: true, help: 'me' });
   const me = meRecord();
   view.innerHTML = `${logo()}<h1>Your name</h1><p class="hint" style="font-size:16px">SPASM fills this in for you on every page. It stays on this device.</p>`;
   const p = picker({ label: 'Your name', g: me ? me.g : 'F', name: me ? me.n : '', id: 'n1' });
@@ -1275,7 +1275,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 43;
+const APP_VERSION = 44;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;
