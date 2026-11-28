@@ -262,4 +262,12 @@ open(os.path.join(OUT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSite
 open(os.path.join(OUT, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     ''.join(f'<url><loc>{BASE}{p}</loc><lastmod>{TODAY}</lastmod></url>\n' for p in pages) + '</urlset>\n')
 open(os.path.join(OUT, '404.html'), 'w').write(f'<!DOCTYPE html><meta charset="utf-8"><title>Not found</title><link rel="stylesheet" href="/site.css"><main><h1>Page not found</h1><p><a href="/">SPASM home</a></p></main>')
+os.makedirs(os.path.join(OUT, 'functions'), exist_ok=True)
+open(os.path.join(OUT, 'functions', '_middleware.js'), 'w').write('''// Sends spasm-site.pages.dev to the real address, keeping the path.
+export async function onRequest({ request, next }) {
+  const url = new URL(request.url);
+  if (url.hostname === 'spasm-site.pages.dev') { url.hostname = '%s'; url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
+  return next();
+}
+''' % BASE.split('//')[1])
 print(len(pages), 'pages ->', OUT)
