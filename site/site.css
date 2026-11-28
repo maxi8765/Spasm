@@ -15,4 +15,4 @@ table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:6px;borde
 .names{columns:3 140px;font-size:15px}.names span{display:block}
 blockquote{margin:10px 0;padding:12px 18px;border-left:4px solid var(--pink);background:#24233200;font-style:italic}
 footer{max-width:860px;margin:0 auto;padding:20px;color:var(--muted);font-size:14px;border-top:1px solid #3a394b}
-.crumbs{font-size:14px;color:var(--muted)}
+.navbtn{background:var(--blue);padding:4px 14px;border-radius:999px;font-weight:700}.crumbs{font-size:14px;color:var(--muted)}
