@@ -61,7 +61,7 @@ async function build() {
   const tag = r.n.replace(/[^A-Za-z]/g, '');
   const short = desc.length > 220 ? desc.slice(0, 217).replace(/\s+\S*$/, '') + '...' : desc;
   document.getElementById('caption').value =
-    `Name of the day: ${r.n}\n\n${short}\n\nKnow a ${r.n}? Tag them. What does your name say? spasm.pages.dev\n\n#${tag} #NameOfTheDay #NameMeaning #WhatsInAName #SPASM`;
+    `Name of the day: ${r.n}\n\n${short}\n\nKnow a ${r.n}? Tag them. What does your name say? spasm.pro\n\n#${tag} #NameOfTheDay #NameMeaning #WhatsInAName #SPASM`;
   window.socialResult = { name: r.n, gender: r.g, date: dateEl.value, caption: document.getElementById('caption').value, warning, blobs: made };
   document.body.dataset.ready = '1';
 }

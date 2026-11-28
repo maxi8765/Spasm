@@ -4,8 +4,8 @@ import json, os, sys, shutil, html, datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB = os.path.join(ROOT, 'public')
 OUT = os.path.join(ROOT, 'site')
-BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://spasm-site.pages.dev').rstrip('/')
-APP = 'https://spasm.pages.dev'
+BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://get.spasm.pro').rstrip('/')
+APP = 'https://spasm.pro'
 BOOK = 'https://www.amazon.com.au/Why-Shouldnt-Call-Son-Clint/dp/0980545935'
 MAIL = 'yoohoohocko@gmail.com'
 TODAY = datetime.date.today().isoformat()

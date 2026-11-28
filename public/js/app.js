@@ -830,8 +830,8 @@ function installPage() {
   view.innerHTML = `${logo()}<h1>Install SPASM</h1>` + (isStandalone()
     ? '<p class="body">You\'re already using the installed app.</p>'
     : `<p class="body">${installSteps()}</p>${installPrompt ? '<button class="btn" id="pinstall">Install now</button>' : ''}
-       <h2>iPhone and iPad</h2><p class="hint" style="font-size:15px">Open spasm.pages.dev in Safari, tap Share ${SHARE_ICON}, then Add to Home Screen.</p>
-       <h2>Android</h2><p class="hint" style="font-size:15px">Open spasm.pages.dev in Chrome, tap the menu (&#8942;), then Install app or Add to Home screen.</p>`);
+       <h2>iPhone and iPad</h2><p class="hint" style="font-size:15px">Open spasm.pro in Safari, tap Share ${SHARE_ICON}, then Add to Home Screen.</p>
+       <h2>Android</h2><p class="hint" style="font-size:15px">Open spasm.pro in Chrome, tap the menu (&#8942;), then Install app or Add to Home screen.</p>`);
   if ($('#pinstall')) $('#pinstall').onclick = async () => { if (!(await runInstall())) toast('Use your browser menu to install'); };
 }
 
@@ -1355,7 +1355,7 @@ boot().catch(() => { view.innerHTML = '<p class="loading">Could not load SPASM. 
 // ---------- updates ----------
 // Installed copies check for a new release whenever they're opened or brought back to the front.
 // Run scripts/bump_version.py on each release; it updates APP_VERSION, version.json and the cache name together.
-const APP_VERSION = 60;
+const APP_VERSION = 61;
 let updateShown = false;
 function showUpdate() {
   if (updateShown) return;

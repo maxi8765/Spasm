@@ -1,7 +1,7 @@
 // Builds a shareable 1080x1350 PNG card for a result, then shares it.
 import { tr } from './i18n.js';
 const W = 1080, PAD = 80;
-const SITE = location.host.endsWith('workers.dev') || location.host.startsWith('localhost') ? 'spasm.pages.dev' : location.host;
+const SITE = 'spasm.pro';
 let logoImg = null;
 
 function loadLogo() {
