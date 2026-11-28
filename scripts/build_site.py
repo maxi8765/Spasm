@@ -76,7 +76,8 @@ def page(path, title, description, body, jsonld=None):
 <title>{e(title)}</title><meta name="description" content="{e(description)}"><link rel="canonical" href="{url}">
 <meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(description)}"><meta property="og:url" content="{url}">
 <meta property="og:image" content="{BASE}/img/spasm-banner.png"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><link rel="stylesheet" href="/site.css">{ld}</head>
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><link rel="stylesheet" href="/site.css">{ld}
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{{"token": "318589241fe44265bc02ce779039217b"}}'></script></head>
 <body><header><a href="/"><img src="/img/logo.png" alt="SPASM"></a><nav>{''.join(f'<a href="{h}">{t}</a>' for h, t in NAV[1:])}<a class="navbtn" href="{APP}/#/install">Install app</a></nav></header>
 <main>{body}
 <div class="card"><h2 style="margin-top:0">Try it on your own name</h2><p>SPASM is free and works on any phone. No sign-up, no app store needed.</p><a class="btn" href="{APP}/#/install">Install the app</a><a class="btn alt" href="{APP}">Open in your browser</a></div>
